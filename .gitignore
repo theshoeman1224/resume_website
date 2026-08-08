@@ -16,3 +16,6 @@ dist/
 
 # Private source material
 /linkedin-profile.pdf
+
+# Generated from the independent Snake repository
+/public/games/snake/

@@ -6,6 +6,7 @@ The source for [joshshuman.com](https://joshshuman.com), a static engineering re
 
 - Node.js 22.12 or newer (`.nvmrc` is provided)
 - npm 9.6.5 or newer
+- Rust with the `wasm32-unknown-unknown` target and Trunk 0.21.14 when rebuilding Snake
 
 ## Local Development
 
@@ -37,3 +38,9 @@ npm run deploy
 Career accomplishments live in `src/content/accomplishments/` and are validated by the schema in `src/content.config.ts`. Add a Markdown file with the required frontmatter to publish another entry; the experience page loads and sorts the collection automatically.
 
 Project entries follow the same pattern in `src/content/projects/`. Each file automatically receives a card and a detail page at the `slug` defined in its frontmatter.
+
+## Snake WebAssembly Build
+
+The Snake source remains in the independent [`theshoeman1224/snake`](https://github.com/theshoeman1224/snake) repository. `npm run build:snake` checks out the pinned source commit, runs its release exporter, and writes generated assets to the ignored `public/games/snake/` directory. Set `SNAKE_SOURCE_DIR` to an existing checkout at the pinned commit to build without cloning.
+
+The deployment workflow installs the pinned Trunk version and rebuilds Snake before Astro. Ordinary Astro builds and non-game pages do not require the Snake repository or generated assets.

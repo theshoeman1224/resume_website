@@ -1,0 +1,29 @@
+---
+interface Props {
+  src: string;
+  title: string;
+}
+
+const { src, title } = Astro.props;
+---
+
+<section class="game-embed-section" id="play" aria-labelledby="game-demo-title">
+  <div class="shell">
+    <header class="section-heading">
+      <p class="section-index">Interactive demo</p>
+      <div>
+        <h2 id="game-demo-title">Play the WebAssembly build.</h2>
+        <p>Choose a difficulty to start. Move with Arrow keys or WASD, pause at any time, and use Restart to reset the current mode. Touch controls are included.</p>
+      </div>
+    </header>
+    <div class="game-frame-shell">
+      <iframe
+        class="game-frame"
+        src={src}
+        title={title}
+        loading="eager"
+        sandbox="allow-scripts allow-same-origin"
+      ></iframe>
+    </div>
+  </div>
+</section>

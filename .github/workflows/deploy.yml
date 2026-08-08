@@ -28,6 +28,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Rust WebAssembly tooling
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo install trunk --version 0.21.14 --locked
+
+      - name: Build Snake WebAssembly release
+        run: npm run build:snake
+
       - name: Build and validate
         run: npm run build
 

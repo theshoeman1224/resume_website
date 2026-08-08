@@ -530,6 +530,25 @@ h3 {
   color: var(--muted);
 }
 
+.game-embed-section {
+  padding-block: clamp(4rem, 8vw, 7rem);
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 2rem;
+}
+
+.game-frame-shell {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #080b09;
+}
+
+.game-frame {
+  display: block;
+  width: 100%;
+  min-height: 900px;
+  border: 0;
+}
+
 .focus-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -875,6 +894,10 @@ h3 {
 
   .focus-card h2 {
     margin-top: 3rem;
+  }
+
+  .game-frame {
+    min-height: 1200px;
   }
 }
 

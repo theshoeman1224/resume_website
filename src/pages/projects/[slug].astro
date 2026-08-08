@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GameEmbed from "../../components/GameEmbed.astro";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -38,6 +39,7 @@ const statusLabels = {
       {data.github && <a class="button" href={data.github}>View source</a>}
     </div>
   </header>
+  {data.embed && <GameEmbed src={data.embed.src} title={data.embed.title} />}
   <section class="section">
     <div class="shell project-detail-grid">
       <aside class="project-detail-aside">

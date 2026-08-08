@@ -35,6 +35,10 @@ const projects = defineCollection({
       src: z.string(),
       alt: z.string(),
     }).optional(),
+    embed: z.object({
+      src: z.string(),
+      title: z.string(),
+    }).optional(),
   }),
 });
 

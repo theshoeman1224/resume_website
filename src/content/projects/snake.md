@@ -9,8 +9,12 @@ technologies:
   - Trunk
   - HTML Canvas
 github: https://github.com/theshoeman1224/snake
+demo: https://joshshuman.com/projects/snake/#play
 featured: true
 status: in-development
+embed:
+  src: /games/snake/index.html
+  title: Play Snake, built with Rust and WebAssembly
 ---
 
 ## Background
@@ -25,6 +29,6 @@ The project keeps game rules and state in a reusable Rust engine. A WebAssembly 
 
 The release workflow compiles the `wasm32-unknown-unknown` target and emits optimized assets plus a manifest recording the exact source commit, repository URL, and build time. That manifest makes the version embedded in this portfolio traceable to its independent source repository.
 
-## Next Step
+## Controls
 
-The playable WebAssembly build and controls will be embedded here in the next milestone.
+Choose Easy, Medium, Hard, or a custom arena to begin. The game supports Arrow keys and WASD on a keyboard, plus an on-screen directional pad for pointer and touch input. Pause and Restart controls remain available while playing.
