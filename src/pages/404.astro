@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Page Not Found | Josh Shuman"
+  description="The requested page could not be found on Josh Shuman's engineering portfolio."
+>
+  <section class="shell error-page" aria-labelledby="error-title">
+    <div>
+      <p class="eyebrow">Error / 404</p>
+      <h1 id="error-title">Signal lost.</h1>
+      <p>The requested route does not exist or may have moved. Return to the portfolio or continue to the project index.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/">Return home</a>
+        <a class="button" href="/projects/">Browse projects</a>
+      </div>
+    </div>
+    <p class="error-code" aria-hidden="true">404</p>
+  </section>
+</BaseLayout>

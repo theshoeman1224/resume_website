@@ -549,6 +549,39 @@ h3 {
   border: 0;
 }
 
+.error-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3rem;
+  align-items: center;
+  min-height: calc(100svh - 9rem);
+  padding-block: clamp(5rem, 12vw, 10rem);
+}
+
+.error-page h1 {
+  margin-bottom: 2rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+
+.error-page > div > p:not(.eyebrow) {
+  max-width: 42rem;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+}
+
+.error-code {
+  margin: 0;
+  color: transparent;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(8rem, 24vw, 22rem);
+  line-height: 0.75;
+  -webkit-text-stroke: 1px var(--line);
+}
+
 .focus-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -898,6 +931,14 @@ h3 {
 
   .game-frame {
     min-height: 1200px;
+  }
+
+  .error-page {
+    grid-template-columns: 1fr;
+  }
+
+  .error-code {
+    display: none;
   }
 }
 
