@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+}
+
+const { data } = Astro.props.project;
+const statusLabels = {
+  active: "Active",
+  "in-development": "In development",
+  complete: "Complete",
+  archived: "Archived",
+};
+---
+
+<article class="project-card">
+  <a class="project-visual" href={`/projects/${data.slug}/`} tabindex="-1" aria-hidden="true">
+    {data.image ? (
+      <img src={data.image.src} alt={data.image.alt} loading="lazy" />
+    ) : (
+      <span>{data.technologies.slice(0, 2).join(" / ")}</span>
+    )}
+  </a>
+  <div class="project-card-content">
+    <div class="project-card-meta">
+      <span>{statusLabels[data.status]}</span>
+      <span>{String(data.technologies.length).padStart(2, "0")} technologies</span>
+    </div>
+    <h3><a href={`/projects/${data.slug}/`}>{data.title}</a></h3>
+    <p>{data.summary}</p>
+    <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+      {data.technologies.map((technology) => <li>{technology}</li>)}
+    </ul>
+    <div class="project-card-actions">
+      <a href={`/projects/${data.slug}/`}>View details</a>
+      {data.demo && <a href={data.demo}>Live demo</a>}
+      {data.github && <a href={data.github}>GitHub</a>}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,52 @@
+---
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const statusLabels = {
+  active: "Active",
+  "in-development": "In development",
+  complete: "Complete",
+  archived: "Archived",
+};
+---
+
+<BaseLayout title={`${data.title} | Josh Shuman`} description={data.description}>
+  <header class="shell project-intro">
+    <a class="eyebrow" href="/projects/">Projects / {statusLabels[data.status]}</a>
+    <h1>{data.title}</h1>
+    <p>{data.description}</p>
+    <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+      {data.technologies.map((technology) => <li>{technology}</li>)}
+    </ul>
+    <div class="hero-actions">
+      {data.demo && <a class="button button-primary" href={data.demo}>Open live demo</a>}
+      {data.github && <a class="button" href={data.github}>View source</a>}
+    </div>
+  </header>
+  <section class="section">
+    <div class="shell project-detail-grid">
+      <aside class="project-detail-aside">
+        <p class="section-index">Project brief</p>
+        <p>{data.summary}</p>
+      </aside>
+      <article class="project-copy">
+        <Content />
+      </article>
+    </div>
+  </section>
+</BaseLayout>

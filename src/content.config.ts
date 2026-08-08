@@ -19,4 +19,23 @@ const accomplishments = defineCollection({
   }),
 });
 
-export const collections = { accomplishments };
+const projects = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    summary: z.string(),
+    description: z.string(),
+    technologies: z.array(z.string()).default([]),
+    github: z.url().optional(),
+    demo: z.url().optional(),
+    featured: z.boolean().default(false),
+    status: z.enum(["active", "in-development", "complete", "archived"]),
+    image: z.object({
+      src: z.string(),
+      alt: z.string(),
+    }).optional(),
+  }),
+});
+
+export const collections = { accomplishments, projects };

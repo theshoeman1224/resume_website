@@ -35,3 +35,5 @@ npm run deploy
 ## Career Content
 
 Career accomplishments live in `src/content/accomplishments/` and are validated by the schema in `src/content.config.ts`. Add a Markdown file with the required frontmatter to publish another entry; the experience page loads and sorts the collection automatically.
+
+Project entries follow the same pattern in `src/content/projects/`. Each file automatically receives a card and a detail page at the `slug` defined in its frontmatter.

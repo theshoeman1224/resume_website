@@ -273,8 +273,7 @@ h3 {
 }
 
 .principles,
-.skill-list,
-.project-list {
+.skill-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -317,41 +316,113 @@ h3 {
   color: var(--muted);
 }
 
-.project-list {
-  counter-reset: projects;
-}
-
-.project-list li {
-  counter-increment: projects;
+.project-grid {
   display: grid;
-  grid-template-columns: 4rem minmax(0, 1fr) auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
-  align-items: center;
-  padding-block: 1.5rem;
-  border-bottom: 1px solid var(--line);
 }
 
-.project-list li::before {
-  color: var(--signal);
-  content: "0" counter(projects);
-}
-
-.project-list h3 {
-  margin-bottom: 0.35rem;
-  font-size: 1.1rem;
-}
-
-.project-list p {
-  margin-bottom: 0;
-  color: var(--muted);
-}
-
-.project-status {
-  padding: 0.4rem 0.6rem;
+.project-card {
+  display: grid;
+  min-width: 0;
   border: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.7rem;
+  background: var(--panel);
+}
+
+.project-visual {
+  position: relative;
+  display: grid;
+  min-height: 13rem;
+  place-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(199, 255, 74, 0.16), transparent 60%),
+    repeating-linear-gradient(90deg, transparent 0 2rem, rgba(199, 255, 74, 0.04) 2rem calc(2rem + 1px));
+  color: var(--signal);
+  text-decoration: none;
+}
+
+.project-visual::before,
+.project-visual::after {
+  position: absolute;
+  width: 5rem;
+  height: 5rem;
+  border-color: var(--signal);
+  opacity: 0.55;
+  content: "";
+}
+
+.project-visual::before {
+  top: 1.25rem;
+  left: 1.25rem;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.project-visual::after {
+  right: 1.25rem;
+  bottom: 1.25rem;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.project-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-visual span {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.project-card-content {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.project-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.project-card h3 {
+  margin: 2rem 0 1rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.7rem);
+  font-weight: 400;
+}
+
+.project-card h3 a {
+  text-decoration: none;
+}
+
+.project-card-content > p {
+  color: var(--muted);
+}
+
+.project-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 2rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.section-action {
+  margin-top: 2rem;
+  text-align: right;
 }
 
 .skills-grid {
@@ -403,6 +474,60 @@ h3 {
   color: var(--muted);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.35rem;
+}
+
+.project-intro {
+  padding-block: clamp(5rem, 12vw, 10rem);
+}
+
+.project-intro > .eyebrow {
+  text-decoration: none;
+}
+
+.project-intro h1 {
+  max-width: 12ch;
+  margin: 1.5rem 0 2rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.4rem, 9vw, 8rem);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+
+.project-intro > p {
+  max-width: 48rem;
+  color: var(--muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+}
+
+.project-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.35fr) minmax(0, 1fr);
+  gap: clamp(3rem, 8vw, 8rem);
+}
+
+.project-detail-aside {
+  color: var(--muted);
+}
+
+.project-copy {
+  max-width: 48rem;
+}
+
+.project-copy h2 {
+  margin: 0 0 1rem;
+  padding-top: 3rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.project-copy h2:first-child {
+  padding-top: 0;
+}
+
+.project-copy p {
+  color: var(--muted);
 }
 
 .focus-grid {
@@ -687,7 +812,9 @@ h3 {
   }
 
   .skills-grid,
-  .focus-grid {
+  .focus-grid,
+  .project-grid,
+  .project-detail-grid {
     grid-template-columns: 1fr;
   }
 
@@ -756,8 +883,7 @@ h3 {
     font-size: clamp(3rem, 17vw, 5rem);
   }
 
-  .feature-panel,
-  .project-list li {
+  .feature-panel {
     grid-template-columns: 1fr;
   }
 

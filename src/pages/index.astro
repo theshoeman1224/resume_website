@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProjectGrid from "../components/ProjectGrid.astro";
+import { getCollection } from "astro:content";
 
 const specialties = [
   "Digital signal processing",
@@ -8,6 +10,8 @@ const specialties = [
   "Applied AI",
   "DevSecOps",
 ];
+
+const featuredProjects = (await getCollection("projects")).filter(({ data }) => data.featured);
 ---
 
 <BaseLayout
@@ -90,22 +94,8 @@ const specialties = [
           <p>Selected builds that make architecture and implementation decisions tangible in the browser.</p>
         </div>
       </header>
-      <ol class="project-list">
-        <li>
-          <div>
-            <h3>Rust Snake</h3>
-            <p>A native Rust game prepared for a browser-executable WebAssembly release.</p>
-          </div>
-          <span class="project-status">In development</span>
-        </li>
-        <li>
-          <div>
-            <h3>Engineering demonstrations</h3>
-            <p>A modular home for future DSP, systems, and visualization projects.</p>
-          </div>
-          <span class="project-status">Planned</span>
-        </li>
-      </ol>
+      <ProjectGrid projects={featuredProjects} />
+      <div class="section-action"><a class="button" href="/projects/">View all projects</a></div>
     </div>
   </section>
 

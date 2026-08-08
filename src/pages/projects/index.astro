@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectGrid from "../../components/ProjectGrid.astro";
+
+const projects = (await getCollection("projects")).sort((a, b) =>
+  Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)
+);
+---
+
+<BaseLayout
+  title="Projects | Josh Shuman"
+  description="Technical projects by Josh Shuman spanning Rust, WebAssembly, systems, and web delivery."
+>
+  <header class="shell page-intro">
+    <p class="eyebrow">Projects / Selected work</p>
+    <h1>Engineering you can inspect.</h1>
+    <p>Reusable project pages connect motivation and architecture to source code and working demonstrations.</p>
+  </header>
+  <section class="section" aria-labelledby="project-grid-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">Project index</p>
+        <div>
+          <h2 id="project-grid-title">Built, measured, documented.</h2>
+          <p>Each project uses the same typed content model and detail template, with live demos linked when available.</p>
+        </div>
+      </header>
+      <ProjectGrid projects={projects} />
+    </div>
+  </section>
+</BaseLayout>
