@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "resume-website",
+  "compatibility_date": "2026-08-08",
+  "assets": {
+    "directory": "./public"
+  },
+  "routes": [
+    {
+      "pattern": "joshshuman.com",
+      "custom_domain": true
+    }
+  ]
+}
