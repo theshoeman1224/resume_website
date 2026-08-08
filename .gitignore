@@ -2,3 +2,17 @@ node_modules/
 dist/
 .astro/
 .wrangler/
+
+# Local environment variables / secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+
+# Private keys
+*.pem
+*.key
+
+# Private source material
+/linkedin-profile.pdf

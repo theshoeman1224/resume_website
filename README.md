@@ -31,3 +31,7 @@ For an authenticated manual deployment:
 npm run build
 npm run deploy
 ```
+
+## Career Content
+
+Career accomplishments live in `src/content/accomplishments/` and are validated by the schema in `src/content.config.ts`. Add a Markdown file with the required frontmatter to publish another entry; the experience page loads and sorts the collection automatically.

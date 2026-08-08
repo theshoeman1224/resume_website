@@ -434,6 +434,73 @@ h3 {
   color: var(--muted);
 }
 
+.accomplishment-list {
+  border-top: 1px solid var(--line);
+}
+
+.accomplishment-card {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  padding-block: clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.accomplishment-meta {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.accomplishment-meta span {
+  display: inline-block;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--signal);
+  color: var(--signal);
+}
+
+.accomplishment-role {
+  color: var(--signal);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.accomplishment-card h3 {
+  max-width: 24ch;
+  margin-bottom: 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 400;
+}
+
+.accomplishment-card > div:last-child > p:not(.accomplishment-role) {
+  max-width: 48rem;
+  color: var(--muted);
+}
+
+.accomplishment-impact strong {
+  color: var(--ink);
+}
+
+.technology-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.technology-list li {
+  padding: 0.35rem 0.55rem;
+  background: var(--signal-soft);
+  color: var(--signal);
+  font-size: 0.72rem;
+}
+
 .site-footer {
   padding-block: 2rem;
   border-top: 1px solid var(--line);
@@ -476,6 +543,10 @@ h3 {
 
   .skills-grid,
   .focus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accomplishment-card {
     grid-template-columns: 1fr;
   }
 

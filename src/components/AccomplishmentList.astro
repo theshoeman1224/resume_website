@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  accomplishments: CollectionEntry<"accomplishments">[];
+}
+
+const { accomplishments } = Astro.props;
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+---
+
+<div class="accomplishment-list">
+  {accomplishments.map(({ id, data }) => (
+    <article class="accomplishment-card" id={id.replace(/\.md$/, "")}>
+      <div class="accomplishment-meta">
+        <p>{dateFormatter.format(data.date)} - {data.endDate ? dateFormatter.format(data.endDate) : "Present"}</p>
+        <span>{data.category}</span>
+      </div>
+      <div>
+        <p class="accomplishment-role">{data.role} / {data.organization}</p>
+        <h3>{data.title}</h3>
+        <p>{data.summary}</p>
+        <p class="accomplishment-impact"><strong>Impact:</strong> {data.impact}</p>
+        <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+          {data.technologies.map((technology) => <li>{technology}</li>)}
+        </ul>
+      </div>
+    </article>
+  ))}
+</div>

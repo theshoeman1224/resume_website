@@ -1,5 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import AccomplishmentList from "../components/AccomplishmentList.astro";
+import { getCollection } from "astro:content";
+
+const accomplishments = (await getCollection("accomplishments")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
 ---
 
 <BaseLayout
@@ -10,7 +16,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <p class="eyebrow">Experience / Overview</p>
     <h1>Technical range. Focused outcomes.</h1>
     <p>
-      A career centered on performance-sensitive software, systems architecture, and technical leadership. Detailed, data-driven accomplishments will populate this experience view as the portfolio develops.
+      A career centered on performance-sensitive software, systems architecture, and technical leadership. The record below connects role progression to concrete technical contributions.
     </p>
   </header>
 
@@ -43,16 +49,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     </div>
   </section>
 
-  <section class="section" aria-labelledby="timeline-preview-title">
+  <section class="section" aria-labelledby="accomplishments-title">
     <div class="shell">
-      <div class="feature-panel">
+      <header class="section-heading">
+        <p class="section-index">Career record</p>
         <div>
-          <p class="eyebrow">Structured career data</p>
-          <h3 id="timeline-preview-title">The interactive timeline is next.</h3>
-          <p>Accomplishments will be organized by date, discipline, role, technologies, and measurable impact.</p>
+          <h2 id="accomplishments-title">Selected accomplishments.</h2>
+          <p>Structured entries ordered by start date, including concurrent technical leadership and improvement initiatives.</p>
         </div>
-        <a class="button" href="/#contact">Start a conversation</a>
-      </div>
+      </header>
+      <AccomplishmentList accomplishments={accomplishments} />
     </div>
   </section>
 </BaseLayout>
