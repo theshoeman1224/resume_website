@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from "astro:content";
+import TimelineItem from "./TimelineItem.astro";
+
+interface Props {
+  accomplishments: CollectionEntry<"accomplishments">[];
+}
+
+const { accomplishments } = Astro.props;
+const categories = [...new Set(accomplishments.map(({ data }) => data.category))].sort();
+---
+
+<div class="timeline" data-timeline>
+  <div class="timeline-controls" aria-label="Filter career timeline">
+    <div class="timeline-filters">
+      <button type="button" data-timeline-filter="All" aria-pressed="true">All</button>
+      {categories.map((category) => (
+        <button type="button" data-timeline-filter={category} aria-pressed="false">{category}</button>
+      ))}
+    </div>
+    <p data-timeline-status aria-live="polite">{accomplishments.length} milestones shown</p>
+  </div>
+  <ol class="timeline-list">
+    {accomplishments.map((accomplishment) => <TimelineItem accomplishment={accomplishment} />)}
+  </ol>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-timeline]").forEach((timeline) => {
+    const buttons = timeline.querySelectorAll<HTMLButtonElement>("[data-timeline-filter]");
+    const items = timeline.querySelectorAll<HTMLElement>("[data-timeline-item]");
+    const status = timeline.querySelector<HTMLElement>("[data-timeline-status]");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const selectedCategory = button.dataset.timelineFilter;
+        let visibleCount = 0;
+
+        buttons.forEach((candidate) => {
+          candidate.setAttribute("aria-pressed", String(candidate === button));
+        });
+
+        items.forEach((item) => {
+          const visible = selectedCategory === "All" || item.dataset.category === selectedCategory;
+          item.hidden = !visible;
+          if (visible) visibleCount += 1;
+        });
+
+        if (status) {
+          const label = visibleCount === 1 ? "milestone" : "milestones";
+          status.textContent = `${visibleCount} ${label} shown`;
+        }
+      });
+    });
+  });
+</script>

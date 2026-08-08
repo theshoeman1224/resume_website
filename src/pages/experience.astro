@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import AccomplishmentList from "../components/AccomplishmentList.astro";
+import Timeline from "../components/Timeline.astro";
 import { getCollection } from "astro:content";
 
 const accomplishments = (await getCollection("accomplishments")).sort(
@@ -49,16 +49,16 @@ const accomplishments = (await getCollection("accomplishments")).sort(
     </div>
   </section>
 
-  <section class="section" aria-labelledby="accomplishments-title">
+  <section class="section" id="career-timeline" aria-labelledby="accomplishments-title">
     <div class="shell">
       <header class="section-heading">
         <p class="section-index">Career record</p>
         <div>
           <h2 id="accomplishments-title">Selected accomplishments.</h2>
-          <p>Structured entries ordered by start date, including concurrent technical leadership and improvement initiatives.</p>
+          <p>Filter the reverse-chronological record by discipline, then expand a milestone to inspect its impact and technical context.</p>
         </div>
       </header>
-      <AccomplishmentList accomplishments={accomplishments} />
+      <Timeline accomplishments={accomplishments} />
     </div>
   </section>
 </BaseLayout>
