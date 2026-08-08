@@ -1,16 +1,173 @@
 ---
-const title = "Josh Shuman";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const specialties = [
+  "Digital signal processing",
+  "Systems architecture",
+  "Performance engineering",
+  "Applied AI",
+  "DevSecOps",
+];
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    <p>joshshuman.com is online.</p>
-  </body>
-</html>
+<BaseLayout
+  title="Josh Shuman | Principal Software Engineer"
+  description="Principal software engineer focused on high-performance DSP, software architecture, and technical leadership."
+>
+  <section class="shell hero" aria-labelledby="hero-title">
+    <div>
+      <p class="eyebrow">Principal Software Engineer</p>
+      <h1 id="hero-title">Engineering systems that <span>perform.</span></h1>
+      <p class="hero-summary">
+        Principal software engineer building high-performance systems at the intersection of DSP, software architecture, and technical leadership.
+      </p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/experience">Explore experience</a>
+        <a class="button" href="#projects">View projects</a>
+      </div>
+    </div>
+    <aside class="hero-aside" aria-label="Engineering focus">
+      <p class="status-line">Focus areas / 05</p>
+      <dl>
+        {specialties.map((specialty, index) => (
+          <div>
+            <dt>{String(index + 1).padStart(2, "0")}</dt>
+            <dd>{specialty}</dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
+  </section>
+
+  <section class="section" id="about" aria-labelledby="about-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">01 / About</p>
+        <div>
+          <h2 id="about-title">From complex constraints to dependable software.</h2>
+        </div>
+      </header>
+      <div class="about-grid">
+        <p class="about-copy">
+          I work where software meets demanding real-world systems: shaping architecture, improving runtime performance, and helping engineering teams turn difficult technical problems into maintainable products.
+        </p>
+        <ul class="principles" aria-label="Engineering principles">
+          <li>Measure before optimizing</li>
+          <li>Design for the next engineer</li>
+          <li>Make operational quality part of delivery</li>
+          <li>Lead through technical clarity</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="timeline" aria-labelledby="timeline-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">02 / Timeline</p>
+        <div>
+          <h2 id="timeline-title">A career built around consequential engineering.</h2>
+          <p>Explore a concise view of role progression, technical decisions, and the impact behind the work.</p>
+        </div>
+      </header>
+      <div class="feature-panel">
+        <div>
+          <p class="eyebrow">Career progression</p>
+          <h3>Experience, not just chronology.</h3>
+          <p>The full timeline will connect engineering challenges to contributions, technologies, and outcomes.</p>
+        </div>
+        <a class="button" href="/experience">Open experience</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects" aria-labelledby="projects-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">03 / Projects</p>
+        <div>
+          <h2 id="projects-title">Technical ideas made executable.</h2>
+          <p>Selected builds that make architecture and implementation decisions tangible in the browser.</p>
+        </div>
+      </header>
+      <ol class="project-list">
+        <li>
+          <div>
+            <h3>Rust Snake</h3>
+            <p>A native Rust game prepared for a browser-executable WebAssembly release.</p>
+          </div>
+          <span class="project-status">In development</span>
+        </li>
+        <li>
+          <div>
+            <h3>Engineering demonstrations</h3>
+            <p>A modular home for future DSP, systems, and visualization projects.</p>
+          </div>
+          <span class="project-status">Planned</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="skills" aria-labelledby="skills-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">04 / Skills</p>
+        <div>
+          <h2 id="skills-title">Depth across the system.</h2>
+          <p>Core capabilities spanning low-level performance, architecture, delivery systems, and technical direction.</p>
+        </div>
+      </header>
+      <div class="skills-grid">
+        <article class="skill-group">
+          <h3>Build</h3>
+          <ul class="skill-list">
+            <li>C / C++</li>
+            <li>Rust</li>
+            <li>Python</li>
+            <li>TypeScript</li>
+          </ul>
+        </article>
+        <article class="skill-group">
+          <h3>Engineer</h3>
+          <ul class="skill-list">
+            <li>DSP systems</li>
+            <li>Software architecture</li>
+            <li>Performance analysis</li>
+            <li>Embedded systems</li>
+          </ul>
+        </article>
+        <article class="skill-group">
+          <h3>Lead</h3>
+          <ul class="skill-list">
+            <li>Technical strategy</li>
+            <li>Engineering mentorship</li>
+            <li>DevSecOps</li>
+            <li>Applied AI</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="shell">
+      <header class="section-heading">
+        <p class="section-index">05 / Contact</p>
+        <div>
+          <h2 id="contact-title">Let's solve something difficult.</h2>
+          <p>For now, GitHub is the best public channel. Additional professional contact details will be added here.</p>
+        </div>
+      </header>
+      <div class="contact-grid">
+        <div>
+          <a class="contact-link" href="https://github.com/theshoeman1224" rel="me">GitHub / theshoeman1224</a>
+        </div>
+        <div>
+          <p class="contact-link pending">LinkedIn / profile link pending</p>
+          <p class="contact-link pending">Email / contact address pending</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

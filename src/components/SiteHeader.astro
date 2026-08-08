@@ -1,0 +1,22 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="/" aria-label="Josh Shuman, home">
+      <span class="brand-mark" aria-hidden="true">JS</span>
+      <span>Josh Shuman</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <ul class="nav-list">
+        <li><a href="/#about">About</a></li>
+        <li><a href="/experience" aria-current={currentPath === "/experience" ? "page" : undefined}>Experience</a></li>
+        <li><a href="/#timeline">Timeline</a></li>
+        <li><a href="/#projects">Projects</a></li>
+        <li><a href="/#skills">Skills</a></li>
+        <li><a href="/#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
