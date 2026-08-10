@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "repository": "theshoeman1224/resume_website",
+      "local": true,
+      "featured": true
+    },
+    {
+      "repository": "theshoeman1224/snake",
+      "featured": true,
+      "demoAdapter": "snake"
+    }
+  ]
+}

@@ -28,6 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Synchronize portfolio metadata
+        run: npm run sync:portfolio
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Install Rust WebAssembly tooling
         run: |
           rustup target add wasm32-unknown-unknown
@@ -37,7 +42,7 @@ jobs:
         run: npm run build:snake
 
       - name: Build and validate
-        run: npm run build
+        run: npm run build:site
 
       - name: Deploy to Cloudflare
         run: npm run deploy

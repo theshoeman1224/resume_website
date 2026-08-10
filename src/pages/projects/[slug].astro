@@ -1,5 +1,5 @@
 ---
-import { getCollection, render, type CollectionEntry } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GameEmbed from "../../components/GameEmbed.astro";
 
@@ -17,37 +17,66 @@ interface Props {
 
 const { project } = Astro.props;
 const { data } = project;
-const { Content } = await render(project);
 const statusLabels = {
   active: "Active",
-  "in-development": "In development",
   complete: "Complete",
+  experimental: "Experimental",
+  prototype: "Prototype",
   archived: "Archived",
 };
+const descriptionParagraphs = data.description.split(/\n\s*\n/);
+const demoUrl = data.demoAdapter === "snake"
+  ? "#play"
+  : data.demo.type === "external"
+    ? data.demo.url
+    : undefined;
+const dateRange = [data.dates.started, data.dates.completed].filter(Boolean).join(" - ");
 ---
 
-<BaseLayout title={`${data.title} | Josh Shuman`} description={data.description}>
+<BaseLayout title={`${data.name} | Josh Shuman`} description={data.summary}>
   <header class="shell project-intro">
     <a class="eyebrow" href="/projects/">Projects / {statusLabels[data.status]}</a>
-    <h1>{data.title}</h1>
-    <p>{data.description}</p>
-    <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+    <h1>{data.name}</h1>
+    <p>{data.tagline}</p>
+    <ul class="technology-list" aria-label={`Technologies used for ${data.name}`}>
       {data.technologies.map((technology) => <li>{technology}</li>)}
     </ul>
     <div class="hero-actions">
-      {data.demo && <a class="button button-primary" href={data.demo}>Open live demo</a>}
-      {data.github && <a class="button" href={data.github}>View source</a>}
+      {demoUrl && <a class="button button-primary" href={demoUrl}>Open live demo</a>}
+      <a class="button" href={data.links.repository}>View source</a>
     </div>
   </header>
-  {data.embed && <GameEmbed src={data.embed.src} title={data.embed.title} />}
+  {data.demoAdapter === "snake" && (
+    <GameEmbed src="/games/snake/index.html" title="Play Snake, built with Rust and WebAssembly" />
+  )}
   <section class="section">
     <div class="shell project-detail-grid">
       <aside class="project-detail-aside">
         <p class="section-index">Project brief</p>
         <p>{data.summary}</p>
+        <dl class="project-facts">
+          <div><dt>Role</dt><dd>{data.role}</dd></div>
+          {dateRange && <div><dt>Dates</dt><dd>{dateRange}</dd></div>}
+          <div><dt>Categories</dt><dd>{data.categories.join(" / ")}</dd></div>
+          <div><dt>Source</dt><dd><code>{data.source.revision.slice(0, 8)}</code></dd></div>
+        </dl>
       </aside>
       <article class="project-copy">
-        <Content />
+        <h2>Overview</h2>
+        {descriptionParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+        <h2>Engineering Highlights</h2>
+        <ul class="project-highlights">
+          {data.highlights.map((highlight) => <li>{highlight}</li>)}
+        </ul>
+        {(data.links.primary.length > 0 || data.links.dashboards.length > 0) && (
+          <>
+            <h2>Project Links</h2>
+            <div class="project-link-groups">
+              {data.links.primary.map((link) => <a href={link.url}>{link.name}<span>{link.type}</span></a>)}
+              {data.links.dashboards.map((link) => <a href={link.url}>{link.name}<span>{link.type}</span></a>)}
+            </div>
+          </>
+        )}
       </article>
     </div>
   </section>

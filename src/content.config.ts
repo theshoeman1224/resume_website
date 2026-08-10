@@ -20,25 +20,53 @@ const accomplishments = defineCollection({
 });
 
 const projects = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/projects" }),
+  loader: glob({ pattern: "**/*.json", base: "./.portfolio-cache/projects" }),
   schema: z.object({
-    title: z.string(),
+    name: z.string(),
     slug: z.string(),
+    tagline: z.string(),
     summary: z.string(),
     description: z.string(),
+    role: z.string(),
+    dates: z.object({
+      started: z.string().optional(),
+      completed: z.string().optional(),
+    }),
     technologies: z.array(z.string()).default([]),
-    github: z.url().optional(),
-    demo: z.url().optional(),
+    categories: z.array(z.string()).default([]),
+    highlights: z.array(z.string()),
+    links: z.object({
+      repository: z.url(),
+      primary: z.array(z.object({
+        name: z.string(),
+        type: z.string(),
+        url: z.url(),
+      })),
+      dashboards: z.array(z.object({
+        name: z.string(),
+        type: z.string(),
+        url: z.url(),
+      })),
+    }),
+    demo: z.object({
+      type: z.enum(["none", "wasm", "web", "external"]),
+      build_command: z.string().optional(),
+      output_directory: z.string().optional(),
+      entrypoint: z.string().optional(),
+      url: z.url().optional(),
+    }),
     featured: z.boolean().default(false),
-    status: z.enum(["active", "in-development", "complete", "archived"]),
+    status: z.enum(["active", "complete", "experimental", "prototype", "archived"]),
     image: z.object({
       src: z.string(),
       alt: z.string(),
     }).optional(),
-    embed: z.object({
-      src: z.string(),
-      title: z.string(),
-    }).optional(),
+    demoAdapter: z.enum(["snake"]).optional(),
+    source: z.object({
+      repository: z.string(),
+      revision: z.string(),
+      defaultBranch: z.string(),
+    }),
   }),
 });
 

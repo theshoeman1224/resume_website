@@ -8,10 +8,16 @@ interface Props {
 const { data } = Astro.props.project;
 const statusLabels = {
   active: "Active",
-  "in-development": "In development",
   complete: "Complete",
+  experimental: "Experimental",
+  prototype: "Prototype",
   archived: "Archived",
 };
+const demoUrl = data.demoAdapter === "snake"
+  ? `/projects/${data.slug}/#play`
+  : data.demo.type === "external"
+    ? data.demo.url
+    : undefined;
 ---
 
 <article class="project-card">
@@ -27,15 +33,15 @@ const statusLabels = {
       <span>{statusLabels[data.status]}</span>
       <span>{String(data.technologies.length).padStart(2, "0")} technologies</span>
     </div>
-    <h3><a href={`/projects/${data.slug}/`}>{data.title}</a></h3>
+    <h3><a href={`/projects/${data.slug}/`}>{data.name}</a></h3>
     <p>{data.summary}</p>
-    <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+    <ul class="technology-list" aria-label={`Technologies used for ${data.name}`}>
       {data.technologies.map((technology) => <li>{technology}</li>)}
     </ul>
     <div class="project-card-actions">
       <a href={`/projects/${data.slug}/`}>View details</a>
-      {data.demo && <a href={data.demo}>Live demo</a>}
-      {data.github && <a href={data.github}>GitHub</a>}
+      {demoUrl && <a href={demoUrl}>Live demo</a>}
+      <a href={data.links.repository}>GitHub</a>
     </div>
   </div>
 </article>

@@ -19,3 +19,5 @@ dist/
 
 # Generated from the independent Snake repository
 /public/games/snake/
+/public/generated/portfolio/
+.portfolio-cache/

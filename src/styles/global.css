@@ -510,6 +510,26 @@ h3 {
   color: var(--muted);
 }
 
+.project-facts {
+  margin-top: 2rem;
+}
+
+.project-facts div {
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-facts dt {
+  color: var(--signal);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.project-facts dd {
+  margin: 0.35rem 0 0;
+}
+
 .project-copy {
   max-width: 48rem;
 }
@@ -528,6 +548,47 @@ h3 {
 
 .project-copy p {
   color: var(--muted);
+}
+
+.project-highlights {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-highlights li {
+  position: relative;
+  padding: 1rem 0 1rem 2rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.project-highlights li::before {
+  position: absolute;
+  left: 0;
+  color: var(--signal);
+  content: "//";
+}
+
+.project-link-groups {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.project-link-groups a {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  text-decoration: none;
+}
+
+.project-link-groups span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  text-transform: uppercase;
 }
 
 .game-embed-section {
@@ -866,7 +927,8 @@ h3 {
   .skills-grid,
   .focus-grid,
   .project-grid,
-  .project-detail-grid {
+  .project-detail-grid,
+  .project-link-groups {
     grid-template-columns: 1fr;
   }
 

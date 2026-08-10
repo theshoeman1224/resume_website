@@ -4,7 +4,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import ProjectGrid from "../../components/ProjectGrid.astro";
 
 const projects = (await getCollection("projects")).sort((a, b) =>
-  Number(b.data.featured) - Number(a.data.featured) || a.data.title.localeCompare(b.data.title)
+  Number(b.data.featured) - Number(a.data.featured) || a.data.name.localeCompare(b.data.name)
 );
 ---
 

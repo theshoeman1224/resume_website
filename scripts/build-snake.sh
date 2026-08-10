@@ -3,8 +3,17 @@ set -euo pipefail
 
 repository_root=$(git rev-parse --show-toplevel)
 snake_repository="https://github.com/theshoeman1224/snake.git"
-snake_ref="24eb2eeec993689c80312c10816c72f8aeeeaf1b"
+metadata_manifest="$repository_root/.portfolio-cache/repositories.json"
+snake_ref=${SNAKE_REF:-}
 snake_source=${SNAKE_SOURCE_DIR:-}
+
+if [[ -z "$snake_ref" ]]; then
+  if [[ ! -f "$metadata_manifest" ]]; then
+    printf 'Portfolio metadata is missing. Run npm run sync:portfolio first.\n' >&2
+    exit 1
+  fi
+  snake_ref=$(node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(data.repositories["theshoeman1224/snake"].revision);' "$metadata_manifest")
+fi
 
 if [[ -z "$snake_source" ]]; then
   temporary_root=$(mktemp -d)

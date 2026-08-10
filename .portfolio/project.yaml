@@ -1,0 +1,67 @@
+schema_version: 1
+
+project:
+  name: "Engineering Portfolio"
+  slug: "resume-website"
+
+  tagline: "Data-driven engineering portfolio with automated static deployment"
+
+  summary: >
+    A fast engineering portfolio that connects structured career accomplishments
+    and technical projects to reusable, accessible interfaces. Astro generates
+    the static site while GitHub Actions deploys verified builds to Cloudflare.
+
+  description: >
+    This portfolio expands beyond a paper resume by connecting engineering work
+    to its technical context, architecture, and outcomes. Typed content drives
+    the career timeline and repository-owned project metadata, keeping published
+    descriptions close to the source that supports them.
+
+    Astro produces static HTML with minimal client-side JavaScript. GitHub Actions
+    validates each build, compiles trusted interactive demonstrations such as the
+    Rust WebAssembly Snake game, and deploys the resulting assets to Cloudflare.
+
+  status: "active"
+
+  role: "Creator and Developer"
+
+  dates:
+    started: 2026-08-08
+    completed:
+
+  technologies:
+    - "Astro"
+    - "TypeScript"
+    - "Cloudflare Workers"
+    - "GitHub Actions"
+    - "Rust"
+    - "WebAssembly"
+
+  categories:
+    - "Web Development"
+    - "Automation"
+    - "DevOps"
+
+  highlights:
+    - "Generates career and project interfaces from schema-validated structured content"
+    - "Builds trusted WebAssembly demonstrations from independent source repositories"
+    - "Deploys reproducible static releases to Cloudflare through GitHub Actions"
+    - "Provides responsive, keyboard-accessible timeline filtering and project navigation"
+    - "Validates production behavior across Chrome, Firefox, and Edge"
+
+  links:
+    repository: "https://github.com/theshoeman1224/resume_website"
+
+    primary:
+      - name: "Live Portfolio"
+        type: "demo"
+        url: "https://joshshuman.com"
+
+    dashboards:
+      - name: "GitHub Actions"
+        type: "ci"
+        url: "https://github.com/theshoeman1224/resume_website/actions"
+
+  demo:
+    type: "external"
+    url: "https://joshshuman.com"
