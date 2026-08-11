@@ -81,7 +81,7 @@ async function loadSource(source) {
     await access(metadataPath);
     return {
       yaml: await readFile(metadataPath, "utf8"),
-      revision: process.env.GITHUB_SHA ?? execFileSync("git", ["rev-parse", "HEAD"], {
+      revision: process.env.GITHUB_SHA ?? execFileSync("/usr/bin/git", ["rev-parse", "HEAD"], {
         cwd: repositoryRoot,
         encoding: "utf8",
       }).trim(),
