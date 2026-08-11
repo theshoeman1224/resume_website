@@ -606,8 +606,9 @@ h3 {
 .game-frame {
   display: block;
   width: 100%;
-  min-height: 900px;
+  height: 1px;
   border: 0;
+  overflow: hidden;
 }
 
 .error-page {
@@ -989,10 +990,6 @@ h3 {
 
   .focus-card h2 {
     margin-top: 3rem;
-  }
-
-  .game-frame {
-    min-height: 1200px;
   }
 
   .error-page {

@@ -19,6 +19,7 @@ const { src, title } = Astro.props;
     <div class="game-frame-shell">
       <iframe
         class="game-frame"
+        data-game-frame
         src={src}
         title={title}
         loading="eager"
@@ -27,3 +28,36 @@ const { src, title } = Astro.props;
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLIFrameElement>("[data-game-frame]").forEach((frame) => {
+    let lastWidth = 0;
+
+    const resizeToContent = () => {
+      const embeddedDocument = frame.contentDocument;
+      const body = embeddedDocument?.body;
+      if (!body) return;
+
+      const contentBottom = Array.from(body.children).reduce(
+        (bottom, element) => Math.max(bottom, element.getBoundingClientRect().bottom),
+        0,
+      );
+      frame.style.height = `${Math.ceil(contentBottom)}px`;
+    };
+
+    const handleLoad = () => {
+      resizeToContent();
+      frame.contentDocument?.fonts.ready.then(resizeToContent);
+    };
+
+    frame.addEventListener("load", handleLoad);
+    if (frame.contentDocument?.readyState === "complete") handleLoad();
+
+    new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width;
+      if (width === lastWidth) return;
+      lastWidth = width;
+      resizeToContent();
+    }).observe(frame);
+  });
+</script>
