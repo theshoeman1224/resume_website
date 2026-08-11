@@ -9,6 +9,9 @@
       "repository": "theshoeman1224/snake",
       "featured": true,
       "demoAdapter": "snake"
+    },
+    {
+      "repository": "theshoeman1224/time_card_tracker"
     }
   ]
 }
