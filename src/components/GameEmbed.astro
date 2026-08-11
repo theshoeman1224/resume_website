@@ -52,7 +52,7 @@ const { src, title } = Astro.props;
 
       contentObserver?.disconnect();
       contentObserver = new ResizeObserver(resizeToContent);
-      Array.from(body.children).forEach((element) => contentObserver?.observe(element));
+      body.querySelectorAll("*").forEach((element) => contentObserver?.observe(element));
       resizeToContent();
       frame.contentDocument?.fonts.ready.then(resizeToContent);
     };
