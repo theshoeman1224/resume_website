@@ -32,6 +32,7 @@ const { src, title } = Astro.props;
 <script>
   document.querySelectorAll<HTMLIFrameElement>("[data-game-frame]").forEach((frame) => {
     let lastWidth = 0;
+    let contentObserver: ResizeObserver | undefined;
 
     const resizeToContent = () => {
       const embeddedDocument = frame.contentDocument;
@@ -46,6 +47,12 @@ const { src, title } = Astro.props;
     };
 
     const handleLoad = () => {
+      const body = frame.contentDocument?.body;
+      if (!body) return;
+
+      contentObserver?.disconnect();
+      contentObserver = new ResizeObserver(resizeToContent);
+      Array.from(body.children).forEach((element) => contentObserver?.observe(element));
       resizeToContent();
       frame.contentDocument?.fonts.ready.then(resizeToContent);
     };
