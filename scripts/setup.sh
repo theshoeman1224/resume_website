@@ -62,7 +62,7 @@ fi
 cd "$ROOT_DIR"
 
 printf 'Installing npm dependencies from package-lock.json...\n'
-npm ci
+npm ci --ignore-scripts
 
 install_skill() {
   local source="$1"
