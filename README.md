@@ -4,16 +4,18 @@ The source for [joshshuman.com](https://joshshuman.com), a static engineering re
 
 ## Requirements
 
-- Node.js 22.12 or newer (`.nvmrc` is provided)
+- Node.js 22.20 or newer (`.nvmrc` pins the setup version)
 - npm 9.6.5 or newer
 - Rust with the `wasm32-unknown-unknown` target and Trunk 0.21.14 when rebuilding Snake
 
 ## Local Development
 
 ```bash
-npm install
+npm run setup
 npm run dev
 ```
+
+`npm run setup` asks once before installing the versions locked in `package-lock.json` and the project skills pinned in `scripts/setup.sh`. For an unattended installation, run `npm run setup -- --force`.
 
 Astro prints the local URL when the development server starts. Use `npm run check` for static validation, `npm run build` for a production build, and `npm run preview` to inspect that build locally.
 

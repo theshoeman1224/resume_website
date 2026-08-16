@@ -3,6 +3,9 @@ dist/
 .astro/
 .wrangler/
 
+# Installed by scripts/setup.sh from pinned skill revisions
+.agents/skills/
+
 # Local environment variables / secrets
 .env
 .env.*
