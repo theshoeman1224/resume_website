@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Timeline from "../components/Timeline.astro";
+import CurrentRoleCard from "../components/CurrentRoleCard.astro";
 import { getCollection } from "astro:content";
 
 const roles = await getCollection("roles");
@@ -10,6 +11,11 @@ const roleSlugs = new Set(roles.map((role) => role.id.replace(/\.md$/, "")));
 const accomplishmentSlugs = new Set(
   accomplishments.map((entry) => entry.id.replace(/\.md$/, "")),
 );
+
+const currentRole = roles.find((role) => !role.data.endDate);
+if (!currentRole) {
+  console.warn("[experience] no role is missing an endDate; current-role card will not render.");
+}
 
 for (const role of roles) {
   const slug = role.id.replace(/\.md$/, "");
@@ -50,6 +56,12 @@ for (const entry of accomplishments) {
       <span class="page-intro-subtitle">leading performant systems for the customer and the program, accountable for the technical direction behind them.</span>
     </h1>
   </header>
+
+  {currentRole && (
+    <div class="shell">
+      <CurrentRoleCard role={currentRole} />
+    </div>
+  )}
 
   <section class="section" id="career-timeline" aria-labelledby="career-record-title">
     <div class="shell">

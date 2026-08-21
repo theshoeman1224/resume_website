@@ -127,13 +127,19 @@ resume_website/
 ├── src/
 │   ├── components/
 │   │   ├── Timeline.astro
-│   │   ├── TimelineItem.astro
+│   │   ├── TimelineFilters.astro
+│   │   ├── RoleSpine.astro
+│   │   ├── RoleNode.astro
+│   │   ├── RolePanel.astro
+│   │   ├── CurrentRoleCard.astro
+│   │   ├── AccomplishmentCard.astro
 │   │   ├── ProjectCard.astro
 │   │   ├── ProjectGrid.astro
 │   │   └── GameEmbed.astro
 │   │
 │   ├── content/
 │   │   ├── accomplishments/
+│   │   ├── roles/
 │   │   └── projects/
 │   │
 │   ├── layouts/
