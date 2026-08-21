@@ -1,10 +1,10 @@
 ---
-title: Next-generation receiver architecture
+title: Owned the software architecture for a new radar receiver
 date: 2025-01-01
 endDate: 2026-03-01
 category: Architecture
-summary: Owned software architecture and interface strategy for a next-generation radar receiver replacement.
-impact: Designed for reuse and scalability, coordinated across hardware, firmware, and systems teams, and technically led a team as it grew from 8 to 18 engineers.
+summary: Owned the software architecture and interface strategy for a new radar receiver replacement.
+impact: Defined interface contracts that hardware, firmware, and systems teams could integrate against independently. Grew the team from 8 to 18 engineers.
 technologies:
   - Software architecture
   - Hardware integration
