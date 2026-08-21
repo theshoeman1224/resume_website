@@ -16,18 +16,18 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
 
 <BaseLayout
   title="Josh Shuman | Principal Software Engineer"
-  description="Principal software engineer focused on high-performance DSP, software architecture, and technical leadership."
+  description="Principal software engineer at Raytheon working on real-time radar DSP, embedded C, and systems architecture."
 >
   <section class="shell hero" aria-labelledby="hero-title">
     <div>
       <p class="eyebrow">Principal Software Engineer</p>
-      <h1 id="hero-title">Engineering systems that <span>perform.</span></h1>
+      <h1 id="hero-title">Real-time DSP. Embedded C. <span>Systems that ship.</span></h1>
       <p class="hero-summary">
-        Principal software engineer building high-performance systems at the intersection of DSP, software architecture, and technical leadership.
+        Six years making radar signal processing hit deadlines on embedded hardware. Currently a principal engineer at Raytheon.
       </p>
       <div class="hero-actions">
-        <a class="button button-primary" href="/experience">Explore experience</a>
-        <a class="button" href="#projects">View projects</a>
+        <a class="button button-primary" href="/experience">Experience</a>
+        <a class="button" href="#projects">Projects</a>
       </div>
     </div>
     <aside class="hero-aside" aria-label="Engineering focus">
@@ -48,18 +48,18 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       <header class="section-heading">
         <p class="section-index">01 / About</p>
         <div>
-          <h2 id="about-title">From complex constraints to dependable software.</h2>
+          <h2 id="about-title">I ship real-time systems that meet their deadlines.</h2>
         </div>
       </header>
       <div class="about-grid">
         <p class="about-copy">
-          I work where software meets demanding real-world systems: shaping architecture, improving runtime performance, and helping engineering teams turn difficult technical problems into maintainable products.
+          I've shipped radar DSP firmware, a next-generation receiver architecture, and an automated photolithography controller presented at AAAS and NCUR. I'm strongest where microseconds matter and hardware, firmware, and software have to agree on the same byte. I'm looking for principal or lead roles in DSP, embedded, or systems work.
         </p>
-        <ul class="principles" aria-label="Engineering principles">
-          <li>Measure before optimizing</li>
-          <li>Design for the next engineer</li>
-          <li>Make operational quality part of delivery</li>
-          <li>Lead through technical clarity</li>
+        <ul class="principles" aria-label="How I work">
+          <li>Profile real-time paths before I touch them</li>
+          <li>Define interface contracts before teams depend on them</li>
+          <li>Grow engineering teams without losing technical depth</li>
+          <li>Make the build and delivery systems I would want to use</li>
         </ul>
       </div>
     </div>
@@ -70,17 +70,17 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       <header class="section-heading">
         <p class="section-index">02 / Timeline</p>
         <div>
-          <h2 id="timeline-title">A career built around consequential engineering.</h2>
-          <p>Explore a concise view of role progression, technical decisions, and the impact behind the work.</p>
+          <h2 id="timeline-title">What I've built and what it did.</h2>
+          <p>Roles, technical decisions, and the outcomes behind them, from 2017 through today.</p>
         </div>
       </header>
       <div class="feature-panel">
         <div>
-          <p class="eyebrow">Career progression</p>
-          <h3>Experience, not just chronology.</h3>
-          <p>The full timeline will connect engineering challenges to contributions, technologies, and outcomes.</p>
+          <p class="eyebrow">Career record</p>
+          <h3>From embedded DSP to principal.</h3>
+          <p>The full timeline on the experience page connects each role to the systems it shipped and the decisions that mattered.</p>
         </div>
-        <a class="button" href="/experience#career-timeline">Explore timeline</a>
+        <a class="button" href="/experience#career-timeline">Open the timeline</a>
       </div>
     </div>
   </section>
@@ -90,8 +90,8 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       <header class="section-heading">
         <p class="section-index">03 / Projects</p>
         <div>
-          <h2 id="projects-title">Technical ideas made executable.</h2>
-          <p>Selected builds that make architecture and implementation decisions tangible in the browser.</p>
+          <h2 id="projects-title">Side builds that taught me something.</h2>
+          <p>Personal projects where I picked up tools or techniques outside the day job.</p>
         </div>
       </header>
       <ProjectGrid projects={featuredProjects} />
@@ -104,8 +104,8 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       <header class="section-heading">
         <p class="section-index">04 / Skills</p>
         <div>
-          <h2 id="skills-title">Depth across the system.</h2>
-          <p>Core capabilities spanning low-level performance, architecture, delivery systems, and technical direction.</p>
+          <h2 id="skills-title">What I use daily.</h2>
+          <p>The stack I reach for at work, grouped by where it shows up in the system.</p>
         </div>
       </header>
       <div class="skills-grid">
@@ -122,15 +122,15 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
           <h3>Engineer</h3>
           <ul class="skill-list">
             <li>DSP systems</li>
-            <li>Software architecture</li>
-            <li>Performance analysis</li>
             <li>Embedded systems</li>
+            <li>Performance analysis</li>
+            <li>Software architecture</li>
           </ul>
         </article>
         <article class="skill-group">
           <h3>Lead</h3>
           <ul class="skill-list">
-            <li>Technical strategy</li>
+            <li>Technical direction</li>
             <li>Engineering mentorship</li>
             <li>DevSecOps</li>
             <li>Applied AI</li>
@@ -145,8 +145,8 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       <header class="section-heading">
         <p class="section-index">05 / Contact</p>
         <div>
-          <h2 id="contact-title">Let's solve something difficult.</h2>
-          <p>For now, GitHub is the best public channel. Additional professional contact details will be added here.</p>
+          <h2 id="contact-title">Currently at Raytheon. Open to principal or lead roles in DSP, embedded, or systems.</h2>
+          <p>GitHub and LinkedIn are below. Email coming soon.</p>
         </div>
       </header>
       <div class="contact-grid">
