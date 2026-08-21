@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Timeline from "../components/Timeline.astro";
+import CurrentRoleCard from "../components/CurrentRoleCard.astro";
 import { getCollection } from "astro:content";
 
 const roles = await getCollection("roles");
@@ -10,6 +11,11 @@ const roleSlugs = new Set(roles.map((role) => role.id.replace(/\.md$/, "")));
 const accomplishmentSlugs = new Set(
   accomplishments.map((entry) => entry.id.replace(/\.md$/, "")),
 );
+
+const currentRole = roles.find((role) => !role.data.endDate);
+if (!currentRole) {
+  console.warn("[experience] no role is missing an endDate; current-role card will not render.");
+}
 
 for (const role of roles) {
   const slug = role.id.replace(/\.md$/, "");
@@ -41,52 +47,29 @@ for (const entry of accomplishments) {
 
 <BaseLayout
   title="Experience | Josh Shuman"
-  description="Engineering experience and focus areas for Josh Shuman, Principal Software Engineer."
+  description="Principal Software Engineer leading performant systems for the customer and the program, accountable for the technical direction behind them."
 >
   <header class="shell page-intro">
-    <p class="eyebrow">Experience / Overview</p>
-    <h1>Technical range. Focused outcomes.</h1>
-    <p>
-      A career centered on performance-sensitive software, systems architecture, and technical leadership. The record below connects role progression to concrete technical contributions.
-    </p>
+    <p class="eyebrow">Experience</p>
+    <h1 class="page-intro-lead">
+      Principal Software Engineer
+      <span class="page-intro-subtitle">leading performant systems for the customer and the program, accountable for the technical direction behind them.</span>
+    </h1>
   </header>
 
-  <section class="section" aria-labelledby="focus-title">
+  {currentRole && (
     <div class="shell">
-      <header class="section-heading">
-        <p class="section-index">Current focus</p>
-        <div>
-          <h2 id="focus-title">How I contribute.</h2>
-          <p>Three connected modes of engineering work, from implementation detail to organizational direction.</p>
-        </div>
-      </header>
-      <div class="focus-grid">
-        <article class="focus-card">
-          <span>01 / Performance</span>
-          <h2>Make critical paths measurable.</h2>
-          <p>Profile systems, identify meaningful constraints, and turn findings into reliable implementation improvements.</p>
-        </article>
-        <article class="focus-card">
-          <span>02 / Architecture</span>
-          <h2>Build for change without guessing.</h2>
-          <p>Define clear boundaries and pragmatic designs that serve today's requirements without blocking tomorrow's work.</p>
-        </article>
-        <article class="focus-card">
-          <span>03 / Leadership</span>
-          <h2>Increase engineering leverage.</h2>
-          <p>Set technical direction, communicate tradeoffs, and help teams deliver dependable systems with confidence.</p>
-        </article>
-      </div>
+      <CurrentRoleCard role={currentRole} />
     </div>
-  </section>
+  )}
 
-  <section class="section" id="career-timeline" aria-labelledby="accomplishments-title">
+  <section class="section" id="career-timeline" aria-labelledby="career-record-title">
     <div class="shell">
       <header class="section-heading">
         <p class="section-index">Career record</p>
         <div>
-          <h2 id="accomplishments-title">Roles, then accomplishments.</h2>
-          <p>Roles anchor the timeline below. Click a role to surface the accomplishments behind it; filter by discipline to highlight the roles that match.</p>
+          <h2 id="career-record-title">Roles and what shipped under them.</h2>
+          <p>Click a role to see the work behind it. Filter by discipline at the top.</p>
         </div>
       </header>
       <Timeline roles={roles} accomplishments={accomplishments} />

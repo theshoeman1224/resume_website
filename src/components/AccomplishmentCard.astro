@@ -33,17 +33,11 @@ const dateLabel = sameDay ? startDate : `${startDate} – ${endDate}`;
       <span class="accomplishment-card-prompt">Inspect impact</span>
     </summary>
     <div class="accomplishment-card-body">
-      <p>
-        <strong>Impact</strong>
-        <span>{data.impact}</span>
-      </p>
+      <p class="accomplishment-card-impact">{data.impact}</p>
       {data.technologies.length > 0 && (
-        <div>
-          <strong>Technical context</strong>
-          <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
-            {data.technologies.map((technology) => <li>{technology}</li>)}
-          </ul>
-        </div>
+        <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+          {data.technologies.map((technology) => <li>{technology}</li>)}
+        </ul>
       )}
     </div>
   </details>

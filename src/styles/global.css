@@ -469,6 +469,22 @@ h3 {
   margin-bottom: 2rem;
 }
 
+.page-intro h1.page-intro-lead {
+  max-width: 100%;
+}
+
+.page-intro-subtitle {
+  display: block;
+  margin-top: 1.5rem;
+  font-size: clamp(1.25rem, 2.2vw, 1.85rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+  color: var(--muted);
+  max-width: 52rem;
+}
+
 .page-intro > p:last-child {
   max-width: 48rem;
   color: var(--muted);
@@ -644,35 +660,6 @@ h3 {
   -webkit-text-stroke: 1px var(--line);
 }
 
-.focus-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.focus-card {
-  min-height: 18rem;
-  padding: 1.5rem;
-  border: 1px solid var(--line);
-  background: var(--panel);
-}
-
-.focus-card span {
-  color: var(--signal);
-  font-size: 0.75rem;
-}
-
-.focus-card h2 {
-  margin: 5rem 0 1rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.8rem;
-  font-weight: 400;
-}
-
-.focus-card p {
-  color: var(--muted);
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -731,6 +718,104 @@ h3 {
   position: relative;
 }
 
+.current-role {
+  display: grid;
+  gap: 1.5rem;
+  margin-block: clamp(2rem, 5vw, 3rem);
+  padding: clamp(1.75rem, 4vw, 3rem);
+  border: 1px solid var(--signal);
+  background: var(--panel);
+}
+
+.current-role-head {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.current-role-title {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+.current-role-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.current-role-pulse {
+  display: inline-block;
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: 0.4rem;
+  background: var(--signal);
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.current-role-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border: 1px solid var(--signal);
+  border-radius: 50%;
+  animation: current-role-pulse 2400ms ease-out infinite;
+}
+
+@keyframes current-role-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.current-role-summary {
+  margin: 0;
+  max-width: none;
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.current-role-focus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.current-role-focus li {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .current-role-pulse::after {
+    animation: none;
+  }
+}
+
 .timeline-panel[hidden] {
   display: none;
 }
@@ -745,8 +830,8 @@ h3 {
 
 .timeline-panel-frame {
   display: grid;
-  gap: 1.25rem;
-  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  gap: 1.5rem;
+  padding: clamp(1.75rem, 4vw, 3rem);
   border: 1px solid var(--line);
   background: var(--panel);
   animation: timeline-panel-in 240ms ease both;
@@ -821,9 +906,10 @@ h3 {
 
 .timeline-panel-summary {
   margin: 0;
-  max-width: 52rem;
+  max-width: none;
   color: var(--ink);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .timeline-panel-focus {
@@ -930,16 +1016,7 @@ h3 {
   padding-top: 1rem;
 }
 
-.accomplishment-card-body strong {
-  display: block;
-  margin-bottom: 0.4rem;
-  color: var(--ink);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.accomplishment-card-body p span {
+.accomplishment-card-impact {
   color: var(--muted);
 }
 
@@ -1272,7 +1349,6 @@ h3 {
   }
 
   .skills-grid,
-  .focus-grid,
   .project-grid,
   .project-detail-grid,
   .project-link-groups {
@@ -1356,14 +1432,6 @@ h3 {
   .timeline-mobile-accomplishments {
     display: grid;
     gap: 0.75rem;
-  }
-
-  .focus-card {
-    min-height: auto;
-  }
-
-  .focus-card h2 {
-    margin-top: 3rem;
   }
 
   .error-page {

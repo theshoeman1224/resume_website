@@ -266,11 +266,13 @@ Add visible TODO list signaling "active builder":
 
 | Priority | Task | Effort | Impact | Dependencies | Status |
 |----------|------|--------|--------|--------------|--------|
-| 1 | Rewrite homepage hero + about copy | 1 hr | High | None | **Not started** |
-| 2 | Rewrite experience page intro + remove focus cards | 30 min | High | None | **Not started** |
+| 1 | Rewrite homepage hero + about copy | 1 hr | High | None | **DONE** |
+| 2 | Rewrite experience page intro + remove focus cards | 30 min | High | None | **DONE** |
+| 2b | Add `CurrentRoleCard` component (signal-green border, pulse dot, focus chips) above timeline | 30–60 min | High | Phase 2 | **DONE** |
 | 3 | **Add metrics to 6 accomplishment MD files** | 2-3 hrs | **Critical** | **METRICS REQUIRED** | Blocked on metrics |
 | 4a | Roles collection + schema (roleId, relatedRoles, drop roleType) | — | — | — | **DONE** |
 | 4b | Horizontal timeline component (alternation, panel overlay, connector, keyboard, hash, mobile) | — | — | — | **DONE** |
+| 4b2 | Widen timeline panel + current-role card padding and remove `max-width: 52rem` on summary text so cards use the available horizontal space when selected | 15 min | Medium | — | **DONE** |
 | 4c | Add `metrics` schema + `AccomplishmentMetrics` component + render in card | 2-3 hrs | High | Phase 3 complete | **Not started** |
 | 5 | Add 5-8 metric-rich accomplishment entries | 2 hrs | High | Phase 4c | **Not started** |
 | 6 | Review/trim projects | 30 min | Medium | None | **Not started** |
@@ -340,6 +342,7 @@ Add visible TODO list signaling "active builder":
 │       ├── RoleSpine.astro           # Phase 4
 │       ├── RoleNode.astro            # Phase 4
 │       ├── RolePanel.astro           # Phase 4
+│       ├── CurrentRoleCard.astro     # Phase 2b (current-role callout above timeline)
 │       ├── AccomplishmentCard.astro  # Phase 4
 │       └── AccomplishmentMetrics.astro  # Phase 4 (new, when metrics land)
 ├── .portfolio-cache/projects/      # Phase 5

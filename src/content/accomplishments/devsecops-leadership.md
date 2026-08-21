@@ -1,10 +1,10 @@
 ---
-title: Agile and DevSecOps change leadership
+title: Led Agile and DevSecOps adoption across the department
 date: 2019-10-01
 endDate: 2025-01-01
 category: DevOps
-summary: Served as a department point of contact for Agile and DevSecOps changes alongside core signal-processing responsibilities.
-impact: Connected program needs across systems and software teams while helping drive delivery-process improvements.
+summary: Department Agile and DevSecOps lead alongside signal-processing work.
+impact: Connected programs across systems and software teams. Drove adoption of delivery-process improvements across the department.
 technologies:
   - DevSecOps
   - Agile delivery

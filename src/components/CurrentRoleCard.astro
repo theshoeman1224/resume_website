@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  role: CollectionEntry<"roles">;
+}
+
+const { role } = Astro.props;
+const { data } = role;
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const startDate = dateFormatter.format(data.startDate);
+const endDate = data.endDate ? dateFormatter.format(data.endDate) : "Present";
+---
+
+<aside class="current-role" aria-labelledby="current-role-title">
+  <header class="current-role-head">
+    <p class="eyebrow">Current role</p>
+    <h2 id="current-role-title" class="current-role-title">{data.title}</h2>
+    <p class="current-role-meta">
+      <span>{data.organization}</span>
+      <span aria-hidden="true"> · </span>
+      <span>{startDate} – {endDate}</span>
+      <span class="current-role-pulse" aria-hidden="true"></span>
+    </p>
+  </header>
+  <p class="current-role-summary">{data.summary}</p>
+  {data.focus.length > 0 && (
+    <ul class="current-role-focus" aria-label="Focus areas">
+      {data.focus.map((area) => <li>{area}</li>)}
+    </ul>
+  )}
+</aside>
