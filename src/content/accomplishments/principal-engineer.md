@@ -11,6 +11,8 @@ technologies:
   - Requirements engineering
 role: Principal Software Engineer
 organization: Raytheon
-roleType: primary
+roleId: principal-software-engineer
+relatedRoles: []
 featured: true
 ---
+

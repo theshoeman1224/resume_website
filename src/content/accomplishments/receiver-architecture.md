@@ -12,6 +12,8 @@ technologies:
   - Systems engineering
 role: Senior Software Engineering Task Lead
 organization: Raytheon
-roleType: leadership
+roleId: senior-software-engineering-task-lead
+relatedRoles: []
 featured: true
 ---
+

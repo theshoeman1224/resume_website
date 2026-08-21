@@ -3,9 +3,40 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Timeline from "../components/Timeline.astro";
 import { getCollection } from "astro:content";
 
-const accomplishments = (await getCollection("accomplishments")).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+const roles = await getCollection("roles");
+const accomplishments = await getCollection("accomplishments");
+
+const roleSlugs = new Set(roles.map((role) => role.id.replace(/\.md$/, "")));
+const accomplishmentSlugs = new Set(
+  accomplishments.map((entry) => entry.id.replace(/\.md$/, "")),
 );
+
+for (const role of roles) {
+  const slug = role.id.replace(/\.md$/, "");
+  for (const accSlug of role.data.accomplishments) {
+    if (!accomplishmentSlugs.has(accSlug)) {
+      console.warn(
+        `[experience] role "${slug}" references missing accomplishment "${accSlug}".`,
+      );
+    }
+  }
+}
+
+for (const entry of accomplishments) {
+  const slug = entry.id.replace(/\.md$/, "");
+  if (!roleSlugs.has(entry.data.roleId)) {
+    console.warn(
+      `[experience] accomplishment "${slug}" has roleId "${entry.data.roleId}" which does not match any role.`,
+    );
+  }
+  for (const rel of entry.data.relatedRoles) {
+    if (!roleSlugs.has(rel)) {
+      console.warn(
+        `[experience] accomplishment "${slug}" references missing related role "${rel}".`,
+      );
+    }
+  }
+}
 ---
 
 <BaseLayout
@@ -54,11 +85,11 @@ const accomplishments = (await getCollection("accomplishments")).sort(
       <header class="section-heading">
         <p class="section-index">Career record</p>
         <div>
-          <h2 id="accomplishments-title">Selected accomplishments.</h2>
-          <p>Filter the reverse-chronological record by discipline, then expand a milestone to inspect its impact and technical context.</p>
+          <h2 id="accomplishments-title">Roles, then accomplishments.</h2>
+          <p>Roles anchor the timeline below. Click a role to surface the accomplishments behind it; filter by discipline to highlight the roles that match.</p>
         </div>
       </header>
-      <Timeline accomplishments={accomplishments} />
+      <Timeline roles={roles} accomplishments={accomplishments} />
     </div>
   </section>
 </BaseLayout>

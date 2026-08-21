@@ -14,8 +14,23 @@ const accomplishments = defineCollection({
     technologies: z.array(z.string()).default([]),
     role: z.string(),
     organization: z.string(),
-    roleType: z.enum(["primary", "leadership", "initiative"]).default("primary"),
+    roleId: z.string(),
+    relatedRoles: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
+  }),
+});
+
+const roles = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/roles" }),
+  schema: z.object({
+    title: z.string(),
+    organization: z.string(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    summary: z.string(),
+    focus: z.array(z.string()).default([]),
+    accomplishments: z.array(z.string()).default([]),
+    order: z.number().default(0),
   }),
 });
 
@@ -70,4 +85,4 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { accomplishments, projects };
+export const collections = { accomplishments, roles, projects };

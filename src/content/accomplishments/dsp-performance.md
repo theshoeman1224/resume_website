@@ -12,6 +12,9 @@ technologies:
   - Performance profiling
 role: Software Engineer
 organization: Raytheon
-roleType: primary
+roleId: software-engineer-raytheon
+relatedRoles:
+  - devsecops-lead
 featured: true
 ---
+

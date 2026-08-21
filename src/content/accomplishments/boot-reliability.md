@@ -12,6 +12,8 @@ technologies:
   - Hardware integration
 role: Software Engineer and Lead Investigator
 organization: Raytheon
-roleType: primary
+roleId: software-engineer-raytheon
+relatedRoles: []
 featured: true
 ---
+

@@ -412,13 +412,35 @@ category:
 summary:
 impact:
 technologies:
-role:
+role:                  # specific title used for this accomplishment (free text)
+organization:
+roleId:                # slug of the PRIMARY owning role
+relatedRoles: []       # optional list of secondary role slugs
 featured:
 ```
 
 Optional fields may be added when useful.
 
-## Categories
+### Roles Collection (M4 update)
+
+The interactive timeline anchors accomplishments to **roles**, which are their own content collection:
+
+```yaml
+# src/content/roles/<slug>.md
+title:
+organization:
+startDate:
+endDate:               # optional; absent => "Present"
+summary:
+focus:                 # optional list of themes
+accomplishments:       # slugs of accomplishments where this role is the PRIMARY owner
+  - <accomplishment-slug>
+order:                 # tie-breaker for overlapping roles
+```
+
+Adding a role is a new markdown file plus appending its slug to any new accomplishments. No timeline component changes required.
+
+### Categories
 
 The design should support categories such as:
 
@@ -438,6 +460,8 @@ Do not tightly couple UI logic to this exact list.
 M3 is complete when:
 
 > Adding a new accomplishment content file causes the website to display the new accomplishment without requiring modifications to timeline component logic.
+
+A role file produces the same outcome: adding a new role causes the timeline to show a new spine marker, and appending a slug to its `accomplishments` list surfaces that accomplishment under the role's panel without any timeline-component changes.
 
 ---
 
@@ -476,23 +500,30 @@ DevOps
 
 ## Interaction
 
-Users should be able to click or select a milestone and view additional information.
+Roles form the spine of the timeline and are always visible. Clicking a role opens a callout panel above the spine that lists the role's primary accomplishments. The selected role's marker is highlighted and a vertical connector links it to the panel.
 
-Expanded information may include:
+* Single-select: opening one role closes any other. Clicking the same role again or pressing `Esc` closes the panel.
+* Each accomplishment card inside the panel can list **related roles**. Clicking a related-role chip switches the panel to that role without a page reload.
+* URL state: the selected role is reflected in the URL hash (`/experience#role-<slug>`) and can be deep-linked.
+* Keyboard: `Tab` to a role node, `Enter`/`Space` to open, `Esc` to close, `Left`/`Right` arrows to move between roles, `Home`/`End` to jump to first/last.
+* Filters dim roles with no matching accomplishments (rather than hiding them) so the spine still conveys career structure.
+
+Expanded information per accomplishment may include:
 
 * Problem
 * Contribution
 * Technical approach
 * Impact
 * Technologies
+* Related roles (chips that switch the active panel)
 
 Keep timeline content concise enough to scan.
 
 ## Responsive Behavior
 
-Desktop may use a horizontal or alternating timeline.
+Desktop uses a **horizontal timeline**: year ticks along a 1px axis, role markers positioned by start-date ratio, callout panel above the spine with a connector to the active role.
 
-Mobile should convert gracefully to a vertical timeline.
+Mobile (below 52rem) reflows to **vertical role bands**: each role is a `<details>` section with title, organization, dates, summary, and accomplishments listed inline when expanded. The same data, single-select model, and filter dimming are reused.
 
 Do not force a large horizontal scrolling experience on phones.
 
@@ -500,12 +531,14 @@ Do not force a large horizontal scrolling experience on phones.
 
 M4 is complete when:
 
-* Timeline content comes from structured accomplishment data
+* Timeline content comes from structured role and accomplishment data
 * Timeline sorts correctly
 * Timeline displays correctly on desktop and mobile
-* Filters work
-* Entries can be expanded or inspected
-* No accomplishment requires custom timeline code
+* Filters work (dim non-matching roles)
+* A role can be selected, the panel opens, and the connector visually links panel to marker
+* URL hash deep-links to a role
+* Keyboard navigation works as described
+* No accomplishment or role requires custom timeline code
 
 ---
 

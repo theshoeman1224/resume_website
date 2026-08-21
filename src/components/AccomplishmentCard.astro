@@ -1,0 +1,70 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  accomplishment: CollectionEntry<"accomplishments">;
+  relatedRoles: { slug: string; title: string; organization: string }[];
+}
+
+const { accomplishment, relatedRoles } = Astro.props;
+const { data } = accomplishment;
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const startDate = dateFormatter.format(data.date);
+const endDate = data.endDate ? dateFormatter.format(data.endDate) : "Present";
+const sameDay = data.endDate && data.date.valueOf() === data.endDate.valueOf();
+const dateLabel = sameDay ? startDate : `${startDate} – ${endDate}`;
+---
+
+<article class="accomplishment-card" data-category={data.category}>
+  <header class="accomplishment-card-head">
+    <span class="accomplishment-card-date">{dateLabel}</span>
+    <span class="accomplishment-card-category">{data.category}</span>
+    <span class="accomplishment-card-role">{data.role} · {data.organization}</span>
+  </header>
+  <h4 class="accomplishment-card-title">{data.title}</h4>
+  <p class="accomplishment-card-summary">{data.summary}</p>
+  <details class="accomplishment-card-details">
+    <summary>
+      <span class="accomplishment-card-prompt">Inspect impact</span>
+    </summary>
+    <div class="accomplishment-card-body">
+      <p>
+        <strong>Impact</strong>
+        <span>{data.impact}</span>
+      </p>
+      {data.technologies.length > 0 && (
+        <div>
+          <strong>Technical context</strong>
+          <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+            {data.technologies.map((technology) => <li>{technology}</li>)}
+          </ul>
+        </div>
+      )}
+    </div>
+  </details>
+  {relatedRoles.length > 0 && (
+    <footer class="accomplishment-card-related">
+      <span class="accomplishment-card-related-label">Also linked to</span>
+      <ul class="related-role-list">
+        {relatedRoles.map((rel) => (
+          <li>
+            <button
+              type="button"
+              class="related-role-chip"
+              data-role-node={rel.slug}
+              aria-label={`Switch to role: ${rel.title} at ${rel.organization}`}
+            >
+              <span class="related-role-chip-title">{rel.title}</span>
+              <span class="related-role-chip-org">{rel.organization}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </footer>
+  )}
+</article>

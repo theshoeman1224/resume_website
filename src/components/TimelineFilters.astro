@@ -1,0 +1,18 @@
+---
+interface Props {
+  categories: string[];
+  totalCount: number;
+}
+
+const { categories, totalCount } = Astro.props;
+---
+
+<div class="timeline-controls" aria-label="Filter timeline by category">
+  <div class="timeline-filters" role="group" data-timeline-filters>
+    <button type="button" data-timeline-filter="All" aria-pressed="true">All</button>
+    {categories.map((category) => (
+      <button type="button" data-timeline-filter={category} aria-pressed="false">{category}</button>
+    ))}
+  </div>
+  <p data-timeline-status aria-live="polite">{totalCount} roles shown</p>
+</div>

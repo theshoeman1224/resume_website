@@ -1,0 +1,51 @@
+---
+import type { CollectionEntry } from "astro:content";
+import RoleNode from "./RoleNode.astro";
+
+interface Props {
+  roles: CollectionEntry<"roles">[];
+  rangeStart: Date;
+  rangeEnd: Date;
+}
+
+const { roles, rangeStart, rangeEnd } = Astro.props;
+const span = rangeEnd.getTime() - rangeStart.getTime();
+const PAD_PERCENT = 4.5;
+const effective = 100 - PAD_PERCENT * 2;
+
+function position(role: CollectionEntry<"roles">): number {
+  const start = role.data.startDate.getTime();
+  const ratio = (start - rangeStart.getTime()) / span;
+  return PAD_PERCENT + ratio * effective;
+}
+
+const yearMarkers: { year: number; position: number }[] = [];
+const startYear = rangeStart.getUTCFullYear();
+const endYear = rangeEnd.getUTCFullYear();
+for (let year = startYear; year <= endYear; year += 1) {
+  const yearStart = Date.UTC(year, 0, 1);
+  if (yearStart < rangeStart.getTime()) continue;
+  if (yearStart > rangeEnd.getTime()) continue;
+  const ratio = (yearStart - rangeStart.getTime()) / span;
+  yearMarkers.push({ year, position: PAD_PERCENT + ratio * effective });
+}
+---
+
+<div class="timeline-spine" data-timeline-spine>
+  <div class="timeline-axis" aria-hidden="true"></div>
+  <div class="timeline-ticks" aria-hidden="true">
+    {yearMarkers.map(({ position }) => (
+      <span class="timeline-tick" style={`left: ${position}%`}></span>
+    ))}
+  </div>
+  <div class="timeline-nodes" data-timeline-nodes>
+    {roles.map((role, index) => (
+      <RoleNode
+        role={role}
+        index={index}
+        position={position(role)}
+        side={index % 2 === 0 ? "above" : "below"}
+      />
+    ))}
+  </div>
+</div>

@@ -12,6 +12,8 @@ technologies:
   - Oscilloscopes
 role: Research Assistant
 organization: Wentworth Institute of Technology
-roleType: primary
+roleId: research-assistant-wit
+relatedRoles: []
 featured: false
 ---
+

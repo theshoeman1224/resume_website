@@ -1,0 +1,119 @@
+---
+import type { CollectionEntry } from "astro:content";
+import AccomplishmentCard from "./AccomplishmentCard.astro";
+
+interface Props {
+  roles: CollectionEntry<"roles">[];
+  rolesBySlug: Map<string, CollectionEntry<"roles">>;
+  accomplishmentsBySlug: Map<string, CollectionEntry<"accomplishments">>;
+}
+
+const { roles, rolesBySlug, accomplishmentsBySlug } = Astro.props;
+
+function buildPanelData(role: CollectionEntry<"roles">) {
+  const dateFormatter = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  const startDate = dateFormatter.format(role.data.startDate);
+  const endDate = role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present";
+  const accomplishments = role.data.accomplishments
+    .map((slug) => accomplishmentsBySlug.get(slug))
+    .filter((entry): entry is CollectionEntry<"accomplishments"> => Boolean(entry))
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+  return {
+    slug: role.id.replace(/\.md$/, ""),
+    title: role.data.title,
+    organization: role.data.organization,
+    startDate,
+    endDate,
+    summary: role.data.summary,
+    focus: role.data.focus,
+    accomplishments: accomplishments.map((accomplishment) => ({
+      slug: accomplishment.id.replace(/\.md$/, ""),
+      category: accomplishment.data.category,
+    })),
+  };
+}
+
+const panels = roles.map(buildPanelData);
+
+function relatedFor(relatedSlugs: string[]) {
+  const result: { slug: string; title: string; organization: string }[] = [];
+  for (const rel of relatedSlugs) {
+    const role = rolesBySlug.get(rel);
+    if (!role) continue;
+    result.push({
+      slug: role.id.replace(/\.md$/, ""),
+      title: role.data.title,
+      organization: role.data.organization,
+    });
+  }
+  return result;
+}
+
+const panelJson = JSON.stringify({
+  roles: roles.map(buildPanelData),
+  accomplishments: Object.fromEntries(
+    [...accomplishmentsBySlug.entries()].map(([slug, entry]) => [
+      slug,
+      {
+        relatedRoles: relatedFor(entry.data.relatedRoles),
+      },
+    ]),
+  ),
+});
+---
+
+<div
+  class="timeline-panel"
+  id="timeline-panel"
+  data-timeline-panel
+  data-timeline-panels={panelJson}
+  hidden
+>
+  {panels.map((panel) => (
+    <div
+      class="timeline-panel-frame"
+      data-panel-for={panel.slug}
+      hidden
+    >
+      <header class="timeline-panel-header">
+        <div>
+          <p class="eyebrow">Role</p>
+          <h3 class="timeline-panel-title">{panel.title}</h3>
+          <p class="timeline-panel-meta">{panel.organization} · {panel.startDate} – {panel.endDate}</p>
+        </div>
+        <button
+          type="button"
+          class="timeline-panel-close"
+          data-timeline-panel-close
+          aria-label="Close role details"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+      </header>
+      <p class="timeline-panel-summary">{panel.summary}</p>
+      {panel.focus.length > 0 && (
+        <ul class="timeline-panel-focus" aria-label="Focus areas">
+          {panel.focus.map((area) => <li>{area}</li>)}
+        </ul>
+      )}
+      <div class="timeline-panel-accomplishments" data-timeline-accomplishments>
+        {panel.accomplishments.map((summary) => {
+          const entry = accomplishmentsBySlug.get(summary.slug);
+          if (!entry) return null;
+          const rels = relatedFor(entry.data.relatedRoles);
+          return (
+            <AccomplishmentCard
+              accomplishment={entry}
+              relatedRoles={rels}
+            />
+          );
+        })}
+      </div>
+    </div>
+  ))}
+</div>

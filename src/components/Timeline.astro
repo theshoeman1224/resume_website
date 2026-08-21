@@ -1,56 +1,386 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import TimelineItem from "./TimelineItem.astro";
+import RoleSpine from "./RoleSpine.astro";
+import RolePanel from "./RolePanel.astro";
+import TimelineFilters from "./TimelineFilters.astro";
+import AccomplishmentCard from "./AccomplishmentCard.astro";
 
 interface Props {
+  roles: CollectionEntry<"roles">[];
   accomplishments: CollectionEntry<"accomplishments">[];
 }
 
-const { accomplishments } = Astro.props;
+const { roles: rawRoles, accomplishments } = Astro.props;
+
+const sortedRoles = [...rawRoles].sort((a, b) => {
+  const startDiff = b.data.startDate.valueOf() - a.data.startDate.valueOf();
+  if (startDiff !== 0) return startDiff;
+  return b.data.order - a.data.order;
+});
+
+const rolesBySlug = new Map(
+  sortedRoles.map((role) => [role.id.replace(/\.md$/, ""), role]),
+);
+
+const accomplishmentsBySlug = new Map(
+  accomplishments.map((entry) => [entry.id.replace(/\.md$/, ""), entry]),
+);
+
+const allStartDates = sortedRoles.map((role) => role.data.startDate.getTime());
+const allEndDates = sortedRoles.map((role) =>
+  role.data.endDate ? role.data.endDate.getTime() : Date.now(),
+);
+const rangeStart = new Date(Math.min(...allStartDates));
+const rangeEnd = new Date(Math.max(...allEndDates));
+
 const categories = [...new Set(accomplishments.map(({ data }) => data.category))].sort();
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+function roleAccoms(role: CollectionEntry<"roles">) {
+  const accs: CollectionEntry<"accomplishments">[] = [];
+  for (const slug of role.data.accomplishments) {
+    const entry = accomplishmentsBySlug.get(slug);
+    if (entry) accs.push(entry);
+  }
+  return accs.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+}
+
+function relatedFor(relatedSlugs: string[]) {
+  const result: { slug: string; title: string; organization: string }[] = [];
+  for (const rel of relatedSlugs) {
+    const role = rolesBySlug.get(rel);
+    if (!role) continue;
+    result.push({
+      slug: role.id.replace(/\.md$/, ""),
+      title: role.data.title,
+      organization: role.data.organization,
+    });
+  }
+  return result;
+}
+
+const roleSlugs = sortedRoles.map((role) => role.id.replace(/\.md$/, ""));
+
+const panelJson = JSON.stringify({
+  roles: sortedRoles.map((role) => {
+    const accs = roleAccoms(role);
+    return {
+      slug: role.id.replace(/\.md$/, ""),
+      title: role.data.title,
+      organization: role.data.organization,
+      startDate: dateFormatter.format(role.data.startDate),
+      endDate: role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present",
+      summary: role.data.summary,
+      focus: role.data.focus,
+      accomplishments: accs.map((a) => ({
+        slug: a.id.replace(/\.md$/, ""),
+        category: a.data.category,
+      })),
+    };
+  }),
+  accomplishments: Object.fromEntries(
+    [...accomplishmentsBySlug.entries()].map(([slug, entry]) => [
+      slug,
+      { relatedRoles: relatedFor(entry.data.relatedRoles) },
+    ]),
+  ),
+});
 ---
 
-<div class="timeline" data-timeline>
-  <div class="timeline-controls" aria-label="Filter career timeline">
-    <div class="timeline-filters">
-      <button type="button" data-timeline-filter="All" aria-pressed="true">All</button>
-      {categories.map((category) => (
-        <button type="button" data-timeline-filter={category} aria-pressed="false">{category}</button>
-      ))}
+<div
+  class="timeline"
+  data-timeline
+  data-role-slugs={JSON.stringify(roleSlugs)}
+>
+  <TimelineFilters categories={categories} totalCount={sortedRoles.length} />
+
+  <div class="timeline-desktop" data-timeline-desktop>
+    <div class="timeline-frame" data-timeline-frame>
+      <RolePanel
+        roles={sortedRoles}
+        rolesBySlug={rolesBySlug}
+        accomplishmentsBySlug={accomplishmentsBySlug}
+      />
+      <div class="timeline-connector-host" aria-hidden="true">
+        <div class="timeline-connector" data-timeline-connector style="--connector-opacity: 0;"></div>
+      </div>
+      <RoleSpine
+        roles={sortedRoles}
+        rangeStart={rangeStart}
+        rangeEnd={rangeEnd}
+      />
     </div>
-    <p data-timeline-status aria-live="polite">{accomplishments.length} milestones shown</p>
   </div>
-  <ol class="timeline-list">
-    {accomplishments.map((accomplishment) => <TimelineItem accomplishment={accomplishment} />)}
-  </ol>
+
+  <div class="timeline-mobile" data-timeline-mobile>
+    {sortedRoles.map((role) => {
+      const accs = roleAccoms(role);
+      const startDate = dateFormatter.format(role.data.startDate);
+      const endDate = role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present";
+      return (
+        <details
+          class="timeline-mobile-role"
+          data-mobile-role={role.id.replace(/\.md$/, "")}
+        >
+          <summary>
+            <span class="timeline-mobile-role-head">
+              <span class="timeline-mobile-role-title">{role.data.title}</span>
+              <span class="timeline-mobile-role-meta">
+                {role.data.organization} · {startDate} – {endDate}
+              </span>
+            </span>
+          </summary>
+          <div class="timeline-mobile-role-body">
+            <p class="timeline-mobile-role-summary">{role.data.summary}</p>
+            {role.data.focus.length > 0 && (
+              <ul class="timeline-panel-focus" aria-label="Focus areas">
+                {role.data.focus.map((area) => <li>{area}</li>)}
+              </ul>
+            )}
+            <div class="timeline-mobile-accomplishments">
+              {accs.map((entry) => (
+                <AccomplishmentCard
+                  accomplishment={entry}
+                  relatedRoles={relatedFor(entry.data.relatedRoles)}
+                />
+              ))}
+            </div>
+          </div>
+        </details>
+      );
+    })}
+  </div>
 </div>
 
-<script>
-  document.querySelectorAll<HTMLElement>("[data-timeline]").forEach((timeline) => {
-    const buttons = timeline.querySelectorAll<HTMLButtonElement>("[data-timeline-filter]");
-    const items = timeline.querySelectorAll<HTMLElement>("[data-timeline-item]");
-    const status = timeline.querySelector<HTMLElement>("[data-timeline-status]");
+<script is:inline define:vars={{ panelJson }}>
+  function initTimeline(timeline, panelPayload) {
+    const filtersEl = timeline.querySelector("[data-timeline-filters]");
+    const statusEl = timeline.querySelector("[data-timeline-status]");
+    const filterButtons = filtersEl ? filtersEl.querySelectorAll("[data-timeline-filter]") : [];
+    const nodes = timeline.querySelectorAll(".timeline-node[data-role-node]");
+    const panelHost = timeline.querySelector("[data-timeline-panel]");
+    const panelFrames = panelHost ? panelHost.querySelectorAll("[data-panel-for]") : [];
+    const connector = timeline.querySelector("[data-timeline-connector]");
+    const frame = timeline.querySelector("[data-timeline-frame]");
+    const mobile = timeline.querySelector("[data-timeline-mobile]");
 
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const selectedCategory = button.dataset.timelineFilter;
-        let visibleCount = 0;
+    if (!panelHost || !connector || !frame) return;
 
-        buttons.forEach((candidate) => {
-          candidate.setAttribute("aria-pressed", String(candidate === button));
+    const panelBySlug = new Map(panelPayload.roles.map((p) => [p.slug, p]));
+
+    const isDesktop = () => window.matchMedia("(min-width: 52rem)").matches;
+
+    const allNodeButtons = () => Array.from(nodes);
+    const nodeBySlug = (slug) => timeline.querySelector("[data-role-node=\"" + slug + "\"]");
+
+    let selectedSlug = null;
+
+    function applyFilter(category) {
+      let visibleRoles = 0;
+      filterButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.timelineFilter === category));
+      });
+      allNodeButtons().forEach((button) => {
+        const slug = button.dataset.roleNode || "";
+        const panel = panelBySlug.get(slug);
+        const matches =
+          category === "All" ||
+          (panel && panel.accomplishments.some((a) => a.category === category));
+        button.classList.toggle("timeline-node-dim", !matches);
+        if (matches) visibleRoles += 1;
+      });
+      if (mobile) {
+        mobile.querySelectorAll("[data-mobile-role]").forEach((details) => {
+          const slug = details.getAttribute("data-mobile-role") || "";
+          const panel = panelBySlug.get(slug);
+          const matches =
+            category === "All" ||
+            (panel && panel.accomplishments.some((a) => a.category === category));
+          details.classList.toggle("timeline-mobile-role-dim", !matches);
         });
+      }
+      if (statusEl) {
+        const label = visibleRoles === 1 ? "role" : "roles";
+        statusEl.textContent = visibleRoles + " " + label + " shown";
+      }
+      if (
+        selectedSlug &&
+        panelBySlug.get(selectedSlug) &&
+        !panelBySlug.get(selectedSlug).accomplishments.some((a) => category === "All" || a.category === category)
+      ) {
+        deselect();
+      }
+    }
 
-        items.forEach((item) => {
-          const visible = selectedCategory === "All" || item.dataset.category === selectedCategory;
-          item.hidden = !visible;
-          if (visible) visibleCount += 1;
-        });
+    function positionConnector() {
+      if (!selectedSlug || !isDesktop()) {
+        connector.style.setProperty("--connector-opacity", "0");
+        return;
+      }
+      const node = nodeBySlug(selectedSlug);
+      if (!node) return;
+      const host = connector.parentElement;
+      if (!host) return;
+      const hostRect = host.getBoundingClientRect();
+      const nodeRect = node.getBoundingClientRect();
+      const panelRect = panelHost.getBoundingClientRect();
+      const markerY = nodeRect.top + nodeRect.height / 2 - hostRect.top;
+      const xPx = nodeRect.left + nodeRect.width / 2 - hostRect.left;
+      const topPx = panelRect.bottom - hostRect.top;
+      const bottomPx = hostRect.bottom - markerY;
+      connector.style.setProperty("--connector-x", xPx + "px");
+      connector.style.setProperty("--connector-top", Math.max(0, topPx) + "px");
+      connector.style.setProperty("--connector-bottom", Math.max(0, bottomPx) + "px");
+      connector.style.setProperty("--connector-opacity", "1");
+    }
 
-        if (status) {
-          const label = visibleCount === 1 ? "milestone" : "milestones";
-          status.textContent = `${visibleCount} ${label} shown`;
+    function select(slug, opts) {
+      opts = opts || {};
+      const panel = panelBySlug.get(slug);
+      if (!panel) return;
+      if (selectedSlug === slug) {
+        deselect();
+        return;
+      }
+      selectedSlug = slug;
+      const node = nodeBySlug(slug);
+      if (frame) {
+        frame.dataset.panelSide = "above";
+        frame.dataset.panelFor = slug;
+      }
+      panelHost.hidden = false;
+      panelFrames.forEach((frameEl) => {
+        frameEl.hidden = frameEl.getAttribute("data-panel-for") !== slug;
+      });
+      allNodeButtons().forEach((button) => {
+        const isSelected = (button.dataset.roleNode || "") === slug;
+        button.setAttribute("aria-expanded", String(isSelected));
+        button.classList.toggle("timeline-node-active", isSelected);
+      });
+      requestAnimationFrame(() => {
+        positionConnector();
+        if (opts.focusNode && node) node.focus();
+      });
+      if (opts.pushHash) {
+        history.replaceState(null, "", "#role-" + slug);
+      }
+    }
+
+    function deselect() {
+      const previouslySelected = selectedSlug;
+      selectedSlug = null;
+      if (frame) {
+        delete frame.dataset.panelSide;
+        delete frame.dataset.panelFor;
+      }
+      panelHost.hidden = true;
+      panelFrames.forEach((frameEl) => {
+        frameEl.hidden = true;
+      });
+      allNodeButtons().forEach((button) => {
+        button.setAttribute("aria-expanded", "false");
+        button.classList.remove("timeline-node-active");
+      });
+      connector.style.setProperty("--connector-opacity", "0");
+      if (location.hash.startsWith("#role-")) {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+      if (previouslySelected) {
+        const origin = nodeBySlug(previouslySelected);
+        if (origin && timeline.contains(document.activeElement) && document.activeElement !== origin) {
+          origin.focus();
         }
+      }
+    }
+
+    nodes.forEach((button) => {
+      button.addEventListener("click", () => {
+        const slug = button.dataset.roleNode || "";
+        select(slug, { pushHash: true });
       });
     });
+
+    timeline.querySelectorAll("[data-timeline-panel-close]").forEach((closeButton) => {
+      closeButton.addEventListener("click", () => deselect());
+    });
+
+    timeline.querySelectorAll(".related-role-chip").forEach((chip) => {
+      chip.addEventListener("click", (event) => {
+        event.stopPropagation();
+        const slug = chip.getAttribute("data-role-node") || "";
+        select(slug, { pushHash: true });
+      });
+    });
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        applyFilter(button.dataset.timelineFilter || "All");
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (!timeline.contains(document.activeElement)) return;
+      if (event.key === "Escape" && selectedSlug) {
+        event.preventDefault();
+        deselect();
+        return;
+      }
+      if (
+        event.key !== "ArrowLeft" &&
+        event.key !== "ArrowRight" &&
+        event.key !== "Home" &&
+        event.key !== "End"
+      ) {
+        return;
+      }
+      const ordered = allNodeButtons();
+      if (ordered.length === 0) return;
+      const currentIndex = selectedSlug
+        ? ordered.findIndex((b) => b.dataset.roleNode === selectedSlug)
+        : -1;
+      let nextIndex = currentIndex;
+      if (event.key === "ArrowRight")
+        nextIndex = currentIndex < ordered.length - 1 ? currentIndex + 1 : currentIndex;
+      if (event.key === "ArrowLeft")
+        nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+      if (event.key === "Home") nextIndex = 0;
+      if (event.key === "End") nextIndex = ordered.length - 1;
+      if (nextIndex === currentIndex || nextIndex < 0) return;
+      event.preventDefault();
+      const nextSlug = ordered[nextIndex].dataset.roleNode || "";
+      select(nextSlug, { pushHash: true, focusNode: true });
+    });
+
+    let resizeRaf = 0;
+    window.addEventListener(
+      "resize",
+      () => {
+        cancelAnimationFrame(resizeRaf);
+        resizeRaf = requestAnimationFrame(() => positionConnector());
+      },
+      { passive: true },
+    );
+
+    applyFilter("All");
+
+    const hashMatch = location.hash.match(/^#role-(.+)$/);
+    if (hashMatch && panelBySlug.has(hashMatch[1])) {
+      requestAnimationFrame(() => select(hashMatch[1], { pushHash: false }));
+    }
+  }
+
+  document.querySelectorAll("[data-timeline]").forEach((timeline) => {
+    const panelEl = timeline.querySelector("[data-timeline-panel]");
+    if (!panelEl || !panelEl.dataset.timelinePanels) return;
+    try {
+      initTimeline(timeline, JSON.parse(panelEl.dataset.timelinePanels));
+    } catch (error) {
+      console.error("Timeline init failed", error);
+    }
   });
 </script>

@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  role: CollectionEntry<"roles">;
+  index: number;
+  position: number;
+  side: "above" | "below";
+}
+
+const { role, index, position, side } = Astro.props;
+const { id, data } = role;
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  timeZone: "UTC",
+});
+const startDate = dateFormatter.format(data.startDate);
+const endDate = data.endDate ? dateFormatter.format(data.endDate) : "Present";
+const slug = id.replace(/\.md$/, "");
+const isOngoing = !data.endDate;
+const compactStart = data.startDate.getUTCFullYear().toString().slice(-2);
+const compactEnd = data.endDate
+  ? data.endDate.getUTCFullYear().toString().slice(-2)
+  : "now";
+const dateCode = `${compactStart}–${compactEnd}`;
+---
+
+<button
+  type="button"
+  class="timeline-node"
+  data-role-node={slug}
+  data-role-index={index}
+  data-role-side={side}
+  style={`--role-x: ${position}%;`}
+  aria-expanded="false"
+  aria-controls="timeline-panel"
+>
+  <span class="timeline-node-stack">
+    <span class="timeline-node-marker" aria-hidden="true">
+      {isOngoing && <span class="timeline-node-pulse"></span>}
+    </span>
+    <span class="timeline-node-tab" aria-hidden="true"></span>
+    <span class="timeline-node-label">
+      <span class="timeline-node-title">{data.title}</span>
+      <span class="timeline-node-org">{data.organization}</span>
+      <span class="timeline-node-dates">{startDate} – {endDate}</span>
+    </span>
+  </span>
+  <span class="visually-hidden">
+    Open role: {data.title} at {data.organization}, {startDate} to {endDate}
+  </span>
+  <span class="visually-hidden">Code {dateCode}</span>
+</button>

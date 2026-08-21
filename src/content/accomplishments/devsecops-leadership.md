@@ -11,6 +11,9 @@ technologies:
   - Cross-functional planning
 role: Software Engineer
 organization: Raytheon
-roleType: initiative
+roleId: devsecops-lead
+relatedRoles:
+  - software-engineer-raytheon
 featured: false
 ---
+

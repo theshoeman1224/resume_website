@@ -108,31 +108,111 @@ Each accomplishment needs:
 
 ---
 
-## Phase 4: Add Accomplishment Timeline with Metrics (New Feature)
+## Phase 4: Accomplishment Timeline — Status Update
 
-### New Schema Addition
+### What's already built
 
-Extend `src/content.config.ts` accomplishment schema:
+The horizontal career timeline on `/experience` is implemented and live. It anchors the page: clicking a role opens a panel that overlays above the spine without pushing it down. Roles and accomplishments are decoupled, with accomplishments cross-linkable via `relatedRoles` chips.
+
+### New content collection: `src/content/roles/`
+
+Roles are now a first-class content collection, not free-text fields on each accomplishment. Each role markdown declares its primary accomplishments by slug.
+
+```yaml
+# src/content/roles/<slug>.md
+title:                  # "Senior Software Engineering Task Lead"
+organization:           # "Raytheon"
+startDate:
+endDate:                # optional; absent => "Present"
+summary:                # role-level narrative
+focus: []               # optional themes
+accomplishments: []     # slugs of accomplishments where this role is PRIMARY owner
+order:                  # tie-breaker for overlapping roles
+```
+
+Current roles (5):
+
+| Slug | Title | Span | Primary accomplishments |
+|---|---|---|---|
+| `research-assistant-wit` | Research Assistant | 2017-05 → 2018-01 | photolithography-control |
+| `software-engineer-raytheon` | Software Engineer | 2019-10 → 2025-01 | dsp-performance, boot-reliability |
+| `devsecops-lead` | DevSecOps Lead | 2019-10 → 2025-01 | devsecops-leadership |
+| `senior-software-engineering-task-lead` | Senior SE Task Lead | 2025-01 → 2026-03 | receiver-architecture |
+| `principal-software-engineer` | Principal Software Engineer | 2026-03 → Present | principal-engineer |
+
+### Accomplishment schema changes (`src/content.config.ts`)
 
 ```typescript
+const accomplishments = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/accomplishments" }),
+  schema: z.object({
+    title: z.string(),
+    date: z.coerce.date(),
+    endDate: z.coerce.date().optional(),
+    category: z.string(),
+    summary: z.string(),
+    impact: z.string(),
+    technologies: z.array(z.string()).default([]),
+    role: z.string(),                    // free-text title for this accomplishment
+    organization: z.string(),
+    roleId: z.string(),                  // PRIMARY owning role slug (required)
+    relatedRoles: z.array(z.string()).default([]),  // secondary role slugs
+    featured: z.boolean().default(false),
+    // roleType: REMOVED — redundant now that roleId exists
+  }),
+});
+```
+
+`roleType` (primary/leadership/initiative) was removed — the role entity makes it redundant.
+
+### Component structure (replaces the planned `TimelineItem.astro`)
+
+| Component | Role |
+|---|---|
+| `Timeline.astro` | Orchestrator: loads data, computes layout, owns selection state, keyboard nav, URL hash, filter |
+| `TimelineFilters.astro` | Category chips (dim non-matching roles) |
+| `RoleSpine.astro` | Horizontal axis with year ticks + role markers |
+| `RoleNode.astro` | One role on the spine (button, ARIA-correct) |
+| `RolePanel.astro` | The callout panel above the spine |
+| `AccomplishmentCard.astro` | Card inside the panel (compact, expandable) |
+| `TimelineConnector` (inline) | Vertical line from panel-bottom to marker |
+
+`TimelineItem.astro` (referenced in the plan's file index) was deleted.
+
+### Visual / interaction design (committed)
+
+- **Alternation pattern**: labels alternate above/below the spine by parity-of-index. Currently 3 above (PSE, DevSecOps Lead, Research Assistant) and 2 below (Senior SE Task Lead, Software Engineer). DevOps and SE share Oct 2019 with no marker collision because they sit on opposite sides.
+- **Signature**: markers are diamonds (rotated 0.65rem squares) on the axis, connected to their label by a 1.1rem "tab". The diamond + tab reads as a flag on a map. Ongoing role (Principal SE) has a slow pulse ring.
+- **Connector**: vertical 1px line, signal green, fades 0% → 100% via linear-gradient at both ends. JS positions it from panel-bottom (5rem above spine-top) to marker center.
+- **Panel anchored above the spine**: `position: absolute; bottom: calc(100% + 5rem)`. Spine has `margin-top: 4rem` for breathing room against the filter chips above. Spine stays put on every selection — no layout shift.
+- **Stacked label content**: title (italic Georgia) → organization (mono caps signal green) → dates (mono caps muted). Title wraps to 2 lines on long titles ("Senior Software Engineering Task Lead").
+- **Single-select**: clicking a role opens its panel and closes any other. Click again or `Esc` closes.
+- **Filter**: category chips dim non-matching roles (not hide). Status reads "N roles shown".
+- **URL deep-link**: `#role-<slug>` opens that role on load and syncs on selection.
+- **Keyboard**: `Tab` to role, `Enter`/`Space` to open, `Esc` to close, `←`/`→` between roles, `Home`/`End` jump.
+- **Related-role chips**: each accomplishment card lists `relatedRoles` as clickable chips that switch the panel without a page reload.
+- **Mobile**: below 52rem the horizontal spine hides and vertical `<details>` role bands take over (same data, same single-select model via mobile UI).
+- **Build-time validation** in `experience.astro` console-warns if any `roleId` or role-`accomplishments` slug is unresolved.
+- **Reduced-motion**: globally respected.
+
+### What's still needed for Phase 4
+
+The plan's `metrics` schema is **not yet added**. The work in this phase is structurally complete; it just doesn't surface metrics.
+
+```typescript
+// To be added to accomplishments schema when metrics arrive
 metrics: z.array(z.object({
-  label: z.string(),           // "Correlation kernel latency"
-  value: z.string(),           // "42% reduction"
-  before: z.string().optional(), // "1.2 ms"
-  after: z.string().optional(),  // "700 μs"
-  unit: z.string().optional(),   // "ms", "cycles", "%", "hrs"
+  label: z.string(),
+  value: z.string(),
+  before: z.string().optional(),
+  after: z.string().optional(),
+  unit: z.string().optional(),
 })).default([]),
 ```
 
-### New Component
+And a new `src/components/AccomplishmentMetrics.astro` to render them inside `AccomplishmentCard.astro`. Likely placement: between the summary and the "Inspect impact" details, as a small horizontal row of stat cards.
 
-Create `src/components/AccomplishmentMetrics.astro` or extend `TimelineItem.astro` to render metrics as visual cards below the timeline entry.
-
-### Content
-
-Add 5-8 new accomplishment entries with real metrics (separate from the 5 existing role-based entries). These are **result-oriented**, not role-oriented.
-
-**Placement**: Below career timeline on `/experience` or new `/results` page.
+When metrics land, each existing role markdown and accomplishment markdown should be reviewed — the "impact" string currently carries the number; once `metrics` exists, the prose can be trimmed and the structured fields can do the work.
 
 ---
 
@@ -184,15 +264,17 @@ Add visible TODO list signaling "active builder":
 
 ## Prioritized Execution Order
 
-| Priority | Task | Effort | Impact | Dependencies |
-|----------|------|--------|--------|--------------|
-| 1 | Rewrite homepage hero + about copy | 1 hr | High | None |
-| 2 | Rewrite experience page intro + remove focus cards | 30 min | High | None |
-| 3 | **Add metrics to 5 accomplishment MD files** | 2-3 hrs | **Critical** | **METRICS REQUIRED** |
-| 4 | Extend schema + build metrics display in Timeline | 2-3 hrs | High | Phase 3 complete |
-| 5 | Add 5-8 metric-rich accomplishment entries | 2 hrs | High | Phase 4 schema |
-| 6 | Review/trim projects | 30 min | Medium | None |
-| 7 | Design decision + contact TODOs | 1 hr | Low | Content stable |
+| Priority | Task | Effort | Impact | Dependencies | Status |
+|----------|------|--------|--------|--------------|--------|
+| 1 | Rewrite homepage hero + about copy | 1 hr | High | None | **Not started** |
+| 2 | Rewrite experience page intro + remove focus cards | 30 min | High | None | **Not started** |
+| 3 | **Add metrics to 6 accomplishment MD files** | 2-3 hrs | **Critical** | **METRICS REQUIRED** | Blocked on metrics |
+| 4a | Roles collection + schema (roleId, relatedRoles, drop roleType) | — | — | — | **DONE** |
+| 4b | Horizontal timeline component (alternation, panel overlay, connector, keyboard, hash, mobile) | — | — | — | **DONE** |
+| 4c | Add `metrics` schema + `AccomplishmentMetrics` component + render in card | 2-3 hrs | High | Phase 3 complete | **Not started** |
+| 5 | Add 5-8 metric-rich accomplishment entries | 2 hrs | High | Phase 4c | **Not started** |
+| 6 | Review/trim projects | 30 min | Medium | None | **Not started** |
+| 7 | Design decision + contact TODOs | 1 hr | Low | Content stable | **Not started** |
 
 ---
 
@@ -238,18 +320,30 @@ Add visible TODO list signaling "active builder":
 │   │   ├── index.astro              # Phase 1, 7
 │   │   └── experience.astro         # Phase 2
 │   ├── content/
+│   │   ├── roles/                            # Phase 4 (new collection)
+│   │   │   ├── research-assistant-wit.md
+│   │   │   ├── software-engineer-raytheon.md
+│   │   │   ├── devsecops-lead.md
+│   │   │   ├── senior-software-engineering-task-lead.md
+│   │   │   └── principal-software-engineer.md
 │   │   ├── accomplishments/
-│   │   │   ├── dsp-performance.md           # Phase 3
-│   │   │   ├── principal-engineer.md        # Phase 3
-│   │   │   ├── devsecops-leadership.md      # Phase 3
-│   │   │   ├── photolithography-control.md  # Phase 3
-│   │   │   └── receiver-architecture.md     # Phase 3
-│   │   └── config.ts               # Phase 4 (schema)
+│   │   │   ├── boot-reliability.md           # Phase 3
+│   │   │   ├── devsecops-leadership.md       # Phase 3
+│   │   │   ├── dsp-performance.md            # Phase 3
+│   │   │   ├── photolithography-control.md   # Phase 3
+│   │   │   ├── principal-engineer.md         # Phase 3
+│   │   │   └── receiver-architecture.md      # Phase 3
+│   │   └── content.config.ts          # Phase 4 (schema)  [note: not config.ts]
 │   └── components/
-│       ├── TimelineItem.astro      # Phase 4 (extend)
-│       └── AccomplishmentMetrics.astro  # Phase 4 (new)
+│       ├── Timeline.astro            # Phase 4 (orchestrator)
+│       ├── TimelineFilters.astro     # Phase 4
+│       ├── RoleSpine.astro           # Phase 4
+│       ├── RoleNode.astro            # Phase 4
+│       ├── RolePanel.astro           # Phase 4
+│       ├── AccomplishmentCard.astro  # Phase 4
+│       └── AccomplishmentMetrics.astro  # Phase 4 (new, when metrics land)
 ├── .portfolio-cache/projects/      # Phase 5
-└── CLEANUP_PLAN.md                 # This file
+└── cleanup_plan.md                  # This file
 ```
 
 ---
