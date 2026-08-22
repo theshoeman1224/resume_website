@@ -282,7 +282,6 @@ h3 {
 .principles li,
 .skill-list li {
   display: flex;
-  justify-content: space-between;
   gap: 1rem;
   padding-block: 0.9rem;
   border-bottom: 1px solid var(--line);
