@@ -63,39 +63,11 @@ function relatedFor(relatedSlugs: string[]) {
   }
   return result;
 }
-
-const roleSlugs = sortedRoles.map((role) => role.id.replace(/\.md$/, ""));
-
-const panelJson = JSON.stringify({
-  roles: sortedRoles.map((role) => {
-    const accs = roleAccoms(role);
-    return {
-      slug: role.id.replace(/\.md$/, ""),
-      title: role.data.title,
-      organization: role.data.organization,
-      startDate: dateFormatter.format(role.data.startDate),
-      endDate: role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present",
-      summary: role.data.summary,
-      focus: role.data.focus,
-      accomplishments: accs.map((a) => ({
-        slug: a.id.replace(/\.md$/, ""),
-        category: a.data.category,
-      })),
-    };
-  }),
-  accomplishments: Object.fromEntries(
-    [...accomplishmentsBySlug.entries()].map(([slug, entry]) => [
-      slug,
-      { relatedRoles: relatedFor(entry.data.relatedRoles) },
-    ]),
-  ),
-});
 ---
 
 <div
   class="timeline"
   data-timeline
-  data-role-slugs={JSON.stringify(roleSlugs)}
 >
   <TimelineFilters categories={categories} totalCount={sortedRoles.length} />
 
@@ -157,7 +129,7 @@ const panelJson = JSON.stringify({
   </div>
 </div>
 
-<script is:inline define:vars={{ panelJson }}>
+<script is:inline>
   function initTimeline(timeline, panelPayload) {
     const filtersEl = timeline.querySelector("[data-timeline-filters]");
     const statusEl = timeline.querySelector("[data-timeline-status]");
