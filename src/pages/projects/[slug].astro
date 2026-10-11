@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GameEmbed from "../../components/GameEmbed.astro";
+import { formatDateRange, formatMonthYear } from "../../lib/dates";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -30,7 +31,13 @@ const demoUrl = data.demoAdapter === "snake"
   : data.demo.type === "external"
     ? data.demo.url
     : undefined;
-const dateRange = [data.dates.started, data.dates.completed].filter(Boolean).join(" - ");
+const started = data.dates.started ? new Date(data.dates.started) : undefined;
+const completed = data.dates.completed ? new Date(data.dates.completed) : undefined;
+const dateRange = !started
+  ? completed && formatMonthYear(completed)
+  : completed || data.status === "active"
+    ? formatDateRange(started, completed)
+    : formatMonthYear(started);
 ---
 
 <BaseLayout title={`${data.name} | Josh Shuman`} description={data.summary}>
@@ -57,20 +64,20 @@ const dateRange = [data.dates.started, data.dates.completed].filter(Boolean).joi
         <dl class="project-facts">
           <div><dt>Role</dt><dd>{data.role}</dd></div>
           {dateRange && <div><dt>Dates</dt><dd>{dateRange}</dd></div>}
-          <div><dt>Categories</dt><dd>{data.categories.join(" / ")}</dd></div>
+          <div><dt>Categories</dt><dd>{data.categories.join(" · ")}</dd></div>
           <div><dt>Source</dt><dd><code>{data.source.revision.slice(0, 8)}</code></dd></div>
         </dl>
       </aside>
       <article class="project-copy">
         <h2>Overview</h2>
         {descriptionParagraphs.map((paragraph) => <p>{paragraph}</p>)}
-        <h2>Engineering Highlights</h2>
+        <h2>Engineering highlights</h2>
         <ul class="project-highlights">
           {data.highlights.map((highlight) => <li>{highlight}</li>)}
         </ul>
         {(data.links.primary.length > 0 || data.links.dashboards.length > 0) && (
           <>
-            <h2>Project Links</h2>
+            <h2>Project links</h2>
             <div class="project-link-groups">
               {data.links.primary.map((link) => <a href={link.url}>{link.name}<span>{link.type}</span></a>)}
               {data.links.dashboards.map((link) => <a href={link.url}>{link.name}<span>{link.type}</span></a>)}

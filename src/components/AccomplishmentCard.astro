@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { formatDateRange, formatMonthYear } from "../lib/dates";
 
 interface Props {
   accomplishment: CollectionEntry<"accomplishments">;
@@ -9,15 +10,8 @@ interface Props {
 const { accomplishment, relatedRoles } = Astro.props;
 const { data } = accomplishment;
 
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-const startDate = dateFormatter.format(data.date);
-const endDate = data.endDate ? dateFormatter.format(data.endDate) : "Present";
 const sameDay = data.endDate && data.date.valueOf() === data.endDate.valueOf();
-const dateLabel = sameDay ? startDate : `${startDate} – ${endDate}`;
+const dateLabel = sameDay ? formatMonthYear(data.date) : formatDateRange(data.date, data.endDate);
 ---
 
 <article class="accomplishment-card" data-category={data.category}>
@@ -28,19 +22,14 @@ const dateLabel = sameDay ? startDate : `${startDate} – ${endDate}`;
   </header>
   <h4 class="accomplishment-card-title">{data.title}</h4>
   <p class="accomplishment-card-summary">{data.summary}</p>
-  <details class="accomplishment-card-details">
-    <summary>
-      <span class="accomplishment-card-prompt">Inspect impact</span>
-    </summary>
-    <div class="accomplishment-card-body">
-      <p class="accomplishment-card-impact">{data.impact}</p>
-      {data.technologies.length > 0 && (
-        <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
-          {data.technologies.map((technology) => <li>{technology}</li>)}
-        </ul>
-      )}
-    </div>
-  </details>
+  <div class="accomplishment-card-body">
+    <p class="accomplishment-card-impact">{data.impact}</p>
+    {data.technologies.length > 0 && (
+      <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+        {data.technologies.map((technology) => <li>{technology}</li>)}
+      </ul>
+    )}
+  </div>
   {relatedRoles.length > 0 && (
     <footer class="accomplishment-card-related">
       <span class="accomplishment-card-related-label">Also linked to</span>

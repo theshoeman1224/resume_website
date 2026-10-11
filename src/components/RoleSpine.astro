@@ -10,7 +10,7 @@ interface Props {
 
 const { roles, rangeStart, rangeEnd } = Astro.props;
 const span = rangeEnd.getTime() - rangeStart.getTime();
-const PAD_PERCENT = 4.5;
+const PAD_PERCENT = 10;
 const effective = 100 - PAD_PERCENT * 2;
 
 function position(role: CollectionEntry<"roles">): number {

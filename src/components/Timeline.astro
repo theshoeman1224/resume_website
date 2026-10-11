@@ -4,6 +4,7 @@ import RoleSpine from "./RoleSpine.astro";
 import RolePanel from "./RolePanel.astro";
 import TimelineFilters from "./TimelineFilters.astro";
 import AccomplishmentCard from "./AccomplishmentCard.astro";
+import { formatDateRange } from "../lib/dates";
 
 interface Props {
   roles: CollectionEntry<"roles">[];
@@ -34,12 +35,6 @@ const rangeStart = new Date(Math.min(...allStartDates));
 const rangeEnd = new Date(Math.max(...allEndDates));
 
 const categories = [...new Set(accomplishments.map(({ data }) => data.category))].sort();
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
 
 function roleAccoms(role: CollectionEntry<"roles">) {
   const accs: CollectionEntry<"accomplishments">[] = [];
@@ -92,19 +87,15 @@ function relatedFor(relatedSlugs: string[]) {
   <div class="timeline-mobile" data-timeline-mobile>
     {sortedRoles.map((role) => {
       const accs = roleAccoms(role);
-      const startDate = dateFormatter.format(role.data.startDate);
-      const endDate = role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present";
       return (
         <details
           class="timeline-mobile-role"
           data-mobile-role={role.id.replace(/\.md$/, "")}
         >
           <summary>
-            <span class="timeline-mobile-role-head">
-              <span class="timeline-mobile-role-title">{role.data.title}</span>
-              <span class="timeline-mobile-role-meta">
-                {role.data.organization} · {startDate} – {endDate}
-              </span>
+            <h3 class="timeline-mobile-role-title">{role.data.title}</h3>
+            <span class="timeline-mobile-role-meta">
+              {role.data.organization} · {formatDateRange(role.data.startDate, role.data.endDate)}
             </span>
           </summary>
           <div class="timeline-mobile-role-body">
@@ -211,6 +202,54 @@ function relatedFor(relatedSlugs: string[]) {
       connector.style.setProperty("--connector-opacity", "1");
     }
 
+    function accItems(frameEl) {
+      return Array.from(frameEl.querySelectorAll("[data-accomplishment-item]"));
+    }
+
+    function showAcc(frameEl, index, delta) {
+      const items = accItems(frameEl);
+      if (items.length === 0) return;
+      const clamped = Math.max(0, Math.min(index, items.length - 1));
+      const previous = Number(frameEl.dataset.accIndex || "0");
+      items.forEach((item, i) => {
+        item.hidden = i !== clamped;
+      });
+      frameEl.dataset.accIndex = String(clamped);
+      const count = frameEl.querySelector("[data-acc-count]");
+      if (count) count.textContent = clamped + 1 + " / " + items.length;
+      const prev = frameEl.querySelector("[data-acc-prev]");
+      const next = frameEl.querySelector("[data-acc-next]");
+      if (prev) prev.disabled = clamped === 0;
+      if (next) next.disabled = clamped === items.length - 1;
+      if (delta && clamped !== previous) enterAcc(items[clamped], delta);
+    }
+
+    function enterAcc(item, delta) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      item.style.setProperty("--acc-dx", delta > 0 ? "12px" : "-12px");
+      item.classList.remove("acc-enter");
+      void item.offsetWidth;
+      item.classList.add("acc-enter");
+      item.addEventListener(
+        "animationend",
+        () => item.classList.remove("acc-enter"),
+        { once: true },
+      );
+    }
+
+    function stepAcc(frameEl, delta) {
+      showAcc(frameEl, Number(frameEl.dataset.accIndex || "0") + delta, delta);
+    }
+
+    function revealPanel() {
+      const rect = panelHost.getBoundingClientRect();
+      const margin = 24;
+      const overshoot = rect.top - margin;
+      if (overshoot >= 0) return;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollBy({ top: overshoot, behavior: reduced ? "auto" : "smooth" });
+    }
+
     function select(slug, opts) {
       opts = opts || {};
       const panel = panelBySlug.get(slug);
@@ -229,6 +268,10 @@ function relatedFor(relatedSlugs: string[]) {
       panelFrames.forEach((frameEl) => {
         frameEl.hidden = frameEl.getAttribute("data-panel-for") !== slug;
       });
+      const activeFrame = Array.from(panelFrames).find(
+        (frameEl) => frameEl.getAttribute("data-panel-for") === slug,
+      );
+      if (activeFrame) showAcc(activeFrame, 0);
       allNodeButtons().forEach((button) => {
         const isSelected = (button.dataset.roleNode || "") === slug;
         button.setAttribute("aria-expanded", String(isSelected));
@@ -236,6 +279,7 @@ function relatedFor(relatedSlugs: string[]) {
       });
       requestAnimationFrame(() => {
         positionConnector();
+        revealPanel();
         if (opts.focusNode && node) node.focus();
       });
       if (opts.pushHash) {
@@ -289,6 +333,15 @@ function relatedFor(relatedSlugs: string[]) {
       });
     });
 
+    panelFrames.forEach((frameEl) => {
+      if (accItems(frameEl).length <= 1) return;
+      const prev = frameEl.querySelector("[data-acc-prev]");
+      const next = frameEl.querySelector("[data-acc-next]");
+      if (prev) prev.addEventListener("click", () => stepAcc(frameEl, -1));
+      if (next) next.addEventListener("click", () => stepAcc(frameEl, 1));
+      showAcc(frameEl, 0);
+    });
+
     filterButtons.forEach((button) => {
       button.addEventListener("click", () => {
         applyFilter(button.dataset.timelineFilter || "All");
@@ -300,6 +353,18 @@ function relatedFor(relatedSlugs: string[]) {
       if (event.key === "Escape" && selectedSlug) {
         event.preventDefault();
         deselect();
+        return;
+      }
+      const accFrame =
+        document.activeElement.closest &&
+        document.activeElement.closest("[data-panel-for]");
+      if (
+        accFrame &&
+        document.activeElement.closest("[data-acc-nav]") &&
+        (event.key === "ArrowLeft" || event.key === "ArrowRight")
+      ) {
+        event.preventDefault();
+        stepAcc(accFrame, event.key === "ArrowRight" ? 1 : -1);
         return;
       }
       if (

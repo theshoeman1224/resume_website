@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import AccomplishmentCard from "./AccomplishmentCard.astro";
+import { formatDateRange } from "../lib/dates";
 
 interface Props {
   roles: CollectionEntry<"roles">[];
@@ -11,13 +12,6 @@ interface Props {
 const { roles, rolesBySlug, accomplishmentsBySlug } = Astro.props;
 
 function buildPanelData(role: CollectionEntry<"roles">) {
-  const dateFormatter = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-  const startDate = dateFormatter.format(role.data.startDate);
-  const endDate = role.data.endDate ? dateFormatter.format(role.data.endDate) : "Present";
   const accomplishments = role.data.accomplishments
     .map((slug) => accomplishmentsBySlug.get(slug))
     .filter((entry): entry is CollectionEntry<"accomplishments"> => Boolean(entry))
@@ -27,8 +21,7 @@ function buildPanelData(role: CollectionEntry<"roles">) {
     slug: role.id.replace(/\.md$/, ""),
     title: role.data.title,
     organization: role.data.organization,
-    startDate,
-    endDate,
+    dates: formatDateRange(role.data.startDate, role.data.endDate),
     summary: role.data.summary,
     focus: role.data.focus,
     accomplishments: accomplishments.map((accomplishment) => ({
@@ -84,7 +77,7 @@ const panelJson = JSON.stringify({
         <div>
           <p class="eyebrow">Role</p>
           <h3 class="timeline-panel-title">{panel.title}</h3>
-          <p class="timeline-panel-meta">{panel.organization} · {panel.startDate} – {panel.endDate}</p>
+          <p class="timeline-panel-meta">{panel.organization} · {panel.dates}</p>
         </div>
         <button
           type="button"
@@ -102,17 +95,52 @@ const panelJson = JSON.stringify({
         </ul>
       )}
       <div class="timeline-panel-accomplishments" data-timeline-accomplishments>
-        {panel.accomplishments.map((summary) => {
-          const entry = accomplishmentsBySlug.get(summary.slug);
-          if (!entry) return null;
-          const rels = relatedFor(entry.data.relatedRoles);
-          return (
-            <AccomplishmentCard
-              accomplishment={entry}
-              relatedRoles={rels}
-            />
-          );
-        })}
+        {panel.accomplishments.length > 1 && (
+          <div class="timeline-panel-accnav" data-acc-nav>
+            <p class="eyebrow">Accomplishment</p>
+            <div class="accnav-controls">
+              <button
+                type="button"
+                class="accnav-button"
+                data-acc-prev
+                aria-label="Previous accomplishment"
+                disabled
+              >
+                <span aria-hidden="true">‹</span>
+              </button>
+              <span class="accnav-count" data-acc-count aria-live="polite">
+                1 / {panel.accomplishments.length}
+              </span>
+              <button
+                type="button"
+                class="accnav-button"
+                data-acc-next
+                aria-label="Next accomplishment"
+              >
+                <span aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        )}
+        <div class="timeline-panel-stack">
+          {panel.accomplishments.map((summary, index) => {
+            const entry = accomplishmentsBySlug.get(summary.slug);
+            if (!entry) return null;
+            const rels = relatedFor(entry.data.relatedRoles);
+            return (
+              <div
+                class="timeline-panel-accomplishment"
+                data-accomplishment-item
+                hidden={index > 0}
+              >
+                <AccomplishmentCard
+                  accomplishment={entry}
+                  relatedRoles={rels}
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   ))}

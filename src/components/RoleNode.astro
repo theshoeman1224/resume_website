@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { formatDateRange, formatMonthYear } from "../lib/dates";
 
 interface Props {
   role: CollectionEntry<"roles">;
@@ -11,13 +12,8 @@ interface Props {
 const { role, index, position, side } = Astro.props;
 const { id, data } = role;
 
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  year: "numeric",
-  timeZone: "UTC",
-});
-const startDate = dateFormatter.format(data.startDate);
-const endDate = data.endDate ? dateFormatter.format(data.endDate) : "Present";
+const startDate = formatMonthYear(data.startDate);
+const endDate = data.endDate ? formatMonthYear(data.endDate) : "Present";
 const slug = id.replace(/\.md$/, "");
 const isOngoing = !data.endDate;
 const compactStart = data.startDate.getUTCFullYear().toString().slice(-2);
@@ -45,7 +41,7 @@ const dateCode = `${compactStart}–${compactEnd}`;
     <span class="timeline-node-label">
       <span class="timeline-node-title">{data.title}</span>
       <span class="timeline-node-org">{data.organization}</span>
-      <span class="timeline-node-dates">{startDate} – {endDate}</span>
+      <span class="timeline-node-dates">{formatDateRange(data.startDate, data.endDate)}</span>
     </span>
   </span>
   <span class="visually-hidden">

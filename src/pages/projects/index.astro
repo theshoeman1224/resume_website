@@ -15,7 +15,7 @@ const projects = (await getCollection("projects")).sort((a, b) =>
   <header class="shell page-intro">
     <p class="eyebrow">Projects / Selected work</p>
     <h1>Engineering you can inspect.</h1>
-    <p>Reusable project pages connect motivation and architecture to source code and working demonstrations.</p>
+    <p>Personal projects with the source open. Each page explains why I built it and how it works.</p>
   </header>
   <section class="section" aria-labelledby="project-grid-title">
     <div class="shell">
@@ -23,7 +23,7 @@ const projects = (await getCollection("projects")).sort((a, b) =>
         <p class="section-index">Project index</p>
         <div>
           <h2 id="project-grid-title">Built, measured, documented.</h2>
-          <p>Each project uses the same typed content model and detail template, with live demos linked when available.</p>
+          <p>Open a project for the architecture notes, the source link, and a live demo where one exists.</p>
         </div>
       </header>
       <ProjectGrid projects={projects} />

@@ -27,7 +27,7 @@ Verified by audit 2026-08-22 (git log + clean build, `astro check` 0 errors, tim
 | 4b2 | Panel/card width fixes | DONE |
 | 4c | `metrics` schema + `AccomplishmentMetrics.astro` | DEFERRED until real figures exist |
 | 5 | Projects review | DECIDED: keep all three incl. Time Card Tracker |
-| 6 | Design direction | OPEN |
+| 6 | Design direction | DECIDED 2026-10-11: keep the look, enforce three type roles (Plex Serif headings / Plex Sans paragraphs / Plex Mono labels), self-hosted. Rules documented at the top of `src/styles/global.css` |
 
 ---
 
@@ -73,10 +73,11 @@ Verified by audit 2026-08-22 (git log + clean build, `astro check` 0 errors, tim
 
 ## TODO backlog
 
-- [ ] Josh: create `contact@joshshuman.com` Cloudflare Email Routing rule → then deploy Task D's mailto
+- [x] Josh: create `contact@joshshuman.com` Cloudflare Email Routing rule → DONE 2026-08-22 (verified: MX routes to Cloudflare; alias matches site mailto)
 - [ ] Add Applied AI accomplishment entry (backs the skills claim)
 - [ ] Project metrics: measure and display actual metrics on project pages/cards (justifies the "Built, measured, documented." heading)
 - [ ] Add 2–5 more metric-rich accomplishments as numbers become available (boot-reliability is the template)
 - [ ] Phase 4c when metrics land: `metrics` array schema + `AccomplishmentMetrics.astro` rendered between summary and "Inspect impact"
-- [ ] Phase 6: design direction decision (keep / simplify / customize) after content settles
+- [x] Phase 6: design direction decision → DONE 2026-10-11 (three type roles; see comment block in `src/styles/global.css`)
+- [ ] Snake embed: align its palette and font stack with the portfolio (change lives in the `snake` repo; it currently falls back to Courier New)
 - [ ] Consider syncing upstream project.yaml copy with unslop rules next time those repos are touched

@@ -1,3 +1,13 @@
+/*
+ * Type rules. Every piece of text takes exactly one role:
+ *   Headings   -> --font-display (IBM Plex Serif 400). Every title, h1-h4.
+ *                 Italic only on the hero accent phrase.
+ *   Paragraphs -> --font-body (IBM Plex Sans 400). Every sentence meant to be read.
+ *   Labels     -> --font-label (IBM Plex Mono 500, uppercase). Eyebrows, dates,
+ *                 meta lines, tags, buttons, nav, counters.
+ * Sizes come from the --text-* tokens. New label or heading selectors join the
+ * grouped rules below instead of setting their own font properties.
+ */
 :root {
   color-scheme: dark;
   --ink: #f0eee6;
@@ -5,10 +15,29 @@
   --paper: #101311;
   --panel: #171b18;
   --line: #343a34;
+  --line-strong: #667066;
   --signal: #c7ff4a;
   --signal-soft: #263516;
+  --on-signal: #0b0d0b;
   --max-width: 74rem;
-  font-family: "IBM Plex Mono", "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+
+  --font-display: var(--font-serif);
+  --font-body: var(--font-sans);
+  --font-label: var(--font-mono);
+
+  --text-display-xl: clamp(2.75rem, 8vw, 6.5rem);
+  --text-display-l: clamp(2.2rem, 5vw, 4rem);
+  --text-display-m: clamp(1.5rem, 2.8vw, 2.125rem);
+  --text-display-s: clamp(1.125rem, 1.8vw, 1.375rem);
+  --text-lead: clamp(1.125rem, 1.6vw, 1.3125rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-label: 0.75rem;
+  --tracking-label: 0.08em;
+  --measure: 66ch;
+
+  font-family: var(--font-body);
+  font-size: var(--text-body);
   background: var(--paper);
   color: var(--ink);
 }
@@ -44,22 +73,91 @@ a:hover {
 }
 
 a:focus-visible,
-button:focus-visible {
+button:focus-visible,
+summary:focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 4px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+code {
+  font-family: var(--font-label);
+  font-size: 0.9em;
 }
 
 h1,
 h2,
 h3,
+h4,
 p {
   margin-top: 0;
 }
 
 h1,
 h2,
-h3 {
+h3,
+h4,
+.timeline-node-title,
+.error-code {
+  font-family: var(--font-display);
+  font-weight: 400;
   line-height: 1.08;
+  text-wrap: balance;
+}
+
+.eyebrow,
+.section-index,
+.status-line,
+.brand-mark,
+.nav-list,
+.button,
+.hero-aside dt,
+.project-visual span,
+.project-card-meta,
+.project-card-actions,
+.project-facts dt,
+.project-link-groups span,
+.timeline-filters button,
+.timeline-controls > p,
+.current-role-meta,
+.timeline-panel-meta,
+.accnav-count,
+.accomplishment-card-head,
+.accomplishment-card-related-label,
+.related-role-chip,
+.timeline-node-org,
+.timeline-node-dates,
+.timeline-mobile-role-meta,
+.technology-list,
+.timeline-panel-focus,
+.current-role-focus {
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.technology-list,
+.timeline-panel-focus,
+.current-role-focus {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:is(.technology-list, .timeline-panel-focus, .current-role-focus) li {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
 }
 
 .shell {
@@ -75,7 +173,11 @@ h3 {
   padding: 0.65rem 0.9rem;
   transform: translateY(-200%);
   background: var(--signal);
-  color: #0b0d0b;
+  color: var(--on-signal);
+}
+
+.skip-link:hover {
+  color: var(--on-signal);
 }
 
 .skip-link:focus {
@@ -101,7 +203,8 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  font-weight: 700;
+  font-family: var(--font-label);
+  font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -113,7 +216,7 @@ h3 {
   place-items: center;
   border: 1px solid var(--signal);
   color: var(--signal);
-  font-size: 0.75rem;
+  letter-spacing: 0;
 }
 
 .nav-list {
@@ -124,9 +227,6 @@ h3 {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .nav-list a {
@@ -151,33 +251,25 @@ h3 {
 .section-index,
 .status-line {
   color: var(--signal);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
 }
 
 .hero h1 {
-  max-width: 12ch;
+  max-width: 13ch;
   margin-bottom: 2rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(3.4rem, 9vw, 8.4rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
+  font-size: var(--text-display-xl);
+  letter-spacing: -0.035em;
 }
 
 .hero h1 span {
   display: block;
   color: var(--signal);
-  font-family: inherit;
   font-style: italic;
 }
 
 .hero-summary {
-  max-width: 43rem;
-  color: #d2d0c8;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  max-width: var(--measure);
+  font-size: var(--text-lead);
+  line-height: 1.55;
 }
 
 .hero-actions {
@@ -193,17 +285,26 @@ h3 {
   justify-content: center;
   min-height: 3rem;
   padding: 0.7rem 1rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  font-size: 0.75rem;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.button:hover {
+  border-color: var(--signal);
+  color: var(--signal);
 }
 
 .button-primary {
   border-color: var(--signal);
   background: var(--signal);
-  color: #0b0d0b;
+  color: var(--on-signal);
+}
+
+.button-primary:hover {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-signal);
 }
 
 .hero-aside {
@@ -248,28 +349,29 @@ h3 {
 .section-heading h2,
 .page-intro h1 {
   margin-bottom: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.6rem, 6vw, 5.6rem);
-  font-weight: 400;
-  letter-spacing: -0.045em;
+  font-size: var(--text-display-l);
+  letter-spacing: -0.03em;
+}
+
+.section-heading h2 + p {
+  margin-top: 1rem;
 }
 
 .section-heading p:last-child {
-  max-width: 44rem;
+  max-width: var(--measure);
   margin-bottom: 0;
   color: var(--muted);
 }
 
-.about-grid,
-.contact-grid {
+.about-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(2rem, 6vw, 6rem);
 }
 
 .about-copy {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.35rem, 2.3vw, 1.85rem);
+  font-size: var(--text-lead);
+  line-height: 1.55;
 }
 
 .principles,
@@ -289,6 +391,7 @@ h3 {
 
 .principles li::before {
   color: var(--signal);
+  font-family: var(--font-label);
   content: "//";
 }
 
@@ -304,13 +407,12 @@ h3 {
 
 .feature-panel h3 {
   margin-bottom: 1rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 4vw, 3.6rem);
-  font-weight: 400;
+  font-size: var(--text-display-m);
+  letter-spacing: -0.02em;
 }
 
-.feature-panel p {
-  max-width: 45rem;
+.feature-panel p:not(.eyebrow) {
+  max-width: var(--measure);
   margin-bottom: 0;
   color: var(--muted);
 }
@@ -372,12 +474,6 @@ h3 {
   object-fit: cover;
 }
 
-.project-visual span {
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
 .project-card-content {
   display: flex;
   flex-direction: column;
@@ -389,16 +485,12 @@ h3 {
   justify-content: space-between;
   gap: 1rem;
   color: var(--muted);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 
 .project-card h3 {
   margin: 2rem 0 1rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.8rem, 3.5vw, 2.7rem);
-  font-weight: 400;
+  font-size: var(--text-display-m);
+  letter-spacing: -0.02em;
 }
 
 .project-card h3 a {
@@ -415,8 +507,6 @@ h3 {
   gap: 1rem;
   margin-top: auto;
   padding-top: 2rem;
-  font-size: 0.72rem;
-  text-transform: uppercase;
 }
 
 .section-action {
@@ -438,25 +528,29 @@ h3 {
 
 .skill-group h3 {
   margin-bottom: 1.5rem;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: var(--text-display-s);
+  letter-spacing: -0.01em;
 }
 
 .skill-list li {
   color: var(--muted);
-  font-size: 0.9rem;
+}
+
+.contact-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 clamp(1.5rem, 4vw, 4rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .contact-link {
   display: block;
   padding-block: 1rem;
   border-bottom: 1px solid var(--line);
-  font-size: clamp(1rem, 2vw, 1.35rem);
-}
-
-.pending {
-  color: var(--muted);
+  font-size: var(--text-lead);
+  overflow-wrap: anywhere;
 }
 
 .page-intro {
@@ -474,21 +568,19 @@ h3 {
 
 .page-intro-subtitle {
   display: block;
+  max-width: var(--measure);
   margin-top: 1.5rem;
-  font-size: clamp(1.25rem, 2.2vw, 1.85rem);
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.35;
-  color: var(--muted);
-  max-width: 52rem;
+  font-family: var(--font-body);
+  font-size: var(--text-lead);
+  letter-spacing: 0;
+  line-height: 1.55;
+  text-wrap: wrap;
 }
 
 .page-intro > p:last-child {
-  max-width: 48rem;
-  color: var(--muted);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.35rem;
+  max-width: var(--measure);
+  font-size: var(--text-lead);
+  line-height: 1.55;
 }
 
 .project-intro {
@@ -500,19 +592,16 @@ h3 {
 }
 
 .project-intro h1 {
-  max-width: 12ch;
+  max-width: 13ch;
   margin: 1.5rem 0 2rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(3.4rem, 9vw, 8rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
+  font-size: var(--text-display-xl);
+  letter-spacing: -0.035em;
 }
 
 .project-intro > p {
-  max-width: 48rem;
-  color: var(--muted);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  max-width: var(--measure);
+  font-size: var(--text-lead);
+  line-height: 1.55;
 }
 
 .project-detail-grid {
@@ -536,9 +625,6 @@ h3 {
 
 .project-facts dt {
   color: var(--signal);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .project-facts dd {
@@ -546,15 +632,14 @@ h3 {
 }
 
 .project-copy {
-  max-width: 48rem;
+  max-width: var(--measure);
 }
 
 .project-copy h2 {
   margin: 0 0 1rem;
   padding-top: 3rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  font-weight: 400;
+  font-size: var(--text-display-m);
+  letter-spacing: -0.02em;
 }
 
 .project-copy h2:first-child {
@@ -582,6 +667,7 @@ h3 {
   position: absolute;
   left: 0;
   color: var(--signal);
+  font-family: var(--font-label);
   content: "//";
 }
 
@@ -596,14 +682,17 @@ h3 {
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   text-decoration: none;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.project-link-groups a:hover {
+  border-color: var(--signal);
 }
 
 .project-link-groups span {
   color: var(--muted);
-  font-size: 0.68rem;
-  text-transform: uppercase;
 }
 
 .game-embed-section {
@@ -637,23 +726,19 @@ h3 {
 
 .error-page h1 {
   margin-bottom: 2rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(4rem, 12vw, 10rem);
-  font-weight: 400;
-  letter-spacing: -0.055em;
+  font-size: var(--text-display-xl);
+  letter-spacing: -0.035em;
 }
 
 .error-page > div > p:not(.eyebrow) {
-  max-width: 42rem;
-  color: var(--muted);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.3rem;
+  max-width: var(--measure);
+  font-size: var(--text-lead);
+  line-height: 1.55;
 }
 
 .error-code {
   margin: 0;
   color: transparent;
-  font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(8rem, 24vw, 22rem);
   line-height: 0.75;
   -webkit-text-stroke: 1px var(--line);
@@ -688,11 +773,9 @@ h3 {
 .timeline-filters button {
   min-height: 2.5rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--paper);
   color: var(--muted);
-  font: inherit;
-  font-size: 0.72rem;
   cursor: pointer;
   transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
 }
@@ -707,10 +790,7 @@ h3 {
 .timeline-controls > p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.72rem;
   white-space: nowrap;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .timeline-frame {
@@ -726,20 +806,6 @@ h3 {
   background: var(--panel);
 }
 
-.current-role-head {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.current-role-title {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.85rem, 3.5vw, 2.75rem);
-  font-weight: 400;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
-}
-
 .current-role-meta {
   display: flex;
   flex-wrap: wrap;
@@ -747,9 +813,10 @@ h3 {
   gap: 0.5rem;
   margin: 0;
   color: var(--muted);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
+}
+
+.current-role-label {
+  color: var(--signal);
 }
 
 .current-role-pulse {
@@ -785,28 +852,10 @@ h3 {
 
 .current-role-summary {
   margin: 0;
-  max-width: none;
+  max-width: var(--measure);
   color: var(--ink);
-  font-size: 1.05rem;
+  font-size: var(--text-lead);
   line-height: 1.55;
-}
-
-.current-role-focus {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.current-role-focus li {
-  padding: 0.3rem 0.55rem;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -821,7 +870,8 @@ h3 {
 
 .timeline-panel {
   position: absolute;
-  bottom: calc(100% + 5rem);
+  /* Clears the spine margin (5rem) and the filter row (2.5rem + 2.5rem) so the open panel never covers the filters. */
+  bottom: calc(100% + 11rem);
   left: 0;
   right: 0;
   z-index: 2;
@@ -862,35 +912,26 @@ h3 {
 
 .timeline-panel-header .eyebrow {
   margin: 0 0 0.5rem;
-  color: var(--signal);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .timeline-panel-title {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  line-height: 1.05;
+  font-size: var(--text-display-m);
+  letter-spacing: -0.02em;
 }
 
 .timeline-panel-meta {
   margin: 0.5rem 0 0;
   color: var(--muted);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .timeline-panel-close {
   width: 2rem;
   height: 2rem;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--paper);
   color: var(--muted);
-  font: inherit;
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -905,34 +946,91 @@ h3 {
 
 .timeline-panel-summary {
   margin: 0;
-  max-width: none;
+  max-width: var(--measure);
   color: var(--ink);
-  font-size: 1rem;
-  line-height: 1.55;
-}
-
-.timeline-panel-focus {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.timeline-panel-focus li {
-  padding: 0.3rem 0.55rem;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .timeline-panel-accomplishments {
   display: grid;
   gap: 1rem;
   margin-top: 0.5rem;
+}
+
+.timeline-panel-stack {
+  display: grid;
+}
+
+[data-accomplishment-item] {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+[data-accomplishment-item][hidden] {
+  visibility: hidden;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .acc-enter {
+    animation: acc-in 180ms ease both;
+  }
+}
+
+@keyframes acc-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--acc-dx, 12px));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.timeline-panel-accnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.timeline-panel-accnav .eyebrow {
+  margin: 0;
+}
+
+.accnav-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accnav-count {
+  min-width: 3ch;
+  color: var(--muted);
+  text-align: center;
+}
+
+.accnav-button {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 160ms ease, color 160ms ease;
+}
+
+.accnav-button:hover:not(:disabled) {
+  border-color: var(--signal);
+  color: var(--signal);
+}
+
+.accnav-button:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .accomplishment-card {
@@ -949,9 +1047,6 @@ h3 {
   gap: 0.4rem 1rem;
   align-items: baseline;
   color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .accomplishment-card-date {
@@ -964,58 +1059,33 @@ h3 {
 
 .accomplishment-card-role {
   color: var(--signal);
-  font-weight: 700;
 }
 
 .accomplishment-card-title {
+  max-width: 44ch;
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.15rem, 2vw, 1.5rem);
-  line-height: 1.15;
+  font-size: var(--text-display-s);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .accomplishment-card-summary {
+  max-width: var(--measure);
   margin: 0;
   color: var(--muted);
-  font-size: 0.88rem;
-}
-
-.accomplishment-card-details {
-  border-top: 1px solid var(--line);
-  margin-top: 0.25rem;
-  padding-top: 0.5rem;
-}
-
-.accomplishment-card-details summary {
-  cursor: pointer;
-  list-style: none;
-  color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.accomplishment-card-details summary::-webkit-details-marker {
-  display: none;
-}
-
-.accomplishment-card-details summary::after {
-  content: "+";
-  margin-left: 0.5rem;
-  color: var(--signal);
-}
-
-.accomplishment-card-details[open] summary::after {
-  content: "−";
 }
 
 .accomplishment-card-body {
   display: grid;
   gap: 1rem;
+  margin-top: 0.25rem;
   padding-top: 1rem;
+  border-top: 1px solid var(--line);
 }
 
 .accomplishment-card-impact {
+  max-width: var(--measure);
+  margin: 0;
   color: var(--muted);
 }
 
@@ -1031,9 +1101,6 @@ h3 {
 
 .accomplishment-card-related-label {
   color: var(--muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .related-role-list {
@@ -1051,11 +1118,9 @@ h3 {
   align-items: flex-start;
   gap: 0.1rem;
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--signal-soft);
   color: var(--signal);
-  font: inherit;
-  font-size: 0.72rem;
   cursor: pointer;
   text-align: left;
   transition: border-color 160ms ease;
@@ -1065,21 +1130,14 @@ h3 {
   border-color: var(--signal);
 }
 
-.related-role-chip-title {
-  font-weight: 700;
-}
-
 .related-role-chip-org {
   color: var(--muted);
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
 .timeline-spine {
   position: relative;
   height: 9rem;
-  margin: 4rem 0.25rem 0;
+  margin: 5rem 0.25rem 0;
   z-index: 1;
 }
 
@@ -1129,8 +1187,6 @@ h3 {
   border: 0;
   padding: 0;
   cursor: pointer;
-  font: inherit;
-  color: inherit;
   text-align: center;
   transition: opacity 160ms ease;
   z-index: 2;
@@ -1141,7 +1197,7 @@ h3 {
 }
 
 .timeline-node:focus-visible .timeline-node-stack {
-  outline: 1px solid var(--signal);
+  outline: 2px solid var(--signal);
   outline-offset: 4px;
 }
 
@@ -1212,7 +1268,7 @@ h3 {
   background: transparent;
   transition: border-color 160ms ease, background 160ms ease;
   width: max-content;
-  max-width: 15rem;
+  max-width: 13rem;
   text-align: center;
   white-space: normal;
 }
@@ -1228,31 +1284,22 @@ h3 {
 }
 
 .timeline-node-title {
-  font-family: Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.15;
   color: var(--ink);
   text-align: center;
-  text-wrap: balance;
 }
 
 .timeline-node-org {
   color: var(--signal);
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   text-align: center;
+  text-wrap: balance;
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
 .timeline-node-dates {
   color: var(--muted);
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   text-align: center;
   white-space: normal;
 }
@@ -1311,7 +1358,9 @@ h3 {
   padding-block: 2rem;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.75rem;
+  font-family: var(--font-label);
+  font-size: var(--text-label);
+  font-weight: 500;
 }
 
 .footer-inner {
@@ -1343,7 +1392,7 @@ h3 {
 
   .section-heading,
   .about-grid,
-  .contact-grid {
+  .contact-list {
     grid-template-columns: 1fr;
   }
 
@@ -1357,11 +1406,6 @@ h3 {
   .timeline-controls {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .timeline-frame {
-    grid-template-rows: auto;
-    row-gap: 0;
   }
 
   .timeline-desktop {
@@ -1387,33 +1431,27 @@ h3 {
   }
 
   .timeline-mobile-role summary {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.25rem;
     cursor: pointer;
     list-style: none;
-    padding: 1.25rem;
-    display: block;
   }
 
   .timeline-mobile-role summary::-webkit-details-marker {
     display: none;
   }
 
-  .timeline-mobile-role-head {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-
   .timeline-mobile-role-title {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 1.25rem;
+    margin: 0;
+    font-size: var(--text-display-s);
     line-height: 1.15;
+    letter-spacing: -0.01em;
   }
 
   .timeline-mobile-role-meta {
     color: var(--signal);
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
   }
 
   .timeline-mobile-role-body {
@@ -1425,7 +1463,6 @@ h3 {
   .timeline-mobile-role-summary {
     margin: 0;
     color: var(--muted);
-    font-size: 0.9rem;
   }
 
   .timeline-mobile-accomplishments {
@@ -1443,20 +1480,8 @@ h3 {
 }
 
 @media (max-width: 35rem) {
-  .hero h1 {
-    font-size: clamp(3rem, 17vw, 5rem);
-  }
-
   .feature-panel {
     grid-template-columns: 1fr;
-  }
-
-  .project-list li::before {
-    margin-bottom: 0.5rem;
-  }
-
-  .project-status {
-    width: fit-content;
   }
 
   .footer-inner {
