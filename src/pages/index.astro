@@ -26,7 +26,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
         Six and a half years from first industry role to principal engineer, keeping radar signal processing on deadline on embedded hardware.
       </p>
       <div class="hero-actions">
-        <a class="button button-primary" href="/experience">Experience</a>
+        <a class="button button-primary" href="/experience/">Experience</a>
         <a class="button" href="#projects">Projects</a>
       </div>
     </div>
@@ -80,7 +80,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
           <h3>From embedded DSP to principal.</h3>
           <p>The full timeline on the experience page connects each role to the systems it shipped and the decisions that mattered.</p>
         </div>
-        <a class="button" href="/experience#career-timeline">Open the timeline</a>
+        <a class="button" href="/experience/#career-timeline">Open the timeline</a>
       </div>
     </div>
   </section>
@@ -149,15 +149,11 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
           <p>GitHub, LinkedIn, and email are below.</p>
         </div>
       </header>
-      <div class="contact-grid">
-        <div>
-          <a class="contact-link" href="https://github.com/theshoeman1224" rel="me">GitHub / theshoeman1224</a>
-        </div>
-        <div>
-          <a class="contact-link" href="https://www.linkedin.com/in/josh-shuman/" rel="me">LinkedIn / josh-shuman</a>
-          <a class="contact-link" href="mailto:contact@joshshuman.com">Email / contact@joshshuman.com</a>
-        </div>
-      </div>
+      <ul class="contact-list">
+        <li><a class="contact-link" href="https://github.com/theshoeman1224" rel="me">GitHub / theshoeman1224</a></li>
+        <li><a class="contact-link" href="https://www.linkedin.com/in/josh-shuman/" rel="me">LinkedIn / josh-shuman</a></li>
+        <li><a class="contact-link" href="mailto:contact@joshshuman.com">Email / contact@joshshuman.com</a></li>
+      </ul>
     </div>
   </section>
 </BaseLayout>
