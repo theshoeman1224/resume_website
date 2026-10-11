@@ -243,7 +243,8 @@ function relatedFor(relatedSlugs: string[]) {
 
     function revealPanel() {
       const rect = panelHost.getBoundingClientRect();
-      const margin = 24;
+      const header = document.querySelector(".site-header");
+      const margin = (header ? header.getBoundingClientRect().height : 0) + 24;
       const overshoot = rect.top - margin;
       if (overshoot >= 0) return;
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
