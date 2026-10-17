@@ -15,7 +15,7 @@ const dateLabel = formatSpan(data.date, data.endDate);
 ---
 
 <article class="accomplishment-card">
-  <header class="accomplishment-card-head">
+  <header class="accomplishment-card-head label">
     <span class="accomplishment-card-date">{dateLabel}</span>
     <span class="accomplishment-card-category">{data.category}</span>
     <span class="accomplishment-card-role">{role.title} · {role.organization}</span>
@@ -32,13 +32,13 @@ const dateLabel = formatSpan(data.date, data.endDate);
   </div>
   {relatedRoles.length > 0 && (
     <footer class="accomplishment-card-related">
-      <span class="accomplishment-card-related-label">Also linked to</span>
+      <span class="accomplishment-card-related-label label">Also linked to</span>
       <ul class="related-role-list">
         {relatedRoles.map((rel) => (
           <li>
             <button
               type="button"
-              class="related-role-chip"
+              class="related-role-chip label"
               data-role-link={rel.id}
               aria-label={`Open role: ${rel.title} at ${rel.organization}`}
             >
@@ -51,3 +51,106 @@ const dateLabel = formatSpan(data.date, data.endDate);
     </footer>
   )}
 </article>
+
+<style>
+  .accomplishment-card {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1.25rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .accomplishment-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+    align-items: baseline;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-date {
+    color: var(--muted);
+  }
+
+  .accomplishment-card-category {
+    color: var(--signal);
+  }
+
+  .accomplishment-card-role {
+    color: var(--signal);
+  }
+
+  .accomplishment-card-title {
+    max-width: 44ch;
+    margin: 0;
+    font-size: var(--text-display-s);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .accomplishment-card-summary {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-body {
+    display: grid;
+    gap: 1rem;
+    margin-top: 0.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .accomplishment-card-impact {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--line);
+    margin-top: 0.25rem;
+  }
+
+  .accomplishment-card-related-label {
+    color: var(--muted);
+  }
+
+  .related-role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related-role-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--line-strong);
+    background: var(--signal-soft);
+    color: var(--signal);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 160ms ease;
+  }
+
+  .related-role-chip:hover {
+    border-color: var(--signal);
+  }
+
+  .related-role-chip-org {
+    color: var(--muted);
+  }
+</style>

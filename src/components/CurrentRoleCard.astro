@@ -11,7 +11,7 @@ const { data } = role;
 ---
 
 <div class="current-role">
-  <p class="current-role-meta">
+  <p class="current-role-meta label">
     <span class="current-role-label">Current role</span>
     <span aria-hidden="true">·</span>
     <span>{data.organization}</span>
@@ -26,3 +26,60 @@ const { data } = role;
     </ul>
   )}
 </div>
+
+<style>
+  .current-role {
+    display: grid;
+    gap: 1.5rem;
+    margin-block: clamp(2rem, 5vw, 3rem);
+    padding: clamp(1.75rem, 4vw, 3rem);
+    border: 1px solid var(--signal);
+    background: var(--panel);
+  }
+
+  .current-role-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .current-role-label {
+    color: var(--signal);
+  }
+
+  .current-role-pulse {
+    display: inline-block;
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: 0.4rem;
+    background: var(--signal);
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+
+  .current-role-pulse::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--signal);
+    border-radius: 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .current-role-pulse::after {
+      animation: pulse-ring var(--duration-pulse) ease-out infinite;
+    }
+  }
+
+  .current-role-summary {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--ink);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+</style>

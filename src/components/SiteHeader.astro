@@ -5,11 +5,11 @@ const currentPath = Astro.url.pathname;
 <header class="site-header">
   <div class="shell header-inner">
     <a class="brand" href="/" aria-label="Josh Shuman, home">
-      <span class="brand-mark" aria-hidden="true">JS</span>
+      <span class="brand-mark label" aria-hidden="true">JS</span>
       <span>Josh Shuman</span>
     </a>
     <nav aria-label="Primary navigation">
-      <ul class="nav-list">
+      <ul class="nav-list label">
         <li><a href="/#about">About</a></li>
         <li><a href="/experience/" aria-current={currentPath.startsWith("/experience") ? "page" : undefined}>Experience</a></li>
         <li><a href="/projects/" aria-current={currentPath.startsWith("/projects") ? "page" : undefined}>Projects</a></li>
@@ -19,3 +19,75 @@ const currentPath = Astro.url.pathname;
     </nav>
   </div>
 </header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-height);
+    gap: 2rem;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-label);
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .brand-mark {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid var(--signal);
+    color: var(--signal);
+    letter-spacing: 0;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-list a {
+    text-decoration: none;
+  }
+
+  .nav-list a[aria-current="page"] {
+    color: var(--signal);
+  }
+
+  @media (max-width: 52rem) {
+    .header-inner {
+      align-items: flex-start;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 0;
+      padding-block: 0.75rem;
+    }
+
+    .nav-list {
+      justify-content: flex-start;
+      gap: 0.25rem 0.75rem;
+    }
+  }
+</style>

@@ -56,3 +56,30 @@ const socialImageUrl = new URL("/social-preview.png", Astro.site ?? Astro.url.or
     </footer>
   </body>
 </html>
+
+<style>
+  .site-footer {
+    padding-block: 2rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--font-label);
+    font-size: var(--text-label);
+    font-weight: 500;
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .footer-inner p {
+    margin: 0;
+  }
+
+  @media (max-width: 35rem) {
+    .footer-inner {
+      flex-direction: column;
+    }
+  }
+</style>

@@ -31,11 +31,11 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
       </div>
     </div>
     <aside class="hero-aside" aria-label="Engineering focus">
-      <p class="status-line">Focus areas / 05</p>
+      <p class="status-line label">Focus areas / 05</p>
       <dl>
         {specialties.map((specialty, index) => (
           <div>
-            <dt>{String(index + 1).padStart(2, "0")}</dt>
+            <dt class="label">{String(index + 1).padStart(2, "0")}</dt>
             <dd>{specialty}</dd>
           </div>
         ))}
@@ -157,3 +157,182 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(16rem, 0.55fr);
+    gap: clamp(2rem, 7vw, 7rem);
+    align-items: end;
+    padding-block: clamp(3rem, 6vw, 5rem) 4rem;
+  }
+
+  .status-line {
+    color: var(--signal);
+  }
+
+  .hero h1 {
+    max-width: 13ch;
+    margin-bottom: 2rem;
+    font-size: var(--text-display-xl);
+    letter-spacing: -0.035em;
+  }
+
+  .hero h1 span {
+    display: block;
+    color: var(--signal);
+    font-style: italic;
+  }
+
+  .hero-summary {
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .hero-aside {
+    border-top: 1px solid var(--signal);
+    padding-top: 1.25rem;
+  }
+
+  .hero-aside dl {
+    margin: 2rem 0 0;
+  }
+
+  .hero-aside div {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .hero-aside dt {
+    color: var(--muted);
+  }
+
+  .hero-aside dd {
+    margin: 0;
+    text-align: right;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2rem, 6vw, 6rem);
+  }
+
+  .about-copy {
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .principles,
+  .skill-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .principles li,
+  .skill-list li {
+    display: flex;
+    gap: 1rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .principles li::before {
+    color: var(--signal);
+    font-family: var(--font-label);
+    content: "//";
+  }
+
+  .feature-panel {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: end;
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  .feature-panel h3 {
+    margin-bottom: 1rem;
+    font-size: var(--text-display-m);
+    letter-spacing: -0.02em;
+  }
+
+  .feature-panel p:not(.eyebrow) {
+    max-width: var(--measure);
+    margin-bottom: 0;
+    color: var(--muted);
+  }
+
+  .section-action {
+    margin-top: 2rem;
+    text-align: right;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .skill-group {
+    padding: 1.5rem;
+    border-top: 2px solid var(--signal);
+    background: var(--panel);
+  }
+
+  .skill-group h3 {
+    margin-bottom: 1.5rem;
+    font-size: var(--text-display-s);
+    letter-spacing: -0.01em;
+  }
+
+  .skill-list li {
+    color: var(--muted);
+  }
+
+  .contact-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 clamp(1.5rem, 4vw, 4rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact-link {
+    display: block;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--line);
+    font-size: var(--text-lead);
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 52rem) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+
+    .about-grid,
+    .contact-list {
+      grid-template-columns: 1fr;
+    }
+
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 35rem) {
+    .feature-panel {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
