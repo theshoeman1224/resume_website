@@ -11,9 +11,6 @@ technologies:
   - Concurrency debugging
   - Failure analysis
   - Hardware integration
-role: Software Engineer
-organization: Raytheon
 roleId: software-engineer-raytheon
 relatedRoles: []
-featured: true
 ---

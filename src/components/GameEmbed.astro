@@ -7,6 +7,12 @@ interface Props {
 const { src, title } = Astro.props;
 ---
 
+<!--
+  The game is a trusted same-origin build (see scripts/build-snake.sh). The
+  sandbox blocks popups, forms and top-level navigation; because it allows
+  same-origin scripts it is not a security boundary, and doesn't need to be.
+  Same-origin access is what lets the script below size the frame.
+-->
 <section class="game-embed-section" id="play" aria-labelledby="game-demo-title">
   <div class="shell">
     <header class="section-heading">
@@ -29,6 +35,27 @@ const { src, title } = Astro.props;
   </div>
 </section>
 
+<style>
+  .game-embed-section {
+    padding-block: var(--space-section);
+    border-top: 1px solid var(--line);
+  }
+
+  .game-frame-shell {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--paper-deep);
+  }
+
+  .game-frame {
+    display: block;
+    width: 100%;
+    height: 1px;
+    border: 0;
+    overflow: hidden;
+  }
+</style>
+
 <script>
   document.querySelectorAll<HTMLIFrameElement>("[data-game-frame]").forEach((frame) => {
     let lastWidth = 0;
@@ -49,6 +76,11 @@ const { src, title } = Astro.props;
     const handleLoad = () => {
       const body = frame.contentDocument?.body;
       if (!body) return;
+
+      // The frame is sized to its content, so the game never needs its own
+      // scrollbars. Without this, rounding leaves both scrollbars showing as
+      // light strips along the right and bottom edges.
+      frame.contentDocument.documentElement.style.overflow = "hidden";
 
       contentObserver?.disconnect();
       contentObserver = new ResizeObserver(resizeToContent);

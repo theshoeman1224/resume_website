@@ -10,10 +10,7 @@ technologies:
   - Hardware integration
   - Firmware interfaces
   - Systems engineering
-role: Senior Software Engineering Task Lead
-organization: Raytheon
 roleId: senior-software-engineering-task-lead
 relatedRoles: []
-featured: true
 ---
 

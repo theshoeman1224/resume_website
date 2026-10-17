@@ -1,23 +1,13 @@
 ---
 import type { CollectionEntry } from "astro:content";
+import { PROJECT_STATUS_LABELS, projectDemoUrl } from "../lib/projects";
 
 interface Props {
   project: CollectionEntry<"projects">;
 }
 
 const { data } = Astro.props.project;
-const statusLabels = {
-  active: "Active",
-  complete: "Complete",
-  experimental: "Experimental",
-  prototype: "Prototype",
-  archived: "Archived",
-};
-const demoUrl = data.demoAdapter === "snake"
-  ? `/projects/${data.slug}/#play`
-  : data.demo.type === "external"
-    ? data.demo.url
-    : undefined;
+const demoUrl = projectDemoUrl(data, { site: Astro.site });
 ---
 
 <article class="project-card">
@@ -25,23 +15,114 @@ const demoUrl = data.demoAdapter === "snake"
     {data.image ? (
       <img src={data.image.src} alt={data.image.alt} loading="lazy" />
     ) : (
-      <span>{data.technologies.slice(0, 2).join(" / ")}</span>
+      <span class="label">{data.technologies.slice(0, 2).join(" / ")}</span>
     )}
   </a>
   <div class="project-card-content">
-    <div class="project-card-meta">
-      <span>{statusLabels[data.status]}</span>
-      <span>{String(data.technologies.length).padStart(2, "0")} technologies</span>
-    </div>
+    <p class="project-card-meta label">{PROJECT_STATUS_LABELS[data.status]}</p>
     <h3><a href={`/projects/${data.slug}/`}>{data.name}</a></h3>
     <p>{data.summary}</p>
-    <ul class="technology-list" aria-label={`Technologies used for ${data.name}`}>
+    <ul class="chip-list label" aria-label={`Technologies used for ${data.name}`}>
       {data.technologies.map((technology) => <li>{technology}</li>)}
     </ul>
-    <div class="project-card-actions">
+    <div class="project-card-actions label">
       <a href={`/projects/${data.slug}/`}>View details</a>
       {demoUrl && <a href={demoUrl}>Live demo</a>}
       <a href={data.links.repository}>GitHub</a>
     </div>
   </div>
 </article>
+
+<style>
+  .project-card {
+    display: grid;
+    min-width: 0;
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  .project-visual {
+    position: relative;
+    display: grid;
+    min-height: 13rem;
+    place-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--signal) 16%, transparent), transparent 60%),
+      repeating-linear-gradient(90deg, transparent 0 2rem, color-mix(in srgb, var(--signal) 4%, transparent) 2rem calc(2rem + 1px));
+    color: var(--signal);
+    text-decoration: none;
+  }
+
+  .project-visual::before,
+  .project-visual::after {
+    position: absolute;
+    width: 5rem;
+    height: 5rem;
+    border-color: var(--signal);
+    opacity: 0.55;
+    content: "";
+  }
+
+  .project-visual::before {
+    top: 1.25rem;
+    left: 1.25rem;
+    border-top: 1px solid;
+    border-left: 1px solid;
+  }
+
+  .project-visual::after {
+    right: 1.25rem;
+    bottom: 1.25rem;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+  }
+
+  .project-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-card-content {
+    display: flex;
+    flex-direction: column;
+    padding: clamp(1.25rem, 4vw, 2rem);
+  }
+
+  .project-card-meta {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .project-card h3 {
+    margin: var(--space-xl) 0 var(--space-s);
+    font-size: var(--text-display-m);
+    letter-spacing: -0.02em;
+  }
+
+  .project-card h3 a {
+    text-decoration: none;
+  }
+
+  .project-card-content > p {
+    color: var(--muted);
+  }
+
+  @media (pointer: coarse) {
+    .project-card-actions a {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--tap-target);
+    }
+  }
+
+  .project-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+    margin-top: auto;
+    padding-top: var(--space-xl);
+  }
+</style>
