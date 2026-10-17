@@ -90,7 +90,7 @@ export function initTimeline(root: HTMLElement): void {
   }
 
   function currentCard(detail: HTMLElement): number {
-    return Math.max(0, cards(detail).findIndex((item) => item.hasAttribute("data-active")));
+    return Math.max(0, cards(detail).findIndex((item) => "active" in item.dataset));
   }
 
   function showCard(detail: HTMLElement, index: number, direction = 0): void {
@@ -172,43 +172,57 @@ export function initTimeline(root: HTMLElement): void {
     button.addEventListener("click", () => applyFilter(button.dataset.timelineFilter ?? ALL));
   }
 
+  /** Escape closes the open role from inside its panel or from its spine marker. */
+  function handleEscape(event: KeyboardEvent, target: HTMLElement): void {
+    const detail =
+      target.closest<HTMLDetailsElement>("details[open][data-role-detail]") ??
+      (target.matches("[data-role-node]") ? detailById.get(target.dataset.roleNode ?? "") : undefined);
+    if (detail?.open) {
+      event.preventDefault();
+      close(detail, { focus: true });
+    }
+  }
+
+  /** Left/Right on the carousel buttons step through accomplishment cards. */
+  function handleCarouselKey(event: KeyboardEvent, target: HTMLElement): void {
+    const detail = target.closest<HTMLElement>("[data-role-detail]");
+    if (!detail) return;
+    event.preventDefault();
+    stepCard(detail, event.key === "ArrowRight" ? 1 : -1);
+  }
+
+  /** The spine marker a key moves to from `index`, or undefined if the key isn't a spine key. */
+  function spineIndexFor(key: string, index: number): number | undefined {
+    const last = nodes.length - 1;
+    switch (key) {
+      case "Home":
+        return 0;
+      case "End":
+        return last;
+      case "ArrowRight":
+        return Math.min(index + 1, last);
+      case "ArrowLeft":
+        return Math.max(index - 1, 0);
+      default:
+        return undefined;
+    }
+  }
+
+  function handleSpineKey(event: KeyboardEvent, target: HTMLButtonElement): void {
+    const next = spineIndexFor(event.key, nodes.indexOf(target));
+    if (next === undefined) return;
+    event.preventDefault();
+    setTabStop(nodes[next]);
+    nodes[next].focus();
+  }
+
   root.addEventListener("keydown", (event) => {
     const target = event.target as HTMLElement;
-
-    if (event.key === "Escape") {
-      const detail =
-        target.closest<HTMLDetailsElement>("details[open][data-role-detail]") ??
-        (target.matches("[data-role-node]") ? detailById.get(target.dataset.roleNode ?? "") : undefined);
-      if (detail?.open) {
-        event.preventDefault();
-        close(detail, { focus: true });
-      }
-      return;
-    }
-
     const horizontal = event.key === "ArrowLeft" || event.key === "ArrowRight";
 
-    if (horizontal && target.closest("[data-carousel-nav]")) {
-      const detail = target.closest<HTMLElement>("[data-role-detail]");
-      if (detail) {
-        event.preventDefault();
-        stepCard(detail, event.key === "ArrowRight" ? 1 : -1);
-      }
-      return;
-    }
-
-    if (target.matches("[data-role-node]") && (horizontal || event.key === "Home" || event.key === "End")) {
-      const index = nodes.indexOf(target as HTMLButtonElement);
-      const last = nodes.length - 1;
-      const next =
-        event.key === "Home" ? 0
-        : event.key === "End" ? last
-        : event.key === "ArrowRight" ? Math.min(index + 1, last)
-        : Math.max(index - 1, 0);
-      event.preventDefault();
-      setTabStop(nodes[next]);
-      nodes[next].focus();
-    }
+    if (event.key === "Escape") handleEscape(event, target);
+    else if (horizontal && target.closest("[data-carousel-nav]")) handleCarouselKey(event, target);
+    else if (target.matches("[data-role-node]")) handleSpineKey(event, target as HTMLButtonElement);
   });
 
   applyFilter(ALL);
