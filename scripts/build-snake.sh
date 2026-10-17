@@ -17,6 +17,7 @@ fi
 
 if [[ -z "$snake_source" ]]; then
   temporary_root=$(mktemp -d)
+  trap 'rm -rf "$temporary_root"' EXIT
   snake_source="$temporary_root/snake"
   git clone --quiet "$snake_repository" "$snake_source"
   git -C "$snake_source" checkout --quiet "$snake_ref"

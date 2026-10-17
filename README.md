@@ -17,11 +17,19 @@ npm run dev
 
 `npm run setup` asks once before installing the versions locked in `package-lock.json` and the project skills pinned in `scripts/setup.sh`. For an unattended installation, run `npm run setup -- --force`.
 
-Astro prints the local URL when the development server starts. Use `npm run check` for static validation, `npm run build` for a production build, and `npm run preview` to inspect that build locally.
+Astro prints the local URL when the development server starts. Use `npm test` for the unit tests, `npm run check` for static validation, `npm run build` for a production build, and `npm run preview` to inspect that build locally.
+
+## Tests and CI
+
+`npm test` runs the Vitest unit tests next to the code they cover: `src/lib/*.test.ts` (dates, career-content links, timeline layout, project demo links) and `scripts/lib/*.test.mjs` (project metadata validation).
+
+`.github/workflows/check.yml` runs the tests and the type-checked build on every branch push and pull request. It never deploys.
 
 ## Production Deployment
 
-Pushes to `main` trigger `.github/workflows/deploy.yml`. The workflow installs locked dependencies, validates and builds the Astro site, then deploys `dist/` to the `resume-website` Cloudflare Worker at [joshshuman.com](https://joshshuman.com).
+Pushes to `main` trigger `.github/workflows/deploy.yml`. The workflow installs locked dependencies, runs the unit tests, validates and builds the Astro site, then deploys `dist/` to the `resume-website` Cloudflare Worker at [joshshuman.com](https://joshshuman.com).
+
+Redirects live in `public/_redirects`, which Cloudflare applies before serving files. `npm run preview` ignores it; use `npx wrangler dev` after a build to test redirects locally.
 
 The GitHub repository must define these Actions secrets:
 
@@ -39,7 +47,11 @@ npm run deploy
 
 ## Career Content
 
-Career accomplishments live in `src/content/accomplishments/` and are validated by the schema in `src/content.config.ts`. Add a Markdown file with the required frontmatter to publish another entry; the experience page loads and sorts the collection automatically.
+Roles live in `src/content/roles/` and accomplishments in `src/content/accomplishments/`, both validated by the schema in `src/content.config.ts`. To add an accomplishment, create a Markdown file whose `roleId` names its role, and list its file name (without `.md`) under that role's `accomplishments`. The card's role title and organization come from the role. The build fails if a role and an accomplishment disagree, or if any `roleId`, `relatedRoles`, or `accomplishments` entry points at a file that doesn't exist (`validateCareerGraph` in `src/lib/career.ts`).
+
+## Styles
+
+`src/styles/global.css` holds the design tokens (colours, type sizes, spacing, motion, layers), base element styles, and shared primitives such as `.button`, `.label`, `.chip-list`, and section headings. Everything else is scoped to its component or page in a `<style>` block. Use the tokens rather than literal values, and give label text the `.label` class. Animations go inside `@media (prefers-reduced-motion: no-preference)`.
 
 Project repositories own their public descriptions in `.portfolio/project.yaml`. `portfolio.sources.json` explicitly allowlists repositories and trusted demo adapters. `npm run sync:portfolio` validates each source at its current default-branch revision and generates ignored build inputs under `.portfolio-cache/`; unavailable or invalid sources fail the build.
 
