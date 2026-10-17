@@ -65,8 +65,9 @@ export function roleLinks(ids: readonly string[], rolesById: ReadonlyMap<string,
   });
 }
 
+/** Deduplicated and alphabetical, ignoring case ("DevOps" before "DSP"). */
 export function uniqueSorted(values: Iterable<string>): string[] {
-  return [...new Set(values)].sort();
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b, "en"));
 }
 
 export function roleCategories(
@@ -85,10 +86,21 @@ export function validateCareerGraph(
   roles: readonly RoleLike[],
   accomplishments: readonly AccomplishmentLike[],
 ): void {
-  const roleIds = new Set(roles.map((role) => role.id));
-  const accomplishmentsById = byId(accomplishments);
-  const problems: string[] = [];
+  const problems = [
+    ...roleProblems(roles, byId(accomplishments)),
+    ...accomplishmentProblems(accomplishments, byId(roles)),
+  ];
+  if (problems.length > 0) {
+    throw new Error(`Career content is inconsistent:\n- ${problems.join("\n- ")}`);
+  }
+}
 
+/** Each role's accomplishment IDs must exist and point back at that role. */
+function roleProblems(
+  roles: readonly RoleLike[],
+  accomplishmentsById: ReadonlyMap<string, AccomplishmentLike>,
+): string[] {
+  const problems: string[] = [];
   for (const role of roles) {
     for (const id of role.data.accomplishments) {
       const accomplishment = accomplishmentsById.get(id);
@@ -101,22 +113,28 @@ export function validateCareerGraph(
       }
     }
   }
+  return problems;
+}
 
+/** Each accomplishment's roleId must exist and list it; related roles must exist. */
+function accomplishmentProblems(
+  accomplishments: readonly AccomplishmentLike[],
+  rolesById: ReadonlyMap<string, RoleLike>,
+): string[] {
+  const problems: string[] = [];
   for (const accomplishment of accomplishments) {
     const { roleId, relatedRoles } = accomplishment.data;
-    if (!roleIds.has(roleId)) {
+    const owner = rolesById.get(roleId);
+    if (!owner) {
       problems.push(`accomplishment "${accomplishment.id}" has unknown roleId "${roleId}"`);
-    } else if (!roles.find((role) => role.id === roleId)?.data.accomplishments.includes(accomplishment.id)) {
+    } else if (!owner.data.accomplishments.includes(accomplishment.id)) {
       problems.push(`accomplishment "${accomplishment.id}" is not listed by its role "${roleId}"`);
     }
     for (const related of relatedRoles) {
-      if (!roleIds.has(related)) {
+      if (!rolesById.has(related)) {
         problems.push(`accomplishment "${accomplishment.id}" has unknown related role "${related}"`);
       }
     }
   }
-
-  if (problems.length > 0) {
-    throw new Error(`Career content is inconsistent:\n- ${problems.join("\n- ")}`);
-  }
+  return problems;
 }

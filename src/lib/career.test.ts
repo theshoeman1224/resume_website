@@ -6,6 +6,7 @@ import {
   roleCategories,
   roleLinks,
   sortRolesNewestFirst,
+  uniqueSorted,
   validateCareerGraph,
   type AccomplishmentLike,
   type RoleLike,
@@ -78,6 +79,17 @@ describe("roleLinks", () => {
   it("maps known IDs to title and organization", () => {
     const roles = byId([role("a", "2020-01-01", { title: "Lead", organization: "Acme" })]);
     expect(roleLinks(["a", "nope"], roles)).toEqual([{ id: "a", title: "Lead", organization: "Acme" }]);
+  });
+});
+
+describe("uniqueSorted", () => {
+  it("dedupes and sorts alphabetically regardless of case", () => {
+    expect(uniqueSorted(["Systems", "DSP", "DevOps", "DSP", "Architecture"])).toEqual([
+      "Architecture",
+      "DevOps",
+      "DSP",
+      "Systems",
+    ]);
   });
 });
 
