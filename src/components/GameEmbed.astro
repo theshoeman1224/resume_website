@@ -31,15 +31,14 @@ const { src, title } = Astro.props;
 
 <style>
   .game-embed-section {
-    padding-block: clamp(4rem, 8vw, 7rem);
+    padding-block: var(--space-section);
     border-top: 1px solid var(--line);
-    scroll-margin-top: 2rem;
   }
 
   .game-frame-shell {
     overflow: hidden;
     border: 1px solid var(--line);
-    background: #080b09;
+    background: var(--paper-deep);
   }
 
   .game-frame {

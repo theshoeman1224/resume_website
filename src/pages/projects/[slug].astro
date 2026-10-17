@@ -75,7 +75,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
 
 <style>
   .project-intro {
-    padding-block: clamp(5rem, 12vw, 10rem);
+    padding-block: var(--space-intro) var(--space-intro-end);
   }
 
   .project-intro > .eyebrow {
@@ -84,7 +84,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
 
   .project-intro h1 {
     max-width: 13ch;
-    margin: 1.5rem 0 2rem;
+    margin: var(--space-l) 0 var(--space-xl);
     font-size: var(--text-display-xl);
     letter-spacing: -0.035em;
   }
@@ -106,11 +106,11 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
   }
 
   .project-facts {
-    margin-top: 2rem;
+    margin-top: var(--space-xl);
   }
 
   .project-facts div {
-    padding-block: 0.75rem;
+    padding-block: var(--space-xs);
     border-bottom: 1px solid var(--line);
   }
 
@@ -119,7 +119,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
   }
 
   .project-facts dd {
-    margin: 0.35rem 0 0;
+    margin: var(--space-3xs) 0 0;
   }
 
   .project-copy {
@@ -127,8 +127,8 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
   }
 
   .project-copy h2 {
-    margin: 0 0 1rem;
-    padding-top: 3rem;
+    margin: 0 0 var(--space-s);
+    padding-top: var(--space-2xl);
     font-size: var(--text-display-m);
     letter-spacing: -0.02em;
   }
@@ -149,7 +149,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
 
   .project-highlights li {
     position: relative;
-    padding: 1rem 0 1rem 2rem;
+    padding: var(--space-s) 0 var(--space-s) var(--space-xl);
     border-bottom: 1px solid var(--line);
     color: var(--muted);
   }
@@ -165,17 +165,17 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
   .project-link-groups {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem;
+    gap: var(--space-xs);
   }
 
   .project-link-groups a {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
+    gap: var(--space-2xs);
+    padding: var(--space-s);
     border: 1px solid var(--line-strong);
     text-decoration: none;
-    transition: border-color 160ms ease, color 160ms ease;
+    transition: border-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
   }
 
   .project-link-groups a:hover {
@@ -186,7 +186,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
     color: var(--muted);
   }
 
-  @media (max-width: 52rem) {
+  @media (width < 52rem) {
     .project-detail-grid,
     .project-link-groups {
       grid-template-columns: 1fr;

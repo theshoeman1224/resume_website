@@ -55,8 +55,8 @@ const dateLabel = formatSpan(data.date, data.endDate);
 <style>
   .accomplishment-card {
     display: grid;
-    gap: 0.6rem;
-    padding: 1.25rem;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
     border: 1px solid var(--line);
     background: var(--paper);
   }
@@ -64,7 +64,7 @@ const dateLabel = formatSpan(data.date, data.endDate);
   .accomplishment-card-head {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1rem;
+    gap: var(--space-3xs) var(--space-s);
     align-items: baseline;
     color: var(--muted);
   }
@@ -97,9 +97,9 @@ const dateLabel = formatSpan(data.date, data.endDate);
 
   .accomplishment-card-body {
     display: grid;
-    gap: 1rem;
-    margin-top: 0.25rem;
-    padding-top: 1rem;
+    gap: var(--space-s);
+    margin-top: var(--space-3xs);
+    padding-top: var(--space-s);
     border-top: 1px solid var(--line);
   }
 
@@ -112,11 +112,11 @@ const dateLabel = formatSpan(data.date, data.endDate);
   .accomplishment-card-related {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 0.75rem;
+    gap: var(--space-2xs) var(--space-xs);
     align-items: center;
-    padding-top: 0.75rem;
+    padding-top: var(--space-xs);
     border-top: 1px solid var(--line);
-    margin-top: 0.25rem;
+    margin-top: var(--space-3xs);
   }
 
   .accomplishment-card-related-label {
@@ -126,7 +126,7 @@ const dateLabel = formatSpan(data.date, data.endDate);
   .related-role-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: var(--space-3xs);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -137,13 +137,13 @@ const dateLabel = formatSpan(data.date, data.endDate);
     flex-direction: column;
     align-items: flex-start;
     gap: 0.1rem;
-    padding: 0.4rem 0.6rem;
+    padding: var(--space-3xs) var(--space-2xs);
     border: 1px solid var(--line-strong);
     background: var(--signal-soft);
     color: var(--signal);
     cursor: pointer;
     text-align: left;
-    transition: border-color 160ms ease;
+    transition: border-color var(--duration-fast) var(--ease);
   }
 
   .related-role-chip:hover {

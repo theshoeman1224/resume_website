@@ -25,6 +25,7 @@
   --paper-deep: #080b09;
   --grid-line: color-mix(in srgb, var(--signal) 2.5%, transparent);
   --max-width: 74rem;
+  /* Sticky header height; used for anchor offsets. The header sets its own height from it. */
   --header-height: 4.75rem;
 
   /* Spacing scale. */
@@ -32,12 +33,15 @@
   --space-2xs: 0.5rem;
   --space-xs: 0.75rem;
   --space-s: 1rem;
-  --space-m: 1.5rem;
-  --space-l: 2rem;
-  --space-xl: 3rem;
-  --space-2xl: 4rem;
+  --space-m: 1.25rem;
+  --space-l: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
   --space-panel: clamp(1.75rem, 4vw, 3rem);
   --space-section: clamp(5rem, 9vw, 8rem);
+  --space-intro: clamp(4rem, 10vw, 8rem);
+  --space-intro-end: clamp(2rem, 5vw, 4rem);
   --tap-target: 2.75rem;
 
   /* Motion. Movement (transforms, animations) only runs under prefers-reduced-motion: no-preference. */
@@ -90,15 +94,15 @@
 
 html {
   /* Keeps anchor targets clear of the sticky header. */
-  scroll-padding-top: var(--header-height);
+  scroll-padding-top: calc(var(--header-height) + var(--space-s));
 }
 
 body {
   margin: 0;
   min-width: 20rem;
   background:
-    linear-gradient(rgba(199, 255, 74, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(199, 255, 74, 0.025) 1px, transparent 1px),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
     var(--paper);
   background-size: 3rem 3rem;
   color: var(--ink);
@@ -165,14 +169,14 @@ h4 {
 .chip-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: var(--space-2xs);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .chip-list li {
-  padding: 0.3rem 0.55rem;
+  padding: var(--space-3xs) var(--space-2xs);
   border: 1px solid var(--line);
   color: var(--muted);
 }
@@ -186,8 +190,8 @@ h4 {
   position: fixed;
   top: 0.75rem;
   left: 0.75rem;
-  z-index: 20;
-  padding: 0.65rem 0.9rem;
+  z-index: var(--z-skip-link);
+  padding: var(--space-xs) var(--space-s);
   transform: translateY(-200%);
   background: var(--signal);
   color: var(--on-signal);
@@ -209,7 +213,7 @@ h4 {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-xs);
   margin-top: 2.5rem;
 }
 
@@ -218,10 +222,10 @@ h4 {
   align-items: center;
   justify-content: center;
   min-height: 3rem;
-  padding: 0.7rem 1rem;
+  padding: var(--space-xs) var(--space-s);
   border: 1px solid var(--line-strong);
   text-decoration: none;
-  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+  transition: border-color var(--duration-fast) var(--ease), background var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
 }
 
 .button:hover {
@@ -279,15 +283,14 @@ h4 {
 }
 
 .section {
-  padding-block: clamp(5rem, 9vw, 8rem);
+  padding-block: var(--space-section);
   border-top: 1px solid var(--line);
-  scroll-margin-top: 2rem;
 }
 
 .section-heading {
   display: grid;
   grid-template-columns: minmax(8rem, 0.35fr) minmax(0, 1fr);
-  gap: 2rem;
+  gap: var(--space-xl);
   margin-bottom: clamp(2.5rem, 6vw, 5rem);
 }
 
@@ -299,7 +302,7 @@ h4 {
 }
 
 .section-heading h2 + p {
-  margin-top: 1rem;
+  margin-top: var(--space-s);
 }
 
 .section-heading p:last-child {
@@ -309,12 +312,12 @@ h4 {
 }
 
 .page-intro {
-  padding-block: clamp(5rem, 12vw, 10rem);
+  padding-block: var(--space-intro) var(--space-intro-end);
 }
 
 .page-intro h1 {
   max-width: 13ch;
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-xl);
 }
 
 .page-intro > p:last-child {
@@ -335,9 +338,17 @@ h4 {
   white-space: nowrap;
 }
 
-@media (max-width: 52rem) {
+@media (width < 52rem) and (pointer: coarse) {
   :root {
-    --header-height: 6.75rem;
+    --nav-row: var(--tap-target);
+  }
+}
+
+@media (width < 52rem) {
+  :root {
+    /* Two rows on narrow screens: brand, then a single scrollable nav row. */
+    --nav-row: 1.75rem;
+    --header-height: calc(var(--space-2xs) * 2 + 2rem + var(--space-3xs) + var(--nav-row));
   }
 
   .section-heading {

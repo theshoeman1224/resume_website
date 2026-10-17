@@ -87,7 +87,7 @@ const dates = formatDateRange(data.startDate, data.endDate);
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
-    padding: var(--space-m) calc(var(--space-m) + 2rem) var(--space-m) var(--space-m);
+    padding: var(--space-l) calc(var(--space-l) + 2rem) var(--space-l) var(--space-l);
     cursor: pointer;
     list-style: none;
   }
@@ -99,8 +99,8 @@ const dates = formatDateRange(data.startDate, data.endDate);
   /* Expand indicator. */
   .role-detail-summary::after {
     position: absolute;
-    top: var(--space-m);
-    right: var(--space-m);
+    top: var(--space-l);
+    right: var(--space-l);
     color: var(--signal);
     font-family: var(--font-label);
     font-size: var(--text-lead);
@@ -129,7 +129,7 @@ const dates = formatDateRange(data.startDate, data.endDate);
   .role-detail-body {
     display: grid;
     gap: var(--space-s);
-    padding: 0 var(--space-m) var(--space-m);
+    padding: 0 var(--space-l) var(--space-l);
   }
 
   /* The summary already shows the title; keep the h3 for heading navigation only. */
@@ -182,7 +182,7 @@ const dates = formatDateRange(data.startDate, data.endDate);
     }
 
     :global(.js) .role-detail-body {
-      gap: var(--space-m);
+      gap: var(--space-l);
       padding: var(--space-panel);
     }
 

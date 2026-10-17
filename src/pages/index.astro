@@ -174,7 +174,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
 
   .hero h1 {
     max-width: 13ch;
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-xl);
     font-size: var(--text-display-xl);
     letter-spacing: -0.035em;
   }
@@ -193,18 +193,18 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
 
   .hero-aside {
     border-top: 1px solid var(--signal);
-    padding-top: 1.25rem;
+    padding-top: var(--space-m);
   }
 
   .hero-aside dl {
-    margin: 2rem 0 0;
+    margin: var(--space-xl) 0 0;
   }
 
   .hero-aside div {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 1rem;
-    padding-block: 0.8rem;
+    gap: var(--space-s);
+    padding-block: var(--space-xs);
     border-bottom: 1px solid var(--line);
   }
 
@@ -238,8 +238,8 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
   .principles li,
   .skill-list li {
     display: flex;
-    gap: 1rem;
-    padding-block: 0.9rem;
+    gap: var(--space-s);
+    padding-block: var(--space-s);
     border-bottom: 1px solid var(--line);
   }
 
@@ -252,7 +252,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
   .feature-panel {
     display: grid;
     grid-template-columns: 1fr auto;
-    gap: 2rem;
+    gap: var(--space-xl);
     align-items: end;
     padding: clamp(1.5rem, 5vw, 3.5rem);
     border: 1px solid var(--line);
@@ -260,7 +260,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
   }
 
   .feature-panel h3 {
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-s);
     font-size: var(--text-display-m);
     letter-spacing: -0.02em;
   }
@@ -272,24 +272,24 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
   }
 
   .section-action {
-    margin-top: 2rem;
+    margin-top: var(--space-xl);
     text-align: right;
   }
 
   .skills-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    gap: var(--space-s);
   }
 
   .skill-group {
-    padding: 1.5rem;
+    padding: var(--space-l);
     border-top: 2px solid var(--signal);
     background: var(--panel);
   }
 
   .skill-group h3 {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-l);
     font-size: var(--text-display-s);
     letter-spacing: -0.01em;
   }
@@ -309,13 +309,13 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
 
   .contact-link {
     display: block;
-    padding-block: 1rem;
+    padding-block: var(--space-s);
     border-bottom: 1px solid var(--line);
     font-size: var(--text-lead);
     overflow-wrap: anywhere;
   }
 
-  @media (max-width: 52rem) {
+  @media (width < 52rem) {
     .hero {
       grid-template-columns: 1fr;
     }
@@ -330,7 +330,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
     }
   }
 
-  @media (max-width: 35rem) {
+  @media (width < 35rem) {
     .feature-panel {
       grid-template-columns: 1fr;
     }

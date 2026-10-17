@@ -59,7 +59,7 @@ const socialImageUrl = new URL("/social-preview.png", Astro.site ?? Astro.url.or
 
 <style>
   .site-footer {
-    padding-block: 2rem;
+    padding-block: var(--space-xl);
     border-top: 1px solid var(--line);
     color: var(--muted);
     font-family: var(--font-label);
@@ -70,14 +70,14 @@ const socialImageUrl = new URL("/social-preview.png", Astro.site ?? Astro.url.or
   .footer-inner {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: var(--space-s);
   }
 
   .footer-inner p {
     margin: 0;
   }
 
-  @media (max-width: 35rem) {
+  @media (width < 35rem) {
     .footer-inner {
       flex-direction: column;
     }

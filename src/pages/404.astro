@@ -31,14 +31,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   .error-page {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 3rem;
+    gap: var(--space-2xl);
     align-items: center;
     min-height: calc(100svh - 9rem);
     padding-block: clamp(5rem, 12vw, 10rem);
   }
 
   .error-page h1 {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-xl);
     font-size: var(--text-display-xl);
     letter-spacing: -0.035em;
   }
@@ -57,7 +57,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     -webkit-text-stroke: 1px var(--line);
   }
 
-  @media (max-width: 52rem) {
+  @media (width < 52rem) {
     .error-page {
       grid-template-columns: 1fr;
     }

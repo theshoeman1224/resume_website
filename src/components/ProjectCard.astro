@@ -52,8 +52,8 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
     overflow: hidden;
     border-bottom: 1px solid var(--line);
     background:
-      linear-gradient(135deg, rgba(199, 255, 74, 0.16), transparent 60%),
-      repeating-linear-gradient(90deg, transparent 0 2rem, rgba(199, 255, 74, 0.04) 2rem calc(2rem + 1px));
+      linear-gradient(135deg, color-mix(in srgb, var(--signal) 16%, transparent), transparent 60%),
+      repeating-linear-gradient(90deg, transparent 0 2rem, color-mix(in srgb, var(--signal) 4%, transparent) 2rem calc(2rem + 1px));
     color: var(--signal);
     text-decoration: none;
   }
@@ -97,12 +97,12 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
   .project-card-meta {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: var(--space-s);
     color: var(--muted);
   }
 
   .project-card h3 {
-    margin: 2rem 0 1rem;
+    margin: var(--space-xl) 0 var(--space-s);
     font-size: var(--text-display-m);
     letter-spacing: -0.02em;
   }
@@ -118,8 +118,8 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
   .project-card-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: var(--space-s);
     margin-top: auto;
-    padding-top: 2rem;
+    padding-top: var(--space-xl);
   }
 </style>

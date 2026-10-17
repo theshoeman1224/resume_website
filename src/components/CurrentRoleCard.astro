@@ -30,9 +30,9 @@ const { data } = role;
 <style>
   .current-role {
     display: grid;
-    gap: 1.5rem;
-    margin-block: clamp(2rem, 5vw, 3rem);
-    padding: clamp(1.75rem, 4vw, 3rem);
+    gap: var(--space-l);
+    margin-block: 0 clamp(2rem, 5vw, 3rem);
+    padding: var(--space-panel);
     border: 1px solid var(--signal);
     background: var(--panel);
   }
@@ -41,7 +41,7 @@ const { data } = role;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     margin: 0;
     color: var(--muted);
   }
@@ -55,7 +55,7 @@ const { data } = role;
     position: relative;
     width: 0.5rem;
     height: 0.5rem;
-    margin-left: 0.4rem;
+    margin-left: var(--space-3xs);
     background: var(--signal);
     border-radius: 50%;
     vertical-align: middle;
