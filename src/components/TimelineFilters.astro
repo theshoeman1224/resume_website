@@ -1,18 +1,86 @@
 ---
 interface Props {
   categories: string[];
-  totalCount: number;
+  total: number;
 }
 
-const { categories, totalCount } = Astro.props;
+const { categories, total } = Astro.props;
 ---
 
-<div class="timeline-controls" aria-label="Filter timeline by category">
-  <div class="timeline-filters" role="group" data-timeline-filters>
-    <button type="button" data-timeline-filter="All" aria-pressed="true">All</button>
-    {categories.map((category) => (
-      <button type="button" data-timeline-filter={category} aria-pressed="false">{category}</button>
+<div class="timeline-controls">
+  <div class="timeline-filters" role="group" aria-label="Filter roles by discipline">
+    {["All", ...categories].map((category) => (
+      <button
+        type="button"
+        class="filter-button label"
+        data-timeline-filter={category}
+        aria-pressed={category === "All" ? "true" : "false"}
+      >
+        {category}
+      </button>
     ))}
   </div>
-  <p data-timeline-status aria-live="polite">{totalCount} roles shown</p>
+  <p class="timeline-status label" data-timeline-status data-total={total} aria-live="polite">
+    {total} roles
+  </p>
 </div>
+
+<style>
+  .timeline-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-l);
+    margin-bottom: var(--space-xl);
+  }
+
+  /* The filters need the timeline script. */
+  :global(html:not(.js)) .timeline-controls {
+    display: none;
+  }
+
+  .timeline-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .filter-button {
+    min-height: 2.5rem;
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast) var(--ease),
+      background-color var(--duration-fast) var(--ease),
+      color var(--duration-fast) var(--ease);
+  }
+
+  .filter-button:hover,
+  .filter-button[aria-pressed="true"] {
+    border-color: var(--signal);
+    background: var(--signal-soft);
+    color: var(--signal);
+  }
+
+  .timeline-status {
+    margin: 0;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  @media (pointer: coarse) {
+    .filter-button {
+      min-height: var(--tap-target);
+    }
+  }
+
+  @media (width < 52rem) {
+    .timeline-controls {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

@@ -19,3 +19,51 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <p class="error-code" aria-hidden="true">404</p>
   </section>
 </BaseLayout>
+
+<style>
+  .error-code {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .error-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--space-2xl);
+    align-items: center;
+    min-height: calc(100svh - 9rem);
+    padding-block: clamp(5rem, 12vw, 10rem);
+  }
+
+  .error-page h1 {
+    margin-bottom: var(--space-xl);
+    font-size: var(--text-display-xl);
+    letter-spacing: -0.035em;
+  }
+
+  .error-page > div > p:not(.eyebrow) {
+    max-width: var(--measure);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .error-code {
+    margin: 0;
+    color: transparent;
+    font-size: clamp(8rem, 24vw, 22rem);
+    line-height: 0.75;
+    -webkit-text-stroke: 1px var(--line);
+  }
+
+  @media (width < 52rem) {
+    .error-page {
+      grid-template-columns: 1fr;
+    }
+
+    .error-code {
+      display: none;
+    }
+  }
+</style>

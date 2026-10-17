@@ -12,3 +12,17 @@ const { projects } = Astro.props;
 <div class="project-grid">
   {projects.map((project) => <ProjectCard project={project} />)}
 </div>
+
+<style>
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-s);
+  }
+
+  @media (width < 52rem) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

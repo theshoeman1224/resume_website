@@ -9,10 +9,7 @@ technologies:
   - DSP
   - Radar systems
   - Requirements engineering
-role: Principal Software Engineer
-organization: Raytheon
 roleId: principal-software-engineer
 relatedRoles: []
-featured: true
 ---
 

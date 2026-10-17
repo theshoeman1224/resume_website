@@ -10,10 +10,7 @@ technologies:
   - Feedback control
   - Test automation
   - Oscilloscopes
-role: Research Assistant
-organization: Wentworth Institute of Technology
 roleId: research-assistant-wit
 relatedRoles: []
-featured: false
 ---
 

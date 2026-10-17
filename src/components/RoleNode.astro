@@ -1,51 +1,196 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { formatDateRange, formatMonthYear } from "../lib/dates";
+import { formatDateRange } from "../lib/dates";
 
 interface Props {
   role: CollectionEntry<"roles">;
-  index: number;
+  categories: string[];
   position: number;
   side: "above" | "below";
 }
 
-const { role, index, position, side } = Astro.props;
+const { role, categories, position, side } = Astro.props;
 const { id, data } = role;
-
-const startDate = formatMonthYear(data.startDate);
-const endDate = data.endDate ? formatMonthYear(data.endDate) : "Present";
-const slug = id.replace(/\.md$/, "");
-const isOngoing = !data.endDate;
-const compactStart = data.startDate.getUTCFullYear().toString().slice(-2);
-const compactEnd = data.endDate
-  ? data.endDate.getUTCFullYear().toString().slice(-2)
-  : "now";
-const dateCode = `${compactStart}–${compactEnd}`;
 ---
 
 <button
   type="button"
   class="timeline-node"
-  data-role-node={slug}
-  data-role-index={index}
-  data-role-side={side}
-  style={`--role-x: ${position}%;`}
+  data-role-node={id}
+  data-categories={categories.join("|")}
+  data-side={side}
+  style={`--role-x: ${position}%`}
   aria-expanded="false"
-  aria-controls="timeline-panel"
+  aria-controls={`role-detail-${id}`}
 >
   <span class="timeline-node-stack">
     <span class="timeline-node-marker" aria-hidden="true">
-      {isOngoing && <span class="timeline-node-pulse"></span>}
+      {!data.endDate && <span class="timeline-node-pulse"></span>}
     </span>
     <span class="timeline-node-tab" aria-hidden="true"></span>
     <span class="timeline-node-label">
       <span class="timeline-node-title">{data.title}</span>
-      <span class="timeline-node-org">{data.organization}</span>
-      <span class="timeline-node-dates">{formatDateRange(data.startDate, data.endDate)}</span>
+      <span class="timeline-node-org label">{data.organization}</span>
+      <span class="timeline-node-dates label">{formatDateRange(data.startDate, data.endDate)}</span>
+      <span class="visually-hidden" data-filter-note hidden>(filtered out)</span>
     </span>
   </span>
-  <span class="visually-hidden">
-    Open role: {data.title} at {data.organization}, {startDate} to {endDate}
-  </span>
-  <span class="visually-hidden">Code {dateCode}</span>
 </button>
+
+<style>
+  .timeline-node {
+    position: absolute;
+    top: var(--axis-y);
+    left: var(--role-x);
+    width: 0;
+    height: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .timeline-node:focus-visible {
+    outline: none;
+  }
+
+  .timeline-node:focus-visible .timeline-node-label {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
+  }
+
+  .timeline-node-stack {
+    position: absolute;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+  }
+
+  /* The stack's marker end sits on the axis; the marker is centred on it. */
+  .timeline-node[data-side="above"] .timeline-node-stack {
+    bottom: -0.325rem;
+    flex-direction: column-reverse;
+  }
+
+  .timeline-node[data-side="below"] .timeline-node-stack {
+    top: -0.325rem;
+  }
+
+  .timeline-node-marker {
+    position: relative;
+    flex-shrink: 0;
+    width: 0.65rem;
+    height: 0.65rem;
+    border: 1px solid var(--signal);
+    background: var(--paper);
+    transform: rotate(45deg);
+    transition:
+      background-color var(--duration-fast) var(--ease),
+      border-color var(--duration-fast) var(--ease),
+      box-shadow var(--duration-fast) var(--ease);
+  }
+
+  .timeline-node-tab {
+    width: 1px;
+    height: 1.1rem;
+    background: var(--line);
+    transition: background-color var(--duration-fast) var(--ease);
+  }
+
+  /* Below-axis labels start under the year labels. */
+  .timeline-node[data-side="below"] .timeline-node-tab {
+    height: 2.25rem;
+  }
+
+  .timeline-node-label {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3xs);
+    width: max-content;
+    max-width: 13rem;
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid transparent;
+    /* Opaque so the selection connector passes behind other labels. */
+    background: var(--paper);
+    text-align: center;
+    transition:
+      border-color var(--duration-fast) var(--ease),
+      background-color var(--duration-fast) var(--ease);
+  }
+
+  .timeline-node-title {
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: var(--text-body);
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .timeline-node-org {
+    color: var(--signal);
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  .timeline-node-dates {
+    color: var(--muted);
+  }
+
+  .timeline-node:hover .timeline-node-label {
+    border-color: var(--line);
+    background: var(--panel);
+  }
+
+  .timeline-node[aria-expanded="true"] .timeline-node-marker {
+    border-color: var(--signal);
+    background: var(--signal);
+    box-shadow: 0 0 0 4px var(--signal-soft);
+  }
+
+  .timeline-node[aria-expanded="true"] .timeline-node-tab {
+    background: var(--signal);
+  }
+
+  .timeline-node[aria-expanded="true"] .timeline-node-label {
+    border-color: var(--signal);
+    background: var(--panel);
+  }
+
+  .timeline-node[aria-expanded="true"] .timeline-node-title {
+    color: var(--signal);
+  }
+
+  /* Faded, not hidden, so the career shape stays readable. Text stays above 4.5:1. */
+  .timeline-node[data-filtered-out] .timeline-node-marker {
+    border-color: var(--line-strong);
+  }
+
+  .timeline-node[data-filtered-out] :is(.timeline-node-title, .timeline-node-org, .timeline-node-dates) {
+    color: var(--faded);
+  }
+
+  .timeline-node-pulse {
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--signal);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-node-marker {
+      transition-property: background-color, border-color, box-shadow, transform;
+    }
+
+    .timeline-node:hover .timeline-node-marker {
+      transform: rotate(45deg) scale(1.25);
+    }
+
+    .timeline-node-pulse {
+      animation: pulse-ring var(--duration-pulse) ease-out infinite;
+    }
+  }
+</style>

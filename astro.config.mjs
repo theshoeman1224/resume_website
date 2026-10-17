@@ -1,8 +1,10 @@
+import sitemap from "@astrojs/sitemap";
 import { defineConfig, fontProviders } from "astro/config";
 
 export default defineConfig({
   site: "https://joshshuman.com",
   trailingSlash: "always",
+  integrations: [sitemap({ filter: (page) => !page.endsWith("/404/") })],
   fonts: [
     {
       provider: fontProviders.fontsource(),
@@ -17,7 +19,7 @@ export default defineConfig({
       provider: fontProviders.fontsource(),
       name: "IBM Plex Sans",
       cssVariable: "--font-sans",
-      weights: [400, 600],
+      weights: [400],
       styles: ["normal"],
       subsets: ["latin"],
       fallbacks: ["system-ui", "sans-serif"],

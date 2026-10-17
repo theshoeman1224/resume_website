@@ -47,7 +47,7 @@ project:
     - "Builds trusted WebAssembly demonstrations from independent source repositories"
     - "Deploys reproducible static releases to Cloudflare through GitHub Actions"
     - "Provides responsive, keyboard-accessible timeline filtering and project navigation"
-    - "Validates production behavior across Chrome, Firefox, and Edge"
+    - "Unit-tests timeline layout, date formatting, and metadata validation with Vitest"
 
   links:
     repository: "https://github.com/theshoeman1224/resume_website"

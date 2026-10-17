@@ -1,0 +1,281 @@
+---
+import type { CollectionEntry } from "astro:content";
+import AccomplishmentCard from "./AccomplishmentCard.astro";
+import type { RoleLink } from "../lib/career";
+import { formatDateRange } from "../lib/dates";
+
+interface Props {
+  role: CollectionEntry<"roles">;
+  categories: string[];
+  accomplishments: { entry: CollectionEntry<"accomplishments">; relatedRoles: RoleLink[] }[];
+}
+
+const { role, categories, accomplishments } = Astro.props;
+const { id, data } = role;
+const owner: RoleLink = { id, title: data.title, organization: data.organization };
+const dates = formatDateRange(data.startDate, data.endDate);
+---
+
+<details
+  class="role-detail"
+  id={`role-detail-${id}`}
+  name="career-role"
+  data-role-detail={id}
+  data-categories={categories.join("|")}
+>
+  <summary class="role-detail-summary">
+    <span class="role-detail-summary-title">{data.title}</span>
+    <span class="role-detail-summary-meta label">{data.organization} · {dates}</span>
+    <span class="visually-hidden" data-filter-note hidden>(filtered out)</span>
+  </summary>
+  <div class="role-detail-body">
+    <header class="role-detail-header">
+      <div>
+        <p class="eyebrow role-detail-eyebrow">Role</p>
+        <h3 class="role-detail-title">{data.title}</h3>
+        <p class="role-detail-meta label">{data.organization} · {dates}</p>
+      </div>
+      <button type="button" class="icon-button role-detail-close" data-role-close aria-label="Close role details">
+        <span aria-hidden="true">×</span>
+      </button>
+    </header>
+    <p class="role-detail-text">{data.summary}</p>
+    {data.focus.length > 0 && (
+      <ul class="chip-list label" aria-label="Focus areas">
+        {data.focus.map((area) => <li>{area}</li>)}
+      </ul>
+    )}
+    {accomplishments.length > 0 && (
+      <div class="role-detail-accomplishments" data-carousel>
+        {accomplishments.length > 1 && (
+          <div class="carousel-nav" data-carousel-nav>
+            <p class="eyebrow">Accomplishments</p>
+            <div class="carousel-controls">
+              <button type="button" class="icon-button" data-carousel-prev aria-label="Previous accomplishment" disabled>
+                <span aria-hidden="true">‹</span>
+              </button>
+              <span class="carousel-count label" data-carousel-count aria-live="polite">
+                1 / {accomplishments.length}
+              </span>
+              <button type="button" class="icon-button" data-carousel-next aria-label="Next accomplishment">
+                <span aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+        )}
+        <div class="carousel-stack">
+          {accomplishments.map(({ entry, relatedRoles }, index) => (
+            <div class="carousel-item" data-carousel-item data-active={index === 0 ? "" : undefined}>
+              <AccomplishmentCard accomplishment={entry} role={owner} relatedRoles={relatedRoles} />
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</details>
+
+<style>
+  /* Narrow screens and no-JS: an expandable list. */
+  .role-detail {
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+
+  .role-detail-summary {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-l) calc(var(--space-l) + 2rem) var(--space-l) var(--space-l);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .role-detail-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Expand indicator. */
+  .role-detail-summary::after {
+    position: absolute;
+    top: var(--space-l);
+    right: var(--space-l);
+    color: var(--signal);
+    font-family: var(--font-label);
+    font-size: var(--text-lead);
+    line-height: 1;
+    content: "+";
+  }
+
+  .role-detail[open] > .role-detail-summary::after {
+    content: "−";
+  }
+
+  .role-detail-summary-title {
+    font-family: var(--font-display);
+    font-size: var(--text-display-s);
+    line-height: 1.15;
+  }
+
+  .role-detail-summary-meta {
+    color: var(--signal);
+  }
+
+  .role-detail[data-filtered-out] :is(.role-detail-summary-title, .role-detail-summary-meta) {
+    color: var(--faded);
+  }
+
+  .role-detail-body {
+    display: grid;
+    gap: var(--space-s);
+    padding: 0 var(--space-l) var(--space-l);
+  }
+
+  /* The summary already shows the title; keep the h3 for heading navigation only. */
+  .role-detail-header > div > :not(h3),
+  .role-detail-close {
+    display: none;
+  }
+
+  .role-detail-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .role-detail-text {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .role-detail-accomplishments {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .carousel-nav {
+    display: none;
+  }
+
+  .carousel-stack {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .carousel-item {
+    min-width: 0;
+  }
+
+  /* Wide screens with JS: the open role is a panel under the spine. */
+  @media (width >= 52rem) {
+    :global(.js) .role-detail:not([open]) {
+      display: none;
+    }
+
+    :global(.js) .role-detail-summary {
+      display: none;
+    }
+
+    :global(.js) .role-detail-body {
+      gap: var(--space-l);
+      padding: var(--space-panel);
+    }
+
+    :global(.js) .role-detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-s);
+    }
+
+    :global(.js) .role-detail-header > div > :not(h3) {
+      display: block;
+    }
+
+    :global(.js) .role-detail-eyebrow {
+      margin: 0 0 var(--space-2xs);
+    }
+
+    :global(.js) .role-detail-title {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      margin: 0;
+      font-size: var(--text-display-m);
+      letter-spacing: -0.02em;
+      white-space: normal;
+    }
+
+    :global(.js) .role-detail-meta {
+      margin: var(--space-2xs) 0 0;
+      color: var(--muted);
+    }
+
+    :global(.js) .role-detail-close {
+      display: inline-grid;
+    }
+
+    :global(.js) .role-detail-text {
+      color: var(--ink);
+    }
+
+    :global(.js) .carousel-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-s);
+    }
+
+    :global(.js) .carousel-nav .eyebrow {
+      margin: 0;
+    }
+
+    :global(.js) .carousel-stack {
+      gap: 0;
+    }
+
+    /* Stack every card in one cell so the panel is as tall as the tallest card and never jumps. */
+    :global(.js) .carousel-item {
+      grid-area: 1 / 1;
+    }
+
+    :global(.js) .carousel-item:not([data-active]) {
+      visibility: hidden;
+    }
+  }
+
+  .carousel-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .carousel-count {
+    min-width: 3ch;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @media (width >= 52rem) {
+      :global(.js) .role-detail[open] {
+        animation: rise-in var(--duration-base) var(--ease) both;
+      }
+    }
+
+    .carousel-item[data-enter] {
+      animation: slide-in var(--duration-fast) var(--ease) both;
+    }
+
+    .carousel-item[data-enter="prev"] {
+      --slide-from: -12px;
+    }
+  }
+</style>

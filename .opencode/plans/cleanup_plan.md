@@ -7,7 +7,7 @@
 **Site-wide guardrails** (decided 2026-08-22):
 
 1. **Employer name appears only inside role/timeline surfaces.** Allowed: spine labels, role panels, accomplishment cards, current-role card, mobile role bands. Forbidden: page headers, hero, about, contact, skills, projects, meta descriptions, footer.
-2. **No age or degree commentary anywhere.** Trajectory is stated once as fact ("Seven years from first industry role to principal engineer"); dates on the timeline carry the math. The no-Master's story stays for interviews and the promotion packet.
+2. **No age or degree commentary anywhere.** Trajectory is stated once as fact ("Six and a half years from first industry role to principal engineer"; see row E below); dates on the timeline carry the math. The no-Master's story stays for interviews and the promotion packet.
 3. Tone rules from the unslop pass apply everywhere: active voice, concrete over adjectival, one list per paragraph max.
 
 ---
@@ -28,10 +28,26 @@ Verified by audit 2026-08-22 (git log + clean build, `astro check` 0 errors, tim
 | 4c | `metrics` schema + `AccomplishmentMetrics.astro` | DEFERRED until real figures exist |
 | 5 | Projects review | DECIDED: keep all three incl. Time Card Tracker |
 | 6 | Design direction | DECIDED 2026-10-11: keep the look, enforce three type roles (Plex Serif headings / Plex Sans paragraphs / Plex Mono labels), self-hosted. Rules documented at the top of `src/styles/global.css` |
+| 7 | Front-end audit cleanup | DONE 2026-10-16 on branch `cleanup/audit-plan` — see "Audit cleanup round" below |
 
 ---
 
-## This round of changes (2026-08-22)
+## Audit cleanup round (2026-10-16)
+
+Full-repo audit, then fixes on `cleanup/audit-plan`, one commit per phase:
+
+1. **Timeline rebuilt.** One `<details>` per role serves desktop and mobile. The open panel sits in flow under the spine (it used to cover the current-role card and section heading). Stable carousel height, roving-tabindex keyboard model, readable faded filter state with screen-reader text, same-date markers spread apart, labelled year ticks, deep links keep the spine in view. Bundled TypeScript in `src/scripts/timeline.ts`.
+2. **Helpers + tests.** `src/lib/{career,spine,dates,projects}.ts` with Vitest tests; `validateCareerGraph` fails the build on broken role/accomplishment links. Accomplishment `role`/`organization` fields removed (derived from `roleId`); unused `featured` removed.
+3. **Styles.** Component styles scoped to their components (global.css 1,513 → ~380 lines); `.label` class; spacing/motion/layer/colour tokens; one reduced-motion strategy; header height and anchor offsets fixed; 44px touch targets on coarse pointers.
+4. **Markup/perf.** Snake iframe scrollbar strips removed; 3 font preloads instead of 5 (Sans 600 dropped); real 301 for `/projects/snake/` via `public/_redirects`; sitemap + robots.txt.
+5. **Content.** Home Timeline teaser removed; project-card tech count and breadcrumb link fixed; self-linking "Live demo" removed; DevSecOps copy de-duplicated; cross-browser claim replaced.
+6. **Tooling.** `check.yml` CI for branches/PRs; tests in deploy; docs updated.
+
+Kept deliberately: `/usr/bin/git` in the sync script (absolute path avoids PATH lookup); `setup.sh` still installs skills for OpenCode.
+
+---
+
+## Earlier round (2026-08-22)
 
 ### Copy fixes
 
@@ -65,8 +81,8 @@ Verified by audit 2026-08-22 (git log + clean build, `astro check` 0 errors, tim
 ## Process facts worth keeping
 
 - **Project copy lives upstream.** `.portfolio-cache/projects/*.json` is generated at build time by `scripts/sync-portfolio-metadata.mjs` from each repo's `.portfolio/project.yaml`. Local edits there get overwritten. Snake and Time Card Tracker copy must be edited in their own repos; this portfolio's own project.yaml is editable locally at `.portfolio/project.yaml`.
-- **Node version**: system node is v18 (unsupported). Use nvm node ≥ 22.12 (`.nvmrc` pins v24; README documents). Build: `export PATH=~/.nvm/versions/node/v24.19.0/bin:$PATH && npm run build`.
-- **Timeline validation**: `experience.astro` console-warns on unresolved roleId/relatedRoles/accomplishment slugs. Silent output = graph intact.
+- **Node version**: system node is v18 (unsupported). `.nvmrc` pins 22.20.0 (the minimum in `package.json` engines); nvm's v24.19.0 also works: `export PATH=~/.nvm/versions/node/v24.19.0/bin:$PATH && npm run build`.
+- **Timeline validation**: `validateCareerGraph` (`src/lib/career.ts`) fails the build on unresolved or inconsistent roleId/relatedRoles/accomplishment IDs.
 - `PROJECT_PLAN.md` is the original M0–M7 build spec; historical reference, all milestones complete.
 
 ---
@@ -77,7 +93,7 @@ Verified by audit 2026-08-22 (git log + clean build, `astro check` 0 errors, tim
 - [ ] Add Applied AI accomplishment entry (backs the skills claim)
 - [ ] Project metrics: measure and display actual metrics on project pages/cards (justifies the "Built, measured, documented." heading)
 - [ ] Add 2–5 more metric-rich accomplishments as numbers become available (boot-reliability is the template)
-- [ ] Phase 4c when metrics land: `metrics` array schema + `AccomplishmentMetrics.astro` rendered between summary and "Inspect impact"
+- [ ] Phase 4c when metrics land: `metrics` array schema + `AccomplishmentMetrics.astro` rendered in `AccomplishmentCard.astro` between summary and impact
 - [x] Phase 6: design direction decision → DONE 2026-10-11 (three type roles; see comment block in `src/styles/global.css`)
 - [ ] Snake embed: align its palette and font stack with the portfolio (change lives in the `snake` repo; it currently falls back to Courier New)
 - [ ] Consider syncing upstream project.yaml copy with unslop rules next time those repos are touched

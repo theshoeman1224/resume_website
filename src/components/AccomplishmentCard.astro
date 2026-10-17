@@ -1,46 +1,46 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { formatDateRange, formatMonthYear } from "../lib/dates";
+import type { RoleLink } from "../lib/career";
+import { formatSpan } from "../lib/dates";
 
 interface Props {
   accomplishment: CollectionEntry<"accomplishments">;
-  relatedRoles: { slug: string; title: string; organization: string }[];
+  role: RoleLink;
+  relatedRoles: RoleLink[];
 }
 
-const { accomplishment, relatedRoles } = Astro.props;
+const { accomplishment, role, relatedRoles } = Astro.props;
 const { data } = accomplishment;
-
-const sameDay = data.endDate && data.date.valueOf() === data.endDate.valueOf();
-const dateLabel = sameDay ? formatMonthYear(data.date) : formatDateRange(data.date, data.endDate);
+const dateLabel = formatSpan(data.date, data.endDate);
 ---
 
-<article class="accomplishment-card" data-category={data.category}>
-  <header class="accomplishment-card-head">
+<article class="accomplishment-card">
+  <header class="accomplishment-card-head label">
     <span class="accomplishment-card-date">{dateLabel}</span>
     <span class="accomplishment-card-category">{data.category}</span>
-    <span class="accomplishment-card-role">{data.role} · {data.organization}</span>
+    <span class="accomplishment-card-role">{role.title} · {role.organization}</span>
   </header>
   <h4 class="accomplishment-card-title">{data.title}</h4>
   <p class="accomplishment-card-summary">{data.summary}</p>
   <div class="accomplishment-card-body">
     <p class="accomplishment-card-impact">{data.impact}</p>
     {data.technologies.length > 0 && (
-      <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+      <ul class="chip-list label" aria-label={`Technologies used for ${data.title}`}>
         {data.technologies.map((technology) => <li>{technology}</li>)}
       </ul>
     )}
   </div>
   {relatedRoles.length > 0 && (
     <footer class="accomplishment-card-related">
-      <span class="accomplishment-card-related-label">Also linked to</span>
+      <span class="accomplishment-card-related-label label">Also linked to</span>
       <ul class="related-role-list">
         {relatedRoles.map((rel) => (
           <li>
             <button
               type="button"
-              class="related-role-chip"
-              data-role-node={rel.slug}
-              aria-label={`Switch to role: ${rel.title} at ${rel.organization}`}
+              class="related-role-chip label"
+              data-role-link={rel.id}
+              aria-label={`Open role: ${rel.title} at ${rel.organization}`}
             >
               <span class="related-role-chip-title">{rel.title}</span>
               <span class="related-role-chip-org">{rel.organization}</span>
@@ -51,3 +51,113 @@ const dateLabel = sameDay ? formatMonthYear(data.date) : formatDateRange(data.da
     </footer>
   )}
 </article>
+
+<style>
+  .accomplishment-card {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+
+  .accomplishment-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+    align-items: baseline;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-date {
+    color: var(--muted);
+  }
+
+  .accomplishment-card-category {
+    color: var(--signal);
+  }
+
+  .accomplishment-card-role {
+    color: var(--signal);
+  }
+
+  .accomplishment-card-title {
+    max-width: 44ch;
+    margin: 0;
+    font-size: var(--text-display-s);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .accomplishment-card-summary {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-body {
+    display: grid;
+    gap: var(--space-s);
+    margin-top: var(--space-3xs);
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--line);
+  }
+
+  .accomplishment-card-impact {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .accomplishment-card-related {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-xs);
+    align-items: center;
+    padding-top: var(--space-xs);
+    border-top: 1px solid var(--line);
+    margin-top: var(--space-3xs);
+  }
+
+  .accomplishment-card-related-label {
+    color: var(--muted);
+  }
+
+  .related-role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related-role-chip {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+    padding: var(--space-3xs) var(--space-2xs);
+    border: 1px solid var(--line-strong);
+    background: var(--signal-soft);
+    color: var(--signal);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color var(--duration-fast) var(--ease);
+  }
+
+  @media (pointer: coarse) {
+    .related-role-chip {
+      min-height: var(--tap-target);
+      justify-content: center;
+    }
+  }
+
+  .related-role-chip:hover {
+    border-color: var(--signal);
+  }
+
+  .related-role-chip-org {
+    color: var(--muted);
+  }
+</style>

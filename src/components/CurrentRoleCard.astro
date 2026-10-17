@@ -10,8 +10,8 @@ const { role } = Astro.props;
 const { data } = role;
 ---
 
-<aside class="current-role" aria-label="Current role">
-  <p class="current-role-meta">
+<div class="current-role">
+  <p class="current-role-meta label">
     <span class="current-role-label">Current role</span>
     <span aria-hidden="true">·</span>
     <span>{data.organization}</span>
@@ -21,8 +21,65 @@ const { data } = role;
   </p>
   <p class="current-role-summary">{data.summary}</p>
   {data.focus.length > 0 && (
-    <ul class="current-role-focus" aria-label="Focus areas">
+    <ul class="chip-list label" aria-label="Focus areas">
       {data.focus.map((area) => <li>{area}</li>)}
     </ul>
   )}
-</aside>
+</div>
+
+<style>
+  .current-role {
+    display: grid;
+    gap: var(--space-l);
+    margin-block: 0 clamp(2rem, 5vw, 3rem);
+    padding: var(--space-panel);
+    border: 1px solid var(--signal);
+    background: var(--panel);
+  }
+
+  .current-role-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .current-role-label {
+    color: var(--signal);
+  }
+
+  .current-role-pulse {
+    display: inline-block;
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-left: var(--space-3xs);
+    background: var(--signal);
+    border-radius: 50%;
+    vertical-align: middle;
+  }
+
+  .current-role-pulse::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--signal);
+    border-radius: 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .current-role-pulse::after {
+      animation: pulse-ring var(--duration-pulse) ease-out infinite;
+    }
+  }
+
+  .current-role-summary {
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--ink);
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+</style>
