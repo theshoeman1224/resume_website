@@ -19,10 +19,7 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
     )}
   </a>
   <div class="project-card-content">
-    <div class="project-card-meta label">
-      <span>{PROJECT_STATUS_LABELS[data.status]}</span>
-      <span>{String(data.technologies.length).padStart(2, "0")} technologies</span>
-    </div>
+    <p class="project-card-meta label">{PROJECT_STATUS_LABELS[data.status]}</p>
     <h3><a href={`/projects/${data.slug}/`}>{data.name}</a></h3>
     <p>{data.summary}</p>
     <ul class="chip-list label" aria-label={`Technologies used for ${data.name}`}>
@@ -95,9 +92,7 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
   }
 
   .project-card-meta {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-s);
+    margin: 0;
     color: var(--muted);
   }
 

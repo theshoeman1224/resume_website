@@ -19,10 +19,8 @@ const currentRole = findCurrentRole(roles);
 >
   <header class="shell page-intro">
     <p class="eyebrow">Experience</p>
-    <h1 class="page-intro-lead">
-      Principal Software Engineer
-      <span class="page-intro-subtitle">leading performant systems for the customer and the program, accountable for the technical direction behind them.</span>
-    </h1>
+    <h1 class="page-intro-lead">Principal Software Engineer</h1>
+    <p>leading performant systems for the customer and the program, accountable for the technical direction behind them.</p>
   </header>
 
   {currentRole && (
@@ -48,16 +46,6 @@ const currentRole = findCurrentRole(roles);
 <style>
   .page-intro h1.page-intro-lead {
     max-width: 100%;
-  }
-
-  .page-intro-subtitle {
-    display: block;
-    max-width: var(--measure);
-    margin-top: var(--space-l);
-    font-family: var(--font-body);
-    font-size: var(--text-lead);
-    letter-spacing: 0;
-    line-height: 1.55;
-    text-wrap: wrap;
+    margin-bottom: var(--space-l);
   }
 </style>

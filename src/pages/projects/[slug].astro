@@ -26,7 +26,8 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
 
 <BaseLayout title={`${data.name} | Josh Shuman`} description={data.summary}>
   <header class="shell project-intro">
-    <a class="eyebrow" href="/projects/">Projects / {PROJECT_STATUS_LABELS[data.status]}</a>
+    <a class="back-link label" href="/projects/"><span aria-hidden="true">←</span> All projects</a>
+    <p class="eyebrow">Project / {PROJECT_STATUS_LABELS[data.status]}</p>
     <h1>{data.name}</h1>
     <p>{data.tagline}</p>
     <ul class="chip-list label" aria-label={`Technologies used for ${data.name}`}>
@@ -78,8 +79,22 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
     padding-block: var(--space-intro) var(--space-intro-end);
   }
 
-  .project-intro > .eyebrow {
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: var(--tap-target);
+    margin-bottom: var(--space-s);
+    color: var(--muted);
     text-decoration: none;
+  }
+
+  .back-link:hover {
+    color: var(--signal);
+  }
+
+  .project-intro > .eyebrow {
+    margin-bottom: 0;
   }
 
   .project-intro h1 {
@@ -89,7 +104,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
     letter-spacing: -0.035em;
   }
 
-  .project-intro > p {
+  .project-intro > p:not(.eyebrow) {
     max-width: var(--measure);
     font-size: var(--text-lead);
     line-height: 1.55;
