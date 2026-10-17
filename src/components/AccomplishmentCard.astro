@@ -146,6 +146,13 @@ const dateLabel = formatSpan(data.date, data.endDate);
     transition: border-color var(--duration-fast) var(--ease);
   }
 
+  @media (pointer: coarse) {
+    .related-role-chip {
+      min-height: var(--tap-target);
+      justify-content: center;
+    }
+  }
+
   .related-role-chip:hover {
     border-color: var(--signal);
   }

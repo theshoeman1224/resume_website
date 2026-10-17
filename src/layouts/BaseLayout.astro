@@ -20,10 +20,12 @@ const socialImageUrl = new URL("/social-preview.png", Astro.site ?? Astro.url.or
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Lets CSS switch to script-driven layouts (the timeline spine) without a flash. -->
     <script is:inline>document.documentElement.classList.add("js");</script>
-    <Font cssVariable="--font-serif" preload />
+    <!-- Preload the faces every page renders first; the serif italic (home hero only) loads on demand. -->
+    <Font cssVariable="--font-serif" preload={[{ style: "normal" }]} />
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
     <meta name="description" content={description} />
+    <!-- Matches --paper in global.css. -->
     <meta name="theme-color" content="#101311" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

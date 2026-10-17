@@ -30,7 +30,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
         <a class="button" href="#projects">Projects</a>
       </div>
     </div>
-    <aside class="hero-aside" aria-label="Engineering focus">
+    <div class="hero-aside">
       <p class="status-line label">Focus areas / 05</p>
       <dl>
         {specialties.map((specialty, index) => (
@@ -40,7 +40,7 @@ const featuredProjects = (await getCollection("projects")).filter(({ data }) => 
           </div>
         ))}
       </dl>
-    </aside>
+    </div>
   </section>
 
   <section class="section" id="about" aria-labelledby="about-title">

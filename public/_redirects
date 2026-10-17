@@ -1,0 +1,3 @@
+# Cloudflare Workers static assets redirects (served before the files in dist/).
+/projects/snake/ /projects/rust-wasm-snake/ 301
+/projects/snake /projects/rust-wasm-snake/ 301

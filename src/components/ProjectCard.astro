@@ -115,6 +115,14 @@ const demoUrl = projectDemoUrl(data, { site: Astro.site });
     color: var(--muted);
   }
 
+  @media (pointer: coarse) {
+    .project-card-actions a {
+      display: inline-flex;
+      align-items: center;
+      min-height: var(--tap-target);
+    }
+  }
+
   .project-card-actions {
     display: flex;
     flex-wrap: wrap;
