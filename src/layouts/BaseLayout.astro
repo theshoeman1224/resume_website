@@ -18,6 +18,8 @@ const socialImageUrl = new URL("/social-preview.png", Astro.site ?? Astro.url.or
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Lets CSS switch to script-driven layouts (the timeline spine) without a flash. -->
+    <script is:inline>document.documentElement.classList.add("js");</script>
     <Font cssVariable="--font-serif" preload />
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />

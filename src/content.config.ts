@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { PROJECT_DEMO_TYPES, PROJECT_STATUSES } from "./lib/project-vocabulary.js";
 
 const accomplishments = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/accomplishments" }),
@@ -12,11 +13,9 @@ const accomplishments = defineCollection({
     summary: z.string(),
     impact: z.string(),
     technologies: z.array(z.string()).default([]),
-    role: z.string(),
-    organization: z.string(),
+    // Cross-collection IDs are checked by validateCareerGraph (src/lib/career.ts).
     roleId: z.string(),
     relatedRoles: z.array(z.string()).default([]),
-    featured: z.boolean().default(false),
   }),
 });
 
@@ -64,14 +63,14 @@ const projects = defineCollection({
       })),
     }),
     demo: z.object({
-      type: z.enum(["none", "wasm", "web", "external"]),
+      type: z.enum(PROJECT_DEMO_TYPES),
       build_command: z.string().optional(),
       output_directory: z.string().optional(),
       entrypoint: z.string().optional(),
       url: z.url().optional(),
     }),
     featured: z.boolean().default(false),
-    status: z.enum(["active", "complete", "experimental", "prototype", "archived"]),
+    status: z.enum(PROJECT_STATUSES),
     image: z.object({
       src: z.string(),
       alt: z.string(),

@@ -9,11 +9,8 @@ technologies:
   - DevSecOps
   - Agile delivery
   - Cross-functional planning
-role: Software Engineer
-organization: Raytheon
 roleId: devsecops-lead
 relatedRoles:
   - software-engineer-raytheon
-featured: false
 ---
 

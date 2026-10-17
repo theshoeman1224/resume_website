@@ -10,7 +10,7 @@ const { role } = Astro.props;
 const { data } = role;
 ---
 
-<aside class="current-role" aria-label="Current role">
+<div class="current-role">
   <p class="current-role-meta">
     <span class="current-role-label">Current role</span>
     <span aria-hidden="true">·</span>
@@ -21,8 +21,8 @@ const { data } = role;
   </p>
   <p class="current-role-summary">{data.summary}</p>
   {data.focus.length > 0 && (
-    <ul class="current-role-focus" aria-label="Focus areas">
+    <ul class="chip-list label" aria-label="Focus areas">
       {data.focus.map((area) => <li>{area}</li>)}
     </ul>
   )}
-</aside>
+</div>

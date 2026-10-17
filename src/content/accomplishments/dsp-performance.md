@@ -10,11 +10,8 @@ technologies:
   - DSP
   - Embedded systems
   - Performance profiling
-role: Software Engineer
-organization: Raytheon
 roleId: software-engineer-raytheon
 relatedRoles:
   - devsecops-lead
-featured: true
 ---
 

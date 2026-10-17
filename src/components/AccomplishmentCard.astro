@@ -1,31 +1,31 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import { formatDateRange, formatMonthYear } from "../lib/dates";
+import type { RoleLink } from "../lib/career";
+import { formatSpan } from "../lib/dates";
 
 interface Props {
   accomplishment: CollectionEntry<"accomplishments">;
-  relatedRoles: { slug: string; title: string; organization: string }[];
+  role: RoleLink;
+  relatedRoles: RoleLink[];
 }
 
-const { accomplishment, relatedRoles } = Astro.props;
+const { accomplishment, role, relatedRoles } = Astro.props;
 const { data } = accomplishment;
-
-const sameDay = data.endDate && data.date.valueOf() === data.endDate.valueOf();
-const dateLabel = sameDay ? formatMonthYear(data.date) : formatDateRange(data.date, data.endDate);
+const dateLabel = formatSpan(data.date, data.endDate);
 ---
 
-<article class="accomplishment-card" data-category={data.category}>
+<article class="accomplishment-card">
   <header class="accomplishment-card-head">
     <span class="accomplishment-card-date">{dateLabel}</span>
     <span class="accomplishment-card-category">{data.category}</span>
-    <span class="accomplishment-card-role">{data.role} · {data.organization}</span>
+    <span class="accomplishment-card-role">{role.title} · {role.organization}</span>
   </header>
   <h4 class="accomplishment-card-title">{data.title}</h4>
   <p class="accomplishment-card-summary">{data.summary}</p>
   <div class="accomplishment-card-body">
     <p class="accomplishment-card-impact">{data.impact}</p>
     {data.technologies.length > 0 && (
-      <ul class="technology-list" aria-label={`Technologies used for ${data.title}`}>
+      <ul class="chip-list label" aria-label={`Technologies used for ${data.title}`}>
         {data.technologies.map((technology) => <li>{technology}</li>)}
       </ul>
     )}
@@ -39,8 +39,8 @@ const dateLabel = sameDay ? formatMonthYear(data.date) : formatDateRange(data.da
             <button
               type="button"
               class="related-role-chip"
-              data-role-node={rel.slug}
-              aria-label={`Switch to role: ${rel.title} at ${rel.organization}`}
+              data-role-link={rel.id}
+              aria-label={`Open role: ${rel.title} at ${rel.organization}`}
             >
               <span class="related-role-chip-title">{rel.title}</span>
               <span class="related-role-chip-org">{rel.organization}</span>

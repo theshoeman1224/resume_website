@@ -2,7 +2,8 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GameEmbed from "../../components/GameEmbed.astro";
-import { formatDateRange, formatMonthYear } from "../../lib/dates";
+import { formatProjectDates } from "../../lib/dates";
+import { PROJECT_STATUS_LABELS, projectDemoUrl } from "../../lib/projects";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -18,34 +19,17 @@ interface Props {
 
 const { project } = Astro.props;
 const { data } = project;
-const statusLabels = {
-  active: "Active",
-  complete: "Complete",
-  experimental: "Experimental",
-  prototype: "Prototype",
-  archived: "Archived",
-};
 const descriptionParagraphs = data.description.split(/\n\s*\n/);
-const demoUrl = data.demoAdapter === "snake"
-  ? "#play"
-  : data.demo.type === "external"
-    ? data.demo.url
-    : undefined;
-const started = data.dates.started ? new Date(data.dates.started) : undefined;
-const completed = data.dates.completed ? new Date(data.dates.completed) : undefined;
-const dateRange = !started
-  ? completed && formatMonthYear(completed)
-  : completed || data.status === "active"
-    ? formatDateRange(started, completed)
-    : formatMonthYear(started);
+const demoUrl = projectDemoUrl(data, { site: Astro.site, onDetailPage: true });
+const dateRange = formatProjectDates(data.dates, data.status === "active");
 ---
 
 <BaseLayout title={`${data.name} | Josh Shuman`} description={data.summary}>
   <header class="shell project-intro">
-    <a class="eyebrow" href="/projects/">Projects / {statusLabels[data.status]}</a>
+    <a class="eyebrow" href="/projects/">Projects / {PROJECT_STATUS_LABELS[data.status]}</a>
     <h1>{data.name}</h1>
     <p>{data.tagline}</p>
-    <ul class="technology-list" aria-label={`Technologies used for ${data.name}`}>
+    <ul class="chip-list label" aria-label={`Technologies used for ${data.name}`}>
       {data.technologies.map((technology) => <li>{technology}</li>)}
     </ul>
     <div class="hero-actions">
