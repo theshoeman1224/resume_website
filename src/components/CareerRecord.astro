@@ -1,0 +1,201 @@
+---
+import type { CollectionEntry } from "astro:content";
+import RoleEntry from "./RoleEntry.astro";
+import WorkProjectEntry from "./WorkProjectEntry.astro";
+import { byId, careerKey, type EmployerGroup } from "../lib/career";
+import { formatDateRange, formatDuration } from "../lib/dates";
+
+type Role = CollectionEntry<"roles">;
+
+interface Props {
+  groups: EmployerGroup<Role>[];
+  roles: Role[];
+  accomplishments: CollectionEntry<"accomplishments">[];
+  workProjects: CollectionEntry<"workProjects">[];
+  relations: Map<string, string[]>;
+}
+
+const { groups, roles, accomplishments, workProjects, relations } = Astro.props;
+const rolesById = byId(roles);
+
+/** A project belongs to the group that holds any of its roles. */
+function projectsIn(group: EmployerGroup<Role>) {
+  const ids = new Set(group.roles.flatMap(({ role, concurrent }) => [role.id, ...concurrent.map((r) => r.id)]));
+  return workProjects
+    .filter((p) => p.data.roles.some((id) => ids.has(id)))
+    .sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+}
+
+function groupMeta(group: EmployerGroup<Role>): string[] {
+  const titles = group.roles.length;
+  return [
+    formatDateRange(group.startDate, group.endDate),
+    formatDuration(group.startDate, group.endDate),
+    `${titles} ${titles === 1 ? "role" : "roles"}`,
+    ...(group.promotions > 0 ? [`${group.promotions} ${group.promotions === 1 ? "promotion" : "promotions"}`] : []),
+  ];
+}
+---
+
+<div class="record">
+  {groups.map((group) => {
+    const projects = projectsIn(group);
+    return (
+      <section class="employer" aria-label={group.organization}>
+        <header class="employer-head">
+          <h3 class="employer-name">{group.organization}</h3>
+          <p class="employer-meta label">
+            {groupMeta(group).map((part) => <span>{part}</span>)}
+          </p>
+        </header>
+        <ol class="employer-roles">
+          {group.roles.map(({ role, concurrent }) => (
+            <li>
+              <RoleEntry
+                role={role}
+                concurrent={concurrent}
+                accomplishments={accomplishments}
+                projects={workProjects}
+                rolesById={rolesById}
+                relations={relations}
+              />
+            </li>
+          ))}
+        </ol>
+        {projects.length > 0 && (
+          <div class="employer-projects">
+            <p class="eyebrow">Work projects at {group.organization}</p>
+            <ul>
+              {projects.map((project) => (
+                <li>
+                  <WorkProjectEntry
+                    project={project}
+                    accomplishments={accomplishments}
+                    rolesById={rolesById}
+                    related={(relations.get(careerKey.work(project.id)) ?? []).join(" ")}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+    );
+  })}
+</div>
+
+<style>
+  .record {
+    display: grid;
+    gap: var(--space-3xl);
+  }
+
+  .employer {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.3fr) minmax(0, 1fr);
+    gap: var(--space-l) var(--space-xl);
+  }
+
+  .employer-head {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-l));
+    padding-top: var(--space-s);
+    border-top: 2px solid var(--signal);
+  }
+
+  .employer-name {
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-display-m);
+    letter-spacing: -0.02em;
+  }
+
+  .employer-meta {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* The promotion ladder: a rule down the left with a marker per role. */
+  .employer-roles {
+    display: grid;
+    gap: var(--space-2xl);
+    margin: 0;
+    padding: 0 0 0 var(--space-l);
+    border-left: 1px solid var(--line-strong);
+    list-style: none;
+  }
+
+  .employer-roles > li {
+    position: relative;
+  }
+
+  .employer-roles > li::before {
+    position: absolute;
+    top: 0.3rem;
+    left: calc(-1 * var(--space-l) - 0.3125rem);
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 1px solid var(--signal);
+    background: var(--paper);
+    content: "";
+  }
+
+  .employer-roles > li:has(> .role[data-current])::before {
+    background: var(--signal);
+  }
+
+  .employer-projects {
+    grid-column: 2;
+    display: grid;
+    gap: var(--space-xs);
+    padding-left: calc(var(--space-l) + 1px);
+  }
+
+  .employer-projects .eyebrow {
+    margin: 0;
+  }
+
+  .employer-projects ul {
+    display: grid;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (width < 52rem) {
+    .employer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .employer-head {
+      position: static;
+    }
+
+    .employer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3xs) var(--space-s);
+    }
+
+    .employer-projects {
+      grid-column: 1;
+    }
+  }
+
+  @media (width < 35rem) {
+    .employer-roles {
+      padding-left: var(--space-s);
+    }
+
+    .employer-roles > li::before {
+      left: calc(-1 * var(--space-s) - 0.3125rem);
+    }
+
+    .employer-projects {
+      padding-left: 0;
+    }
+  }
+</style>

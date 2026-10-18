@@ -1,5 +1,6 @@
 ---
 title: Research Assistant
+shortTitle: Research
 organization: Wentworth Institute of Technology
 startDate: 2017-05-01
 endDate: 2018-01-01

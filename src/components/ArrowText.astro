@@ -1,0 +1,30 @@
+---
+import Arrow from "./Arrow.astro";
+
+// Renders content text such as "7–10% → 1–2%" with drawn arrows. Screen
+// readers hear "7–10% to 1–2%". The only place a line may break is before an
+// arrow, so a wrap reads "7–10%" / "→ 1–2%" (never "7–" / "10%").
+interface Props {
+  text: string;
+}
+
+// Odd indexes are the arrows themselves (the capture group).
+const [first, ...rest] = Astro.props.text.split(/\s*([→←])\s*/);
+const pairs: { arrow: string; after: string }[] = [];
+for (let index = 0; index < rest.length; index += 2) pairs.push({ arrow: rest[index], after: rest[index + 1] ?? "" });
+---
+
+<span class="arrow-pair">{first}</span>{pairs.map(({ arrow, after }) => (
+  <>{" "}<span class="arrow-pair"><Arrow direction={arrow === "←" ? "left" : "right"} /><span class="visually-hidden"> {arrow === "←" ? "from" : "to"} </span>{after}</span></>
+))}
+
+<style>
+  .arrow-pair {
+    white-space: nowrap;
+  }
+
+  /* The space before the arrow does the spacing (and vanishes at a line break), so no margin before it. */
+  .arrow-pair > :global(.arrow:first-child) {
+    margin-inline-start: 0;
+  }
+</style>

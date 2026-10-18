@@ -1,0 +1,274 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Arrow from "../../components/Arrow.astro";
+import ArrowText from "../../components/ArrowText.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import { byId, careerKey, roleLinks } from "../../lib/career";
+import { formatDateRange, formatSpan } from "../../lib/dates";
+
+export async function getStaticPaths() {
+  const accomplishments = (await getCollection("accomplishments")).sort(
+    (a, b) => a.data.date.valueOf() - b.data.date.valueOf(),
+  );
+  return accomplishments.map((entry, index) => ({
+    params: { slug: entry.id },
+    props: { entry, earlier: accomplishments[index - 1], later: accomplishments[index + 1] },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<"accomplishments">;
+  earlier?: CollectionEntry<"accomplishments">;
+  later?: CollectionEntry<"accomplishments">;
+}
+
+const { entry, earlier, later } = Astro.props;
+const { id, data } = entry;
+const roles = await getCollection("roles");
+const rolesById = byId(roles);
+const role = rolesById.get(data.roleId);
+const project = data.workProject
+  ? (await getCollection("workProjects")).find((p) => p.id === data.workProject)
+  : undefined;
+const alsoUnder = roleLinks(data.relatedRoles, rolesById);
+const { Content } = await render(entry);
+// Until a case study is written, the summary and impact stand in for it.
+const hasStory = Boolean(entry.body?.trim());
+---
+
+<BaseLayout title={`${data.title} | Josh Shuman`} description={data.summary}>
+  <article class="shell case">
+    <header class="page-intro case-intro">
+      <p class="eyebrow">
+        <a href={`/experience/#${careerKey.win(id)}`}>Experience</a> / Case study
+      </p>
+      <h1>{data.title}</h1>
+      <p class="case-meta label">
+        <span>{formatSpan(data.date, data.endDate)}</span>
+        <span class="case-category">{data.category}</span>
+        {role && <span>{role.data.title} · {role.data.organization}</span>}
+      </p>
+    </header>
+
+    <div class="case-layout">
+      <div class="case-story">
+        {data.metric && (
+          <p class="case-metric">
+            <span class="case-metric-value"><ArrowText text={data.metric.value} /></span>
+            <span class="label">{data.metric.label}</span>
+          </p>
+        )}
+        {hasStory ? (
+          <div class="case-prose"><Content /></div>
+        ) : (
+          <div class="case-prose">
+            <h2>What I did</h2>
+            <p>{data.summary}</p>
+            <h2>Result</h2>
+            <p>{data.impact}</p>
+          </div>
+        )}
+      </div>
+
+      <aside class="case-facts" aria-label="Details">
+        <dl>
+          {role && (
+            <div>
+              <dt class="label">Role</dt>
+              <dd>
+                <a href={`/experience/#${careerKey.role(role.id)}`}>{role.data.title}</a>
+                <span class="case-fact-note">{role.data.organization} · {formatDateRange(role.data.startDate, role.data.endDate)}</span>
+              </dd>
+            </div>
+          )}
+          {project && (
+            <div>
+              <dt class="label">Work project</dt>
+              <dd>
+                <a href={`/experience/#${careerKey.work(project.id)}`}>{project.data.title}</a>
+                <span class="case-fact-note">{formatDateRange(project.data.startDate, project.data.endDate)}</span>
+              </dd>
+            </div>
+          )}
+          {alsoUnder.length > 0 && (
+            <div>
+              <dt class="label">Also under</dt>
+              <dd>
+                {alsoUnder.map((rel) => <a href={`/experience/#${careerKey.role(rel.id)}`}>{rel.title}</a>)}
+              </dd>
+            </div>
+          )}
+          {data.technologies.length > 0 && (
+            <div>
+              <dt class="label">Technologies</dt>
+              <dd>
+                <ul class="chip-list label">
+                  {data.technologies.map((technology) => <li>{technology}</li>)}
+                </ul>
+              </dd>
+            </div>
+          )}
+        </dl>
+      </aside>
+    </div>
+
+    <nav class="case-pager" aria-label="More case studies">
+      {earlier ? (
+        <a href={`/experience/${earlier.id}/`} rel="prev">
+          <span class="label"><Arrow direction="left" />Earlier</span>
+          <span class="case-pager-title">{earlier.data.title}</span>
+        </a>
+      ) : <span></span>}
+      {later && (
+        <a href={`/experience/${later.id}/`} rel="next" class="case-pager-next">
+          <span class="label">Later<Arrow /></span>
+          <span class="case-pager-title">{later.data.title}</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .case-intro h1 {
+    max-width: 24ch;
+    font-size: var(--text-display-l);
+  }
+
+  .case-intro .eyebrow a {
+    text-decoration: none;
+  }
+
+  /* Outranks the global .page-intro > p:last-child lead size. */
+  .case-intro .case-meta {
+    max-width: none;
+    font-size: var(--text-label);
+    line-height: 1.4;
+  }
+
+  .case-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-m);
+    color: var(--muted);
+  }
+
+  .case-category {
+    color: var(--signal);
+  }
+
+  .case-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.4fr);
+    gap: var(--space-2xl);
+    padding-bottom: var(--space-section);
+  }
+
+  .case-metric {
+    display: grid;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .case-metric-value {
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-size: var(--text-display-l);
+    line-height: 1.05;
+  }
+
+  .case-prose {
+    max-width: var(--measure);
+  }
+
+  .case-prose :global(h2) {
+    margin: var(--space-xl) 0 var(--space-xs);
+    font-size: var(--text-display-s);
+    letter-spacing: -0.01em;
+  }
+
+  .case-prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .case-prose :global(p),
+  .case-prose :global(li) {
+    font-size: var(--text-lead);
+    line-height: 1.6;
+  }
+
+  .case-facts dl {
+    display: grid;
+    gap: var(--space-l);
+    margin: 0;
+    padding-top: var(--space-s);
+    border-top: 2px solid var(--signal);
+  }
+
+  .case-facts dt {
+    margin-bottom: var(--space-3xs);
+    color: var(--muted);
+  }
+
+  .case-facts dd {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: 0;
+  }
+
+  .case-facts dd > a {
+    color: var(--signal);
+  }
+
+  .case-fact-note {
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+
+  .case-pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-s);
+    padding-block: var(--space-xl) var(--space-section);
+    border-top: 1px solid var(--line);
+  }
+
+  .case-pager a {
+    display: grid;
+    gap: var(--space-2xs);
+    text-decoration: none;
+  }
+
+  .case-pager .label {
+    color: var(--signal);
+  }
+
+  .case-pager-next {
+    text-align: right;
+  }
+
+  .case-pager-title {
+    font-family: var(--font-display);
+    font-size: var(--text-display-s);
+    line-height: 1.25;
+  }
+
+  @media (width < 52rem) {
+    .case-layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (width < 35rem) {
+    .case-pager {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .case-pager-next {
+      text-align: left;
+    }
+  }
+</style>

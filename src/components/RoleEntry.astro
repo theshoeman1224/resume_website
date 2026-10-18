@@ -1,0 +1,198 @@
+---
+import type { CollectionEntry } from "astro:content";
+import AccomplishmentCard from "./AccomplishmentCard.astro";
+import { accomplishmentsForRole, byId, careerKey, roleLinks, type RoleLike } from "../lib/career";
+import { formatDateRange, formatDuration } from "../lib/dates";
+
+type Role = CollectionEntry<"roles">;
+
+interface Props {
+  role: Role;
+  concurrent?: Role[];
+  accomplishments: CollectionEntry<"accomplishments">[];
+  projects: CollectionEntry<"workProjects">[];
+  rolesById: ReadonlyMap<string, RoleLike>;
+  relations: Map<string, string[]>;
+  /** A concurrent role renders nested and one heading level down. */
+  nested?: boolean;
+}
+
+const { role, concurrent = [], accomplishments, projects, rolesById, relations, nested = false } = Astro.props;
+const { id, data } = role;
+const key = careerKey.role(id);
+const related = (k: string) => (relations.get(k) ?? []).join(" ");
+const Heading = nested ? "h5" : "h4";
+
+const wins = accomplishmentsForRole(role, byId(accomplishments));
+const roleProjects = projects.filter((p) => p.data.roles.includes(id));
+const projectById = new Map(projects.map((p) => [p.id, p]));
+---
+
+<article class="role" id={key} data-key={key} data-related={related(key)} data-nested={nested ? "" : undefined} data-current={!data.endDate ? "" : undefined}>
+  <header class="role-head">
+    <p class="role-meta label">
+      {nested && <span class="role-tag">Held alongside</span>}
+      <span>{formatDateRange(data.startDate, data.endDate)}</span>
+      <span class="role-duration">{formatDuration(data.startDate, data.endDate)}</span>
+      {data.promotion && <span class="role-tag">Promotion</span>}
+      {!data.endDate && <span class="role-tag">Current</span>}
+    </p>
+    <Heading class="role-title">{data.title}</Heading>
+    {data.scope.length > 0 && (
+      <ul class="role-scope label" aria-label="Scope">
+        {data.scope.map((item) => <li>{item}</li>)}
+      </ul>
+    )}
+  </header>
+
+  <p class="role-summary">{data.summary}</p>
+
+  {(data.focus.length > 0 || roleProjects.length > 0) && (
+    <div class="role-facts">
+      {data.focus.length > 0 && (
+        <ul class="chip-list label" aria-label="Focus areas">
+          {data.focus.map((area) => <li>{area}</li>)}
+        </ul>
+      )}
+      {roleProjects.length > 0 && (
+        <p class="role-projects label">
+          Work project{roleProjects.length > 1 ? "s" : ""}{" "}
+          {roleProjects.map((project, index) => (
+            <>{index > 0 && ", "}<a href={`#${careerKey.work(project.id)}`}>{project.data.title}</a></>
+          ))}
+        </p>
+      )}
+    </div>
+  )}
+
+  {wins.length > 0 && (
+    <ul class="role-wins" aria-label={`Accomplishments as ${data.title}`}>
+      {wins.map((win) => (
+        <li>
+          <AccomplishmentCard
+            accomplishment={win}
+            relatedRoles={roleLinks(win.data.relatedRoles.filter((r) => r !== id), rolesById)}
+            project={win.data.workProject ? projectById.get(win.data.workProject) : undefined}
+            related={related(careerKey.win(win.id))}
+            level={nested ? 6 : 5}
+          />
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {concurrent.map((other) => (
+    <Astro.self
+      role={other}
+      accomplishments={accomplishments}
+      projects={projects}
+      rolesById={rolesById}
+      relations={relations}
+      nested
+    />
+  ))}
+</article>
+
+<style>
+  .role {
+    display: grid;
+    gap: var(--space-s);
+    scroll-margin-top: calc(var(--header-height) + var(--space-s));
+  }
+
+  .role[data-nested] {
+    margin-top: var(--space-xs);
+    padding: var(--space-m);
+    border: 1px dashed var(--line-strong);
+  }
+
+  .role[data-nested][data-lit],
+  .role[data-nested]:target {
+    border-color: var(--signal);
+  }
+
+  .role-head {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .role-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .role-duration {
+    color: var(--faded);
+  }
+
+  .role-tag {
+    color: var(--signal);
+  }
+
+  .role-title {
+    margin: 0;
+    font-size: var(--text-display-m);
+    letter-spacing: -0.02em;
+  }
+
+  .role[data-nested] .role-title {
+    font-size: var(--text-display-s);
+  }
+
+  .role:target > .role-head .role-title,
+  .role[data-lit] > .role-head .role-title {
+    color: var(--signal);
+  }
+
+  .role-scope {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--ink);
+  }
+
+  .role-scope li::before {
+    color: var(--signal);
+    content: "// ";
+  }
+
+  .role-summary {
+    max-width: var(--measure);
+    margin: 0;
+    font-size: var(--text-lead);
+    line-height: 1.55;
+  }
+
+  .role[data-nested] .role-summary {
+    font-size: var(--text-body);
+    color: var(--muted);
+  }
+
+  .role-facts {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .role-projects {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .role-projects a {
+    color: var(--signal);
+  }
+
+  .role-wins {
+    display: grid;
+    gap: var(--space-xs);
+    margin: var(--space-2xs) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

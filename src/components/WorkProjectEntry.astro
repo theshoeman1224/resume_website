@@ -1,0 +1,118 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { accomplishmentsForProject, careerKey, roleLinks, type RoleLike } from "../lib/career";
+import { formatDateRange, formatDuration } from "../lib/dates";
+
+interface Props {
+  project: CollectionEntry<"workProjects">;
+  accomplishments: CollectionEntry<"accomplishments">[];
+  rolesById: ReadonlyMap<string, RoleLike>;
+  related: string;
+}
+
+const { project, accomplishments, rolesById, related } = Astro.props;
+const { id, data } = project;
+const key = careerKey.work(id);
+const roles = roleLinks(data.roles, rolesById);
+const wins = accomplishmentsForProject(id, accomplishments);
+---
+
+<article class="project" id={key} data-key={key} data-related={related}>
+  <p class="project-meta label">
+    <span>{formatDateRange(data.startDate, data.endDate)}</span>
+    <span class="project-duration">{formatDuration(data.startDate, data.endDate)}</span>
+  </p>
+  <h4 class="project-title">{data.title}</h4>
+  <p class="project-summary">{data.summary}</p>
+  <dl class="project-links label">
+    {roles.length > 0 && (
+      <div>
+        <dt>Role{roles.length > 1 ? "s" : ""}</dt>
+        <dd>
+          {roles.map((role, index) => (
+            <>{index > 0 && ", "}<a href={`#${careerKey.role(role.id)}`}>{role.title}</a></>
+          ))}
+        </dd>
+      </div>
+    )}
+    {wins.length > 0 && (
+      <div>
+        <dt>Win{wins.length > 1 ? "s" : ""}</dt>
+        <dd>
+          {wins.map((win, index) => (
+            <>{index > 0 && ", "}<a href={`#${careerKey.win(win.id)}`}>{win.data.shortTitle ?? win.data.title}</a></>
+          ))}
+        </dd>
+      </div>
+    )}
+  </dl>
+  {data.technologies.length > 0 && (
+    <ul class="chip-list label" aria-label={`Technologies on ${data.title}`}>
+      {data.technologies.map((technology) => <li>{technology}</li>)}
+    </ul>
+  )}
+</article>
+
+<style>
+  .project {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-m);
+    border: 1px solid var(--line);
+    background: var(--paper);
+    transition: border-color var(--duration-fast) var(--ease);
+  }
+
+  .project[data-lit],
+  .project:target {
+    border-color: var(--signal);
+  }
+
+  .project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .project-duration {
+    color: var(--faded);
+  }
+
+  .project-title {
+    margin: 0;
+    font-size: var(--text-display-s);
+    letter-spacing: -0.01em;
+  }
+
+  .project-summary {
+    max-width: var(--measure);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .project-links {
+    display: grid;
+    gap: var(--space-3xs);
+    margin: 0;
+  }
+
+  .project-links div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .project-links dt {
+    color: var(--muted);
+  }
+
+  .project-links dd {
+    margin: 0;
+  }
+
+  .project-links a {
+    color: var(--signal);
+  }
+</style>

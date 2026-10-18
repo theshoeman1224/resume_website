@@ -1,0 +1,167 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Arrow from "./Arrow.astro";
+import ArrowText from "./ArrowText.astro";
+import { careerKey, yearsBetween, type EmployerGroup } from "../lib/career";
+import { formatMonthYear } from "../lib/dates";
+
+type Role = CollectionEntry<"roles">;
+
+interface Props {
+  current: Role;
+  /** The employer group holding the current role, for the promotion ladder. */
+  group?: EmployerGroup<Role>;
+  featured: CollectionEntry<"accomplishments">[];
+}
+
+const { current, group, featured } = Astro.props;
+// The first title at the current employer, if it differs from today's.
+const first = group?.roles.at(-1)?.role;
+const ladder =
+  first && first.id !== current.id
+    ? { from: first.data.title, years: yearsBetween(first.data.startDate, current.data.startDate) }
+    : undefined;
+const metrics = featured.filter((win) => win.data.metric);
+---
+
+<section class="glance" aria-labelledby="glance-title">
+  <div class="glance-current">
+    <p class="glance-label label">
+      <span id="glance-title">Current role</span>
+      <span class="glance-pulse" aria-hidden="true"></span>
+    </p>
+    <p class="glance-role">
+      <a href={`#${careerKey.role(current.id)}`}>{current.data.title}</a>
+    </p>
+    <p class="glance-meta label">{current.data.organization} · since {formatMonthYear(current.data.startDate)}</p>
+    {ladder && (
+      <p class="glance-ladder">
+        {ladder.from}<Arrow /><span class="visually-hidden"> to </span>{current.data.title} in {ladder.years} years.
+      </p>
+    )}
+  </div>
+  {metrics.length > 0 && (
+    <ul class="glance-metrics" aria-label="Headline results">
+      {metrics.map((win) => (
+        <li>
+          <a href={`#${careerKey.win(win.id)}`}>
+            <span class="glance-value"><ArrowText text={win.data.metric!.value} /></span>
+            <span class="glance-metric-label label">{win.data.metric!.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
+
+<style>
+  .glance {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: var(--space-l) var(--space-xl);
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+    padding: var(--space-panel);
+    border: 1px solid var(--signal);
+    background: var(--panel);
+  }
+
+  .glance-current {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+  }
+
+  .glance-current p {
+    margin: 0;
+  }
+
+  .glance-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    color: var(--signal);
+  }
+
+  .glance-pulse {
+    position: relative;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--signal);
+  }
+
+  .glance-pulse::after {
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--signal);
+    border-radius: 50%;
+    content: "";
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .glance-pulse::after {
+      animation: pulse-ring var(--duration-pulse) ease-out infinite;
+    }
+  }
+
+  .glance-role {
+    font-family: var(--font-display);
+    font-size: var(--text-display-m);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .glance-role a {
+    text-decoration: none;
+  }
+
+  .glance-meta {
+    color: var(--muted);
+  }
+
+  .glance-ladder {
+    margin-top: var(--space-xs) !important;
+    color: var(--muted);
+  }
+
+  .glance-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .glance-metrics a {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+    height: 100%;
+    padding-top: var(--space-s);
+    border-top: 1px solid var(--line-strong);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--ease);
+  }
+
+  .glance-metrics a:hover {
+    border-color: var(--signal);
+  }
+
+  .glance-value {
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-size: var(--text-display-m);
+    line-height: 1.1;
+  }
+
+  .glance-metric-label {
+    color: var(--muted);
+  }
+
+  @media (width < 52rem) {
+    .glance {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

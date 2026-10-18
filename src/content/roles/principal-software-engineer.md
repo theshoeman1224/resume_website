@@ -1,5 +1,6 @@
 ---
 title: Principal Software Engineer
+shortTitle: Principal
 organization: Raytheon
 startDate: 2026-03-01
 summary: Principal engineer for embedded software on radar programs. Set architecture and direction; drove requirements and verification across hardware, firmware, integration, and test.
@@ -10,5 +11,8 @@ focus:
 accomplishments:
   - principal-engineer
 order: 40
+promotion: true
+scope:
+  - Embedded software across radar programs
 ---
 

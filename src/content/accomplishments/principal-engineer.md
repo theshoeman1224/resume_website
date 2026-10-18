@@ -1,5 +1,6 @@
 ---
 title: Set embedded software direction across radar programs
+shortTitle: Software direction
 date: 2026-03-01
 category: Leadership
 summary: Set software architecture and direction across radar programs, from concept through verification.

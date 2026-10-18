@@ -1,5 +1,6 @@
 ---
 title: Senior Software Engineering Task Lead
+shortTitle: Task Lead
 organization: Raytheon
 startDate: 2025-01-01
 endDate: 2026-03-01
@@ -11,5 +12,8 @@ focus:
 accomplishments:
   - receiver-architecture
 order: 30
+promotion: true
+scope:
+  - Team grown from 8 to 18 engineers
 ---
 

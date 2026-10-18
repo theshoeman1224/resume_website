@@ -1,5 +1,6 @@
 ---
 title: Cut boot failure rate from 7–10% to 1–2% on radar platform
+shortTitle: Boot failures
 date: 2022-02-01
 endDate: 2022-02-01
 category: Embedded
@@ -12,5 +13,9 @@ technologies:
   - Hardware integration
 roleId: software-engineer-raytheon
 relatedRoles: []
+featured: true
+metric:
+  value: 7–10% → 1–2%
+  label: Boot failure rate
 ---
 

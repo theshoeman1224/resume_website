@@ -119,19 +119,18 @@ Follow these rules throughout development.
 
 # 3. Repository Target Structure
 
-The project should evolve toward approximately this structure (refreshed to match the repository on 2026-10-16):
+The project should evolve toward approximately this structure (refreshed to match the repository on 2026-10-18):
 
 ```text
 resume_website/
 |
 ├── src/
 │   ├── components/
-│   │   ├── Timeline.astro          # filters + spine + one RoleDetail per role
-│   │   ├── TimelineFilters.astro
-│   │   ├── RoleSpine.astro
-│   │   ├── RoleNode.astro
-│   │   ├── RoleDetail.astro        # <details>: mobile row / desktop panel
-│   │   ├── CurrentRoleCard.astro
+│   │   ├── CareerGlance.astro      # current role, promotion ladder, headline metrics
+│   │   ├── CareerOverview.astro    # swimlane chart: roles, work projects, wins
+│   │   ├── CareerRecord.astro      # roles grouped by employer
+│   │   ├── RoleEntry.astro
+│   │   ├── WorkProjectEntry.astro
 │   │   ├── AccomplishmentCard.astro
 │   │   ├── ProjectCard.astro
 │   │   ├── ProjectGrid.astro
@@ -139,16 +138,19 @@ resume_website/
 │   │   └── SiteHeader.astro
 │   │
 │   ├── content/
-│   │   ├── accomplishments/
-│   │   └── roles/                  # projects come from .portfolio-cache/ (generated)
+│   │   ├── accomplishments/        # body = case study (/experience/<id>/)
+│   │   ├── roles/
+│   │   └── work-projects/          # side projects come from .portfolio-cache/ (generated)
 │   │
 │   ├── layouts/
 │   ├── lib/                        # pure helpers + Vitest tests
-│   ├── scripts/                    # client-side behaviour (timeline.ts)
+│   ├── scripts/                    # client-side behaviour (career-links.ts)
 │   │
 │   ├── pages/
 │   │   ├── index.astro
 │   │   ├── experience.astro
+│   │   ├── experience/[slug].astro # case study per accomplishment
+│   │   ├── resume.astro            # printable resume from the same content
 │   │   ├── 404.astro
 │   │   └── projects/
 │   │       ├── index.astro
@@ -476,6 +478,8 @@ A role file produces the same outcome: adding a new role causes the timeline to 
 ---
 
 # 8. Milestone M4 — Interactive Career Timeline
+
+> **Superseded on 2026-10-18.** The click-to-open spine described below was replaced by an always-visible layout: a swimlane overview chart (roles, concurrent roles, work projects and wins on one time axis, each linking to its entry) above a career record grouped by employer, plus a case-study page per accomplishment and a printable `/resume/`. Old `/experience#role-<slug>` links still land on the role. The rest of this section is kept for history.
 
 ## Goal
 

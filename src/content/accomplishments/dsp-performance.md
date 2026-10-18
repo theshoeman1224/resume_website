@@ -1,5 +1,6 @@
 ---
-title: Embedded C for real-time radar DSP
+title: Cut radar correlator cycle counts with identical output
+shortTitle: DSP cycle counts
 date: 2019-10-01
 endDate: 2025-01-01
 category: DSP

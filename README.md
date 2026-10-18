@@ -21,7 +21,7 @@ Astro prints the local URL when the development server starts. Use `npm test` fo
 
 ## Tests and CI
 
-`npm test` runs the Vitest unit tests next to the code they cover: `src/lib/*.test.ts` (dates, career-content links, timeline layout, project demo links) and `scripts/lib/*.test.mjs` (project metadata validation).
+`npm test` runs the Vitest unit tests next to the code they cover: `src/lib/*.test.ts` (dates, career-content links and grouping, overview chart layout, project demo links) and `scripts/lib/*.test.mjs` (project metadata validation).
 
 `.github/workflows/check.yml` runs the tests and the type-checked build on every branch push and pull request. It never deploys.
 
@@ -47,7 +47,17 @@ npm run deploy
 
 ## Career Content
 
-Roles live in `src/content/roles/` and accomplishments in `src/content/accomplishments/`, both validated by the schema in `src/content.config.ts`. To add an accomplishment, create a Markdown file whose `roleId` names its role, and list its file name (without `.md`) under that role's `accomplishments`. The card's role title and organization come from the role. The build fails if a role and an accomplishment disagree, or if any `roleId`, `relatedRoles`, or `accomplishments` entry points at a file that doesn't exist (`validateCareerGraph` in `src/lib/career.ts`).
+Career content lives in three collections, validated by the schema in `src/content.config.ts`:
+
+- `src/content/roles/`: one file per title. `track` is `primary` (a job title), `concurrent` (a responsibility held alongside one, shown nested inside it), or `education`. `promotion: true` marks a title that was a promotion; `scope` lists short facts shown under the title.
+- `src/content/accomplishments/`: one file per win. `roleId` names the owning role, and the role lists the file name (without `.md`) under `accomplishments`. Optional fields: `workProject`, `featured` (leads the experience page and the home page's signature work), and `metric` (`value` and `label`, the headline number). The Markdown body, if present, is the case study at `/experience/<id>/`; until one is written, the page shows the summary and impact.
+- `src/content/work-projects/`: programs or projects at work, drawn as date ranges on the overview. Each lists the `roles` it spans; accomplishments join a project through their `workProject` field.
+
+Any entry can set `shortTitle` for the overview chart, where space is tight.
+
+The build fails if a role and an accomplishment disagree, if any `roleId`, `relatedRoles`, `accomplishments`, `workProject` or project `roles` entry points at a file that doesn't exist, or if a concurrent role doesn't overlap a primary role at the same organization (`validateCareerGraph` in `src/lib/career.ts`). The experience page, case studies and `/resume/` are all built from these files.
+
+`docs/CAREER_QUESTIONNAIRE.md` collects the details these files need. Nothing in it is published.
 
 ## Styles
 
