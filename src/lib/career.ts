@@ -187,7 +187,10 @@ export function careerRelations(
   const links = new Map<string, Set<string>>();
   const node = (key: string) => {
     let set = links.get(key);
-    if (!set) links.set(key, (set = new Set()));
+    if (!set) {
+      set = new Set();
+      links.set(key, set);
+    }
     return set;
   };
   const link = (a: string, b: string) => {
@@ -206,7 +209,7 @@ export function careerRelations(
     node(careerKey.work(id));
     for (const roleId of data.roles) link(careerKey.work(id), careerKey.role(roleId));
   }
-  return new Map([...links].map(([key, set]) => [key, [...set].sort()]));
+  return new Map([...links].map(([key, set]) => [key, [...set].sort((a, b) => a.localeCompare(b, "en"))]));
 }
 
 /** Whole months between two dates, as years to one decimal (Oct 2019 → Mar 2026 is 6.4). */

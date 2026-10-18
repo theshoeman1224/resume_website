@@ -88,6 +88,11 @@ export function buildOverview({ roles, accomplishments, workProjects, now = new 
   const at = (date: Date) => timePosition(date, rangeStart, rangeEnd);
   const current = roles.find((r) => !r.data.endDate && (r.data.track ?? "primary") === "primary");
 
+  function roleKind(role: RoleLike): OverviewKind {
+    if (role === current) return "current";
+    return (role.data.track ?? "primary") === "education" ? "education" : "role";
+  }
+
   /** A bar for a dated entry. Ongoing bars run to the chart's end and fade out. */
   function bar(
     key: string,
@@ -131,9 +136,7 @@ export function buildOverview({ roles, accomplishments, workProjects, now = new 
         group.organization,
         "bars",
         group.roles.map(({ role }) => {
-          const track = role.data.track ?? "primary";
-          const kind: OverviewKind = role === current ? "current" : track === "education" ? "education" : "role";
-          return bar(careerKey.role(role.id), kind, role.data, role.data.organization);
+          return bar(careerKey.role(role.id), roleKind(role), role.data, role.data.organization);
         }),
       ),
     );

@@ -405,11 +405,13 @@ h6 {
     color: #000;
   }
 
+  /* None of these set a display of their own, so no !important is needed.
+     Give an element with its own display a print rule in its component. */
   .site-header,
   .site-footer,
   .skip-link,
   [data-no-print] {
-    display: none !important;
+    display: none;
   }
 
   .shell {
