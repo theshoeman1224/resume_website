@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GameEmbed from "../../components/GameEmbed.astro";
+import Arrow from "../../components/Arrow.astro";
 import { formatProjectDates } from "../../lib/dates";
 import { PROJECT_STATUS_LABELS, projectDemoUrl } from "../../lib/projects";
 
@@ -26,7 +27,7 @@ const dateRange = formatProjectDates(data.dates, data.status === "active");
 
 <BaseLayout title={`${data.name} | Josh Shuman`} description={data.summary}>
   <header class="shell project-intro">
-    <a class="back-link label" href="/projects/"><span aria-hidden="true">←</span> All projects</a>
+    <a class="back-link label" href="/projects/"><Arrow direction="left" />All projects</a>
     <p class="eyebrow">Project / {PROJECT_STATUS_LABELS[data.status]}</p>
     <h1>{data.name}</h1>
     <p>{data.tagline}</p>

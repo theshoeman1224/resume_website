@@ -1,51 +1,117 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Timeline from "../components/Timeline.astro";
-import CurrentRoleCard from "../components/CurrentRoleCard.astro";
+import CareerGlance from "../components/CareerGlance.astro";
+import CareerOverview from "../components/CareerOverview.astro";
+import CareerRecord from "../components/CareerRecord.astro";
 import { getCollection } from "astro:content";
-import { findCurrentRole, validateCareerGraph } from "../lib/career";
+import { careerRelations, findCurrentRole, groupByEmployer, validateCareerGraph } from "../lib/career";
+import { buildOverview } from "../lib/overview";
 
 const roles = await getCollection("roles");
 const accomplishments = await getCollection("accomplishments");
+const workProjects = await getCollection("workProjects");
 
-// Fails the build on broken links between roles and accomplishments.
-validateCareerGraph(roles, accomplishments);
-const currentRole = findCurrentRole(roles);
+// Fails the build on broken links between roles, accomplishments and work projects.
+validateCareerGraph(roles, accomplishments, workProjects);
+
+const groups = groupByEmployer(roles);
+const relations = careerRelations(roles, accomplishments, workProjects);
+const overview = buildOverview({ roles, accomplishments, workProjects });
+const currentRole = findCurrentRole(roles.filter((role) => role.data.track === "primary"));
+const currentGroup = groups.find((group) => group.roles.some(({ role }) => role === currentRole));
+const featured = accomplishments
+  .filter((win) => win.data.featured)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <BaseLayout
   title="Experience | Josh Shuman"
-  description="Principal Software Engineer leading performant systems for the customer and the program, accountable for the technical direction behind them."
+  description="Career record of Josh Shuman: real-time radar signal processing, embedded C, and software architecture at Raytheon, from Software Engineer to Principal."
 >
   <header class="shell page-intro">
     <p class="eyebrow">Experience</p>
     <h1 class="page-intro-lead">Principal Software Engineer</h1>
-    <p>leading performant systems for the customer and the program, accountable for the technical direction behind them.</p>
+    <p>
+      Real-time radar signal processing, embedded C, and the software architecture around them. Every role, project and result below links to the others; each result opens a case study.
+    </p>
   </header>
 
-  {currentRole && (
-    <div class="shell">
-      <CurrentRoleCard role={currentRole} />
-    </div>
-  )}
+  <div class="shell" data-career>
+    {currentRole && <CareerGlance current={currentRole} group={currentGroup} featured={featured} />}
 
-  <section class="section" id="career-timeline" aria-labelledby="career-record-title">
-    <div class="shell">
+    <section class="career-section" aria-labelledby="overview-title">
+      <header class="career-section-head">
+        <h2 id="overview-title" class="label">Timeline</h2>
+        <p>Roles, work projects and wins on one axis. Select any bar or marker to jump to it.</p>
+      </header>
+      <CareerOverview overview={overview} relations={relations} />
+    </section>
+
+    <section class="section career-record" id="career-record" aria-labelledby="career-record-title">
       <header class="section-heading">
         <p class="section-index">Career record</p>
         <div>
-          <h2 id="career-record-title">Roles and what shipped under them.</h2>
-          <p>Click a role to see the work behind it. Filter by discipline at the top.</p>
+          <h2 id="career-record-title">Every role, and what shipped under it.</h2>
+          <p>Grouped by employer, newest first. Responsibilities held alongside a role sit inside it.</p>
         </div>
       </header>
-      <Timeline roles={roles} accomplishments={accomplishments} />
-    </div>
-  </section>
+      <CareerRecord
+        groups={groups}
+        roles={roles}
+        accomplishments={accomplishments}
+        workProjects={workProjects}
+        relations={relations}
+      />
+    </section>
+  </div>
 </BaseLayout>
+
+<script>
+  import { initCareerLinks } from "../scripts/career-links";
+
+  document.querySelectorAll<HTMLElement>("[data-career]").forEach(initCareerLinks);
+</script>
 
 <style>
   .page-intro h1.page-intro-lead {
     max-width: 100%;
     margin-bottom: var(--space-l);
+  }
+
+  .career-section {
+    display: none;
+    margin-bottom: var(--space-section);
+  }
+
+  /* The chart is desktop-only; so is its heading. */
+  @media (width >= 52rem) {
+    .career-section {
+      display: block;
+    }
+  }
+
+  .career-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs) var(--space-l);
+    margin-bottom: var(--space-s);
+  }
+
+  .career-section-head h2 {
+    margin: 0;
+    color: var(--signal);
+    font-family: var(--font-label);
+  }
+
+  .career-section-head p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* The record's .section rule spans the shell, not the viewport, inside this wrapper. */
+  .career-record {
+    padding-top: var(--space-section);
   }
 </style>

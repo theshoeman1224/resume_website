@@ -1,6 +1,6 @@
 /*
  * Type rules. Every piece of text takes exactly one role:
- *   Headings   -> --font-display (IBM Plex Serif 400). Every title, h1-h4.
+ *   Headings   -> --font-display (IBM Plex Serif 400). Every title, h1-h6.
  *                 Italic only on the hero accent phrase.
  *   Paragraphs -> --font-body (IBM Plex Sans 400). Every sentence meant to be read.
  *   Labels     -> --font-label (IBM Plex Mono 500, uppercase). Eyebrows, dates,
@@ -20,7 +20,7 @@
   --signal: #c7ff4a;
   --signal-soft: #263516;
   --on-signal: #0b0d0b;
-  /* Text for filtered-out timeline roles: clearly dimmer than --muted, still 4.5:1 on --paper and --panel. */
+  /* Secondary meta text (durations): clearly dimmer than --muted, still 4.5:1 on --paper and --panel. */
   --faded: #83827a;
   --paper-deep: #080b09;
   --grid-line: color-mix(in srgb, var(--signal) 2.5%, transparent);
@@ -57,7 +57,7 @@
 
   /*
    * Breakpoints (custom properties can't be used in media queries):
-   *   52rem  desktop layouts, timeline spine. Written as (width >= 52rem) / (width < 52rem).
+   *   52rem  desktop layouts, career overview chart. Written as (width >= 52rem) / (width < 52rem).
    *   35rem  small phones.
    */
 
@@ -140,6 +140,8 @@ h1,
 h2,
 h3,
 h4,
+h5,
+h6,
 p {
   margin-top: 0;
 }
@@ -147,7 +149,9 @@ p {
 h1,
 h2,
 h3,
-h4 {
+h4,
+h5,
+h6 {
   font-family: var(--font-display);
   font-weight: 400;
   line-height: 1.08;
@@ -380,5 +384,35 @@ h4 {
   from {
     opacity: 0;
     transform: translateX(var(--slide-from, 12px));
+  }
+}
+
+/* Print: paper colours, no site chrome. The resume page is the main target. */
+
+@page {
+  size: letter;
+  margin: 0.5in 0.6in;
+}
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    min-width: 0;
+    background: #fff;
+    color: #000;
+  }
+
+  .site-header,
+  .site-footer,
+  .skip-link,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  .shell {
+    width: auto;
   }
 }

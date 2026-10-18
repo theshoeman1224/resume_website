@@ -1,5 +1,6 @@
 ---
 title: Built feedback control for a student photolithography system
+shortTitle: Photolithography
 date: 2017-05-01
 endDate: 2018-01-01
 category: Systems

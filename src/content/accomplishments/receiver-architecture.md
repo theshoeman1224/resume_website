@@ -1,5 +1,6 @@
 ---
 title: Owned the software architecture for a new radar receiver
+shortTitle: Receiver architecture
 date: 2025-01-01
 endDate: 2026-03-01
 category: Architecture
@@ -12,5 +13,10 @@ technologies:
   - Systems engineering
 roleId: senior-software-engineering-task-lead
 relatedRoles: []
+workProject: radar-receiver-replacement
+featured: true
+metric:
+  value: 8 → 18
+  label: Engineers on the team
 ---
 

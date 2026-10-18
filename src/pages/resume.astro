@@ -1,0 +1,328 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { accomplishmentsForRole, byId, groupByEmployer, trackOf, validateCareerGraph } from "../lib/career";
+import { formatDateRange, formatMonthYear } from "../lib/dates";
+import { profile } from "../lib/profile";
+
+// Built from the same files as /experience/, so the two never disagree.
+const roles = await getCollection("roles");
+const accomplishments = await getCollection("accomplishments");
+validateCareerGraph(roles, accomplishments, await getCollection("workProjects"));
+
+const accomplishmentsById = byId(accomplishments);
+const winsFor = (role: (typeof roles)[number]) => accomplishmentsForRole(role, accomplishmentsById);
+const groups = groupByEmployer(roles.filter((role) => trackOf(role) !== "education"));
+const education = roles
+  .filter((role) => trackOf(role) === "education")
+  .sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+// On paper a bare handle means nothing, so links print as their address.
+const printable = (href: string, text: string) =>
+  href.startsWith("mailto:") ? text : href.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const year = (date?: Date) => (date ? String(date.getUTCFullYear()) : "Present");
+---
+
+<BaseLayout
+  title="Resume | Josh Shuman"
+  description="Printable resume for Josh Shuman, Principal Software Engineer: real-time radar DSP, embedded C, and systems architecture."
+>
+  <div class="shell resume-page">
+    <div class="resume-toolbar" data-no-print>
+      <p class="label">One-page resume, generated from the career record.</p>
+      <button type="button" class="button button-primary resume-print" data-print>Save as PDF</button>
+    </div>
+
+    <article class="resume">
+      <header class="resume-head">
+        <div>
+          <h1>{profile.name}</h1>
+          <p class="resume-title">{profile.title}</p>
+        </div>
+        <ul class="resume-contact">
+          {profile.contact.map(({ text, href }) => <li><a href={href}>{printable(href, text)}</a></li>)}
+          <li><a href={`https://${profile.site}`}>{profile.site}</a></li>
+        </ul>
+      </header>
+
+      <section>
+        <h2>Summary</h2>
+        <p>{profile.summary}</p>
+      </section>
+
+      <section>
+        <h2>Experience</h2>
+        {groups.map((group) => (
+          <div class="resume-employer">
+            <h3>
+              <span>{group.organization}</span>
+              <span class="resume-dates">{year(group.startDate)} – {year(group.endDate)}</span>
+            </h3>
+            {group.roles.map(({ role, concurrent }) => (
+              <div class="resume-role">
+                <h4>
+                  <span>{role.data.title}</span>
+                  <span class="resume-dates">{formatDateRange(role.data.startDate, role.data.endDate)}</span>
+                </h4>
+                <p class="resume-summary">{role.data.summary}</p>
+                {winsFor(role).length > 0 && (
+                  <ul>
+                    {winsFor(role).map((win) => <li>{win.data.title}.</li>)}
+                  </ul>
+                )}
+                {concurrent.map((other) => (
+                  <div class="resume-concurrent">
+                    <p>
+                      <strong>Also: {other.data.title}</strong>
+                      <span class="resume-dates"> ({formatMonthYear(other.data.startDate)} – {other.data.endDate ? formatMonthYear(other.data.endDate) : "Present"})</span>.
+                      {" "}{other.data.summary}
+                    </p>
+                    {winsFor(other).length > 0 && (
+                      <ul>
+                        {winsFor(other).map((win) => <li>{win.data.title}.</li>)}
+                      </ul>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+      </section>
+
+      {education.length > 0 && (
+        <section>
+          <h2>Education</h2>
+          {education.map((role) => (
+            <h4>
+              <span>{role.data.title}, {role.data.organization}</span>
+              <span class="resume-dates">{year(role.data.endDate)}</span>
+            </h4>
+          ))}
+        </section>
+      )}
+
+      <section>
+        <h2>Skills</h2>
+        <dl class="resume-skills">
+          {profile.skills.map(({ group, items }) => (
+            <div>
+              <dt>{group}</dt>
+              <dd>{items.join(", ")}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+    </article>
+  </div>
+</BaseLayout>
+
+<script>
+  document.querySelector("[data-print]")?.addEventListener("click", () => window.print());
+</script>
+
+<style>
+  .resume-page {
+    padding-block: var(--space-intro-end) var(--space-section);
+  }
+
+  .resume-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    max-width: 52rem;
+    margin: 0 auto var(--space-l);
+  }
+
+  .resume-toolbar p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  /* The print button needs JS; without it, the browser's own print still works. */
+  .resume-print {
+    display: none;
+    cursor: pointer;
+  }
+
+  :global(.js) .resume-print {
+    display: inline-flex;
+  }
+
+  /* On screen the resume is a sheet of paper; in print it is the page. */
+  .resume {
+    --sheet: #fbfaf6;
+    --sheet-ink: #161816;
+    --sheet-muted: #4a4f4a;
+    --sheet-rule: #c9cbc4;
+    --sheet-accent: #3d5410;
+
+    max-width: 52rem;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    background: var(--sheet);
+    color: var(--sheet-ink);
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+
+  .resume a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .resume p {
+    margin: 0;
+  }
+
+  .resume-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-bottom: var(--space-s);
+    border-bottom: 2px solid var(--sheet-ink);
+  }
+
+  .resume h1 {
+    margin: 0;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .resume-title {
+    color: var(--sheet-accent);
+    font-family: var(--font-label);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .resume-contact {
+    display: grid;
+    gap: 0.1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: right;
+    font-size: 0.8125rem;
+  }
+
+  .resume section {
+    padding-top: var(--space-s);
+  }
+
+  .resume h2 {
+    margin: 0 0 var(--space-2xs);
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--sheet-rule);
+    color: var(--sheet-accent);
+    font-family: var(--font-label);
+    font-size: var(--text-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .resume h3,
+  .resume h4 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 var(--space-s);
+    margin: 0;
+  }
+
+  .resume h3 {
+    font-size: 1.125rem;
+  }
+
+  .resume h4 {
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    font-weight: 600;
+  }
+
+  .resume-dates {
+    color: var(--sheet-muted);
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 400;
+  }
+
+  .resume-employer + .resume-employer {
+    margin-top: var(--space-s);
+  }
+
+  .resume-role {
+    margin-top: var(--space-2xs);
+  }
+
+  .resume-summary {
+    color: var(--sheet-muted);
+  }
+
+  .resume ul {
+    margin: 0.2rem 0 0;
+    padding-left: 1.1rem;
+  }
+
+  .resume li + li {
+    margin-top: 0.1rem;
+  }
+
+  .resume-concurrent {
+    margin-top: 0.35rem;
+  }
+
+  .resume-concurrent strong {
+    font-weight: 600;
+  }
+
+  .resume-skills {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0;
+  }
+
+  .resume-skills div {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+
+  .resume-skills dt {
+    min-width: 5rem;
+    font-weight: 600;
+  }
+
+  .resume-skills dd {
+    margin: 0;
+  }
+
+  @media (width < 35rem) {
+    .resume-contact {
+      text-align: left;
+    }
+  }
+
+  @media print {
+    .resume-page {
+      width: auto;
+      padding: 0;
+    }
+
+    .resume {
+      max-width: none;
+      padding: 0;
+      background: none;
+      font-size: 10pt;
+    }
+
+    .resume-role {
+      break-inside: avoid;
+    }
+  }
+</style>

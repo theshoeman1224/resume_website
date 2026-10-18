@@ -12,6 +12,22 @@ export function formatDateRange(start: Date, end?: Date): string {
   return `${formatMonthYear(start)} – ${end ? formatMonthYear(end) : "Present"}`;
 }
 
+/** Whole calendar months from `start` to `end` (Oct 2019 → Jan 2025 is 63). */
+export function monthsBetween(start: Date, end: Date): number {
+  return (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + (end.getUTCMonth() - start.getUTCMonth());
+}
+
+/** "5 yrs 3 mos", "7 mos", "1 yr". An open end counts to `now`; anything under a month reads "1 mo". */
+export function formatDuration(start: Date, end?: Date, now = new Date()): string {
+  const months = Math.max(1, monthsBetween(start, end ?? now));
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  const parts = [];
+  if (years > 0) parts.push(`${years} yr${years === 1 ? "" : "s"}`);
+  if (rest > 0) parts.push(`${rest} mo${rest === 1 ? "" : "s"}`);
+  return parts.join(" ");
+}
+
 function sameMonth(a: Date, b: Date): boolean {
   return a.getUTCFullYear() === b.getUTCFullYear() && a.getUTCMonth() === b.getUTCMonth();
 }

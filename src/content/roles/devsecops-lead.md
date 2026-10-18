@@ -10,5 +10,6 @@ focus:
 accomplishments:
   - devsecops-leadership
 order: 21
+track: concurrent
 ---
 

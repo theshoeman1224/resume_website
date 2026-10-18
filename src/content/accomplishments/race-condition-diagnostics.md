@@ -1,5 +1,6 @@
 ---
 title: Resolved a production-blocking race condition during customer testing
+shortTitle: Race condition
 date: 2022-11-01
 endDate: 2022-11-01
 category: Embedded
@@ -13,4 +14,8 @@ technologies:
   - Hardware integration
 roleId: software-engineer-raytheon
 relatedRoles: []
+featured: true
+metric:
+  value: Overnight
+  label: Fix after an 8-month investigation
 ---

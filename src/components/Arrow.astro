@@ -1,0 +1,36 @@
+---
+// Drawn instead of the → / ← characters: the site's IBM Plex subsets don't
+// include them, so the browser fell back to a system font whose arrow sits
+// low on the line (and differs per OS). This one is centred on cap height in
+// any font and takes the text colour.
+interface Props {
+  direction?: "right" | "left";
+}
+
+const { direction = "right" } = Astro.props;
+---
+
+<svg class="arrow" data-direction={direction} viewBox="0 0 16 10" aria-hidden="true" focusable="false"><path d="M1 5h13.5M10 1l4.5 4-4.5 4" /></svg>
+
+<style>
+  .arrow {
+    display: inline-block;
+    width: 0.95em;
+    height: 0.6em;
+    margin-inline: 0.22em;
+    /* Raises the box so its middle sits at --arrow-axis above the baseline (about mid cap height for Plex). */
+    vertical-align: calc(var(--arrow-axis, 0.35em) - 0.3em);
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* A left arrow leads its text ("← Earlier"), so no space before it. */
+  .arrow[data-direction="left"] {
+    margin-inline: 0 0.3em;
+    transform: scaleX(-1);
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 title: Led Agile and DevSecOps adoption across the department
+shortTitle: DevSecOps adoption
 date: 2019-10-01
 endDate: 2025-01-01
 category: DevOps

@@ -1,163 +1,169 @@
 ---
 import type { CollectionEntry } from "astro:content";
-import type { RoleLink } from "../lib/career";
+import Arrow from "./Arrow.astro";
+import ArrowText from "./ArrowText.astro";
+import { careerKey, type RoleLink } from "../lib/career";
 import { formatSpan } from "../lib/dates";
 
 interface Props {
   accomplishment: CollectionEntry<"accomplishments">;
-  role: RoleLink;
+  /** Other roles this win also belongs to. */
   relatedRoles: RoleLink[];
+  project?: CollectionEntry<"workProjects">;
+  related: string;
+  /** Heading level, so the card fits under a role (h5) or a concurrent role (h6). */
+  level?: 5 | 6;
 }
 
-const { accomplishment, role, relatedRoles } = Astro.props;
-const { data } = accomplishment;
-const dateLabel = formatSpan(data.date, data.endDate);
+const { accomplishment, relatedRoles, project, related, level = 5 } = Astro.props;
+const { id, data } = accomplishment;
+const Heading = `h${level}` as const;
+// The last word travels with the arrow so the arrow never wraps onto a line by itself.
+const words = data.title.split(" ");
+const lastWord = words.pop();
 ---
 
-<article class="accomplishment-card">
-  <header class="accomplishment-card-head label">
-    <span class="accomplishment-card-date">{dateLabel}</span>
-    <span class="accomplishment-card-category">{data.category}</span>
-    <span class="accomplishment-card-role">{role.title} · {role.organization}</span>
-  </header>
-  <h4 class="accomplishment-card-title">{data.title}</h4>
-  <p class="accomplishment-card-summary">{data.summary}</p>
-  <div class="accomplishment-card-body">
-    <p class="accomplishment-card-impact">{data.impact}</p>
+<article class="win" id={careerKey.win(id)} data-key={careerKey.win(id)} data-related={related}>
+  {data.metric && (
+    <p class="win-metric">
+      <span class="win-metric-value"><ArrowText text={data.metric.value} /></span>
+      <span class="win-metric-label label">{data.metric.label}</span>
+    </p>
+  )}
+  <div class="win-body">
+    <p class="win-meta label">
+      <span>{formatSpan(data.date, data.endDate)}</span>
+      <span class="win-category">{data.category}</span>
+    </p>
+    <Heading class="win-title">
+      <a href={`/experience/${id}/`}>{words.join(" ")} <span class="win-title-end">{lastWord}<span class="win-arrow"><Arrow /></span></span></a>
+    </Heading>
+    <p class="win-impact">{data.impact}</p>
     {data.technologies.length > 0 && (
       <ul class="chip-list label" aria-label={`Technologies used for ${data.title}`}>
         {data.technologies.map((technology) => <li>{technology}</li>)}
       </ul>
     )}
+    {(project || relatedRoles.length > 0) && (
+      <p class="win-links label">
+        {project && (
+          <span>Project <a href={`#${careerKey.work(project.id)}`}>{project.data.title}</a></span>
+        )}
+        {relatedRoles.length > 0 && (
+          <span>
+            Also under{" "}
+            {relatedRoles.map((rel, index) => (
+              <>{index > 0 && ", "}<a href={`#${careerKey.role(rel.id)}`}>{rel.title}</a></>
+            ))}
+          </span>
+        )}
+      </p>
+    )}
   </div>
-  {relatedRoles.length > 0 && (
-    <footer class="accomplishment-card-related">
-      <span class="accomplishment-card-related-label label">Also linked to</span>
-      <ul class="related-role-list">
-        {relatedRoles.map((rel) => (
-          <li>
-            <button
-              type="button"
-              class="related-role-chip label"
-              data-role-link={rel.id}
-              aria-label={`Open role: ${rel.title} at ${rel.organization}`}
-            >
-              <span class="related-role-chip-title">{rel.title}</span>
-              <span class="related-role-chip-org">{rel.organization}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </footer>
-  )}
 </article>
 
 <style>
-  .accomplishment-card {
+  .win {
     display: grid;
-    gap: var(--space-2xs);
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-s);
     padding: var(--space-m);
     border: 1px solid var(--line);
+    border-left: 2px solid var(--line-strong);
     background: var(--paper);
+    transition: border-color var(--duration-fast) var(--ease);
   }
 
-  .accomplishment-card-head {
+  .win:has(.win-metric) {
+    grid-template-columns: minmax(9rem, 0.3fr) minmax(0, 1fr);
+  }
+
+  .win[data-lit],
+  .win:target {
+    border-color: var(--signal);
+  }
+
+  .win-metric {
+    display: grid;
+    align-content: start;
+    gap: var(--space-3xs);
+    margin: 0;
+  }
+
+  .win-metric-value {
+    color: var(--signal);
+    font-family: var(--font-display);
+    font-size: var(--text-display-s);
+    line-height: 1.15;
+  }
+
+  .win-metric-label {
+    color: var(--muted);
+  }
+
+  .win-body {
+    display: grid;
+    gap: var(--space-2xs);
+    min-width: 0;
+  }
+
+  .win-meta {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3xs) var(--space-s);
-    align-items: baseline;
+    margin: 0;
     color: var(--muted);
   }
 
-  .accomplishment-card-date {
-    color: var(--muted);
-  }
-
-  .accomplishment-card-category {
+  .win-category {
     color: var(--signal);
   }
 
-  .accomplishment-card-role {
-    color: var(--signal);
-  }
-
-  .accomplishment-card-title {
-    max-width: 44ch;
+  .win-title {
+    max-width: 48ch;
     margin: 0;
     font-size: var(--text-display-s);
     line-height: 1.2;
     letter-spacing: -0.01em;
   }
 
-  .accomplishment-card-summary {
-    max-width: var(--measure);
-    margin: 0;
-    color: var(--muted);
+  .win-title a {
+    text-decoration: none;
   }
 
-  .accomplishment-card-body {
-    display: grid;
-    gap: var(--space-s);
-    margin-top: var(--space-3xs);
-    padding-top: var(--space-s);
-    border-top: 1px solid var(--line);
+  .win-title a:hover {
+    text-decoration: underline;
   }
 
-  .accomplishment-card-impact {
-    max-width: var(--measure);
-    margin: 0;
-    color: var(--muted);
+  .win-title-end {
+    white-space: nowrap;
   }
 
-  .accomplishment-card-related {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2xs) var(--space-xs);
-    align-items: center;
-    padding-top: var(--space-xs);
-    border-top: 1px solid var(--line);
-    margin-top: var(--space-3xs);
-  }
-
-  .accomplishment-card-related-label {
-    color: var(--muted);
-  }
-
-  .related-role-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .related-role-chip {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.1rem;
-    padding: var(--space-3xs) var(--space-2xs);
-    border: 1px solid var(--line-strong);
-    background: var(--signal-soft);
+  .win-arrow {
     color: var(--signal);
-    cursor: pointer;
-    text-align: left;
-    transition: border-color var(--duration-fast) var(--ease);
   }
 
-  @media (pointer: coarse) {
-    .related-role-chip {
-      min-height: var(--tap-target);
-      justify-content: center;
-    }
-  }
-
-  .related-role-chip:hover {
-    border-color: var(--signal);
-  }
-
-  .related-role-chip-org {
+  .win-impact {
+    max-width: var(--measure);
+    margin: 0;
     color: var(--muted);
+  }
+
+  .win-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-m);
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .win-links a {
+    color: var(--signal);
+  }
+
+  @media (width < 35rem) {
+    .win:has(.win-metric) {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 </style>
