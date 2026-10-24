@@ -1,63 +1,243 @@
 ---
-import type { Overview } from "../lib/overview";
+import { itemStyle, yearLabel, type Overview } from "../lib/overview";
 
 interface Props {
   overview: Overview;
   /** Keys related to each key; see careerRelations in src/lib/career.ts. */
   relations: Map<string, string[]>;
+  /** serializeOverviewInputs output, so the browser can rebuild the chart for another view. */
+  inputs: string;
 }
 
-const { overview, relations } = Astro.props;
+const { overview, relations, inputs } = Astro.props;
 const related = (key: string) => (relations.get(key) ?? []).join(" ");
+const { view, context } = overview;
+const shown = (id: string) => view.show === null || view.show.includes(id);
+const years = Array.from({ length: context.lastYear - context.firstYear + 1 }, (_, i) => context.firstYear + i);
+// Two slots, one each side of the focus; empty ones stay hidden.
+const bands = [0, 1].map((index) => overview.bands[index]);
 ---
 
 <!--
   Every bar and marker is a plain link to its entry in the career record below,
-  so the chart works without JS. src/scripts/career-links.ts adds highlighting.
+  so the chart works without JS. The server renders the default view; with JS,
+  src/scripts/career-overview.ts applies the view in the URL and the controls,
+  and src/scripts/career-links.ts adds highlighting.
 -->
-<nav class="overview" aria-label="Career overview">
-  <div class="overview-grid" aria-hidden="true">
-    {overview.years.map(({ position }) => <span style={`--x: ${position}%`}></span>)}
-    <span class="overview-now" style={`--x: ${overview.now}%`}></span>
+<div class="overview-root" data-overview>
+  <div class="overview-controls" data-overview-controls>
+    <fieldset class="overview-rows">
+      <legend class="label">Rows</legend>
+      {overview.lanes.map((lane) => (
+        <label class="overview-toggle label">
+          <input type="checkbox" name="show" value={lane.id} checked={shown(lane.id)} />
+          {lane.label}
+        </label>
+      ))}
+    </fieldset>
+
+    <fieldset class="overview-focus">
+      <legend class="label">Focus</legend>
+      <label class="label">
+        From
+        <select name="from">
+          {years.map((year) => <option value={year} selected={year === view.from}>{year}</option>)}
+        </select>
+      </label>
+      <label class="label">
+        To
+        <select name="to">
+          {years.slice(0, -1).map((year) => <option value={year} selected={year === view.to}>{year}</option>)}
+          <option value="now" selected={view.to === null}>Now</option>
+        </select>
+      </label>
+    </fieldset>
+
+    <div class="overview-actions">
+      <button type="button" class="button" data-action="full">Full career</button>
+      <button type="button" class="button" data-action="reset">Default view</button>
+      <button type="button" class="button" data-action="copy">Copy link</button>
+      <p class="overview-status label" role="status" data-status></p>
+    </div>
   </div>
 
-  {overview.lanes.map((lane) => (
-    <div class="overview-lane" data-style={lane.style} style={`--rows: ${lane.rows}`}>
-      <p class="overview-lane-label label">{lane.label}</p>
-      <ul class="overview-track">
-        {lane.items.map((item) => (
+  <nav class="overview" aria-label="Career overview">
+    <div class="overview-grid" aria-hidden="true">
+      {bands.map((band, index) => (
+        <span class="overview-band" data-band={index} hidden={!band} style={band ? `--start: ${band.start}%; --end: ${band.end}%` : undefined}></span>
+      ))}
+      {overview.years.map(({ year, position }) => <span data-year={year} style={`--x: ${position}%`}></span>)}
+      <span class="overview-now" data-now style={`--x: ${overview.now}%`}></span>
+    </div>
+
+    {overview.lanes.map((lane) => (
+      <div class="overview-lane" data-lane={lane.id} data-style={lane.style} hidden={lane.hidden} style={`--rows: ${lane.rows}`}>
+        <p class="overview-lane-label label">{lane.label}</p>
+        <ul class="overview-track">
+          {lane.items.map((item) => (
+            <li
+              class="overview-item"
+              data-item={item.key}
+              data-kind={item.kind}
+              data-point={item.point ? "" : undefined}
+              data-ongoing={item.ongoing ? "" : undefined}
+              data-flip={item.flip ? "" : undefined}
+              data-compact={item.compact ? "" : undefined}
+              hidden={item.hidden}
+              style={itemStyle(item)}
+            >
+              <a href={`#${item.key}`} title={item.description} data-key={item.key} data-related={related(item.key)}>
+                <span class="overview-marker" aria-hidden="true"></span>
+                <span class="overview-label label" aria-hidden="true">{item.label}</span>
+                <span class="visually-hidden">{item.description}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+
+    <div class="overview-lane overview-axis" aria-hidden="true">
+      <span></span>
+      <ol class="overview-track">
+        {overview.years.map((marker) => (
           <li
-            class="overview-item"
-            data-kind={item.kind}
-            data-point={item.point ? "" : undefined}
-            data-ongoing={item.ongoing ? "" : undefined}
-            data-flip={item.flip ? "" : undefined}
-            data-compact={item.compact ? "" : undefined}
-            style={`--start: ${item.start}%; --end: ${item.end}%; --row: ${item.row}`}
+            class="label"
+            data-year={marker.year}
+            data-compressed={marker.compressed ? "" : undefined}
+            hidden={!marker.labelled}
+            style={`--x: ${marker.position}%`}
           >
-            <a href={`#${item.key}`} title={item.description} data-key={item.key} data-related={related(item.key)}>
-              <span class="overview-marker" aria-hidden="true"></span>
-              <span class="overview-label label" aria-hidden="true">{item.label}</span>
-              <span class="visually-hidden">{item.description}</span>
-            </a>
+            {yearLabel(marker)}
           </li>
         ))}
-      </ul>
+        <li class="label overview-axis-now" data-now style={`--x: ${overview.now}%`}>Now</li>
+      </ol>
     </div>
-  ))}
+  </nav>
 
-  <div class="overview-lane overview-axis" aria-hidden="true">
-    <span></span>
-    <ol class="overview-track">
-      {overview.years.map(({ year, position }) => (
-        <li class="label" style={`--x: ${position}%`}>{year}</li>
-      ))}
-      <li class="label overview-axis-now" style={`--x: ${overview.now}%`}>Now</li>
-    </ol>
-  </div>
-</nav>
+  <script is:inline type="application/json" data-overview-inputs set:html={inputs} />
+</div>
+<script is:inline>
+  // A shared link names another view: keep the chart hidden until it's applied, so the default doesn't flash first.
+  if (location.search) document.currentScript.previousElementSibling.setAttribute("data-pending", "");
+</script>
 
 <style>
+  /* The controls need JS and, like the chart, a desktop-width screen. */
+  .overview-controls {
+    display: none;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-s) var(--space-xl);
+    margin-bottom: var(--space-s);
+  }
+
+  @media (width >= 52rem) {
+    :global(.js) .overview-controls {
+      display: flex;
+    }
+  }
+
+  .overview-root[data-pending] .overview {
+    visibility: hidden;
+  }
+
+  .overview-controls fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .overview-controls legend {
+    margin-bottom: var(--space-2xs);
+    padding: 0;
+    color: var(--muted);
+  }
+
+  .overview-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 2rem;
+    padding: 0 var(--space-2xs);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
+  }
+
+  .overview-toggle:hover,
+  .overview-toggle:has(:checked) {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .overview-toggle input {
+    margin: 0;
+    accent-color: var(--signal);
+  }
+
+  .overview-focus label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    color: var(--muted);
+  }
+
+  .overview-focus select {
+    min-height: 2rem;
+    padding: 0 var(--space-2xs);
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+  }
+
+  .overview-controls :is(input, select):focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  .overview-actions {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-left: auto;
+  }
+
+  .overview-actions .button {
+    min-height: 2rem;
+    padding: 0 var(--space-xs);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .overview-actions .button[aria-disabled="true"] {
+    border-color: var(--line);
+    color: var(--faded);
+    cursor: default;
+  }
+
+  /* Beside the buttons, out of the flow, so a message doesn't shift them. */
+  .overview-status {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + var(--space-s));
+    transform: translateY(-50%);
+    margin: 0;
+    white-space: nowrap;
+    color: var(--signal);
+    text-align: right;
+  }
+
   .overview {
     --label-column: 9rem;
     --bar-row: 2rem;
@@ -99,9 +279,23 @@ const related = (key: string) => (relations.get(key) ?? []).join(" ");
     opacity: 0.6;
   }
 
+  /* Compressed years: a faint tint, so the change of scale is visible. */
+  .overview-grid .overview-band {
+    left: var(--start);
+    width: calc(var(--end) - var(--start));
+    background: color-mix(in srgb, var(--line) 40%, transparent);
+    opacity: 1;
+  }
+
   .overview-grid .overview-now {
     background: var(--signal);
     opacity: 0.45;
+  }
+
+  .overview-lane[hidden],
+  .overview-item[hidden],
+  .overview-band[hidden] {
+    display: none;
   }
 
   .overview-lane {
@@ -300,6 +494,10 @@ const related = (key: string) => (relations.get(key) ?? []).join(" ");
     transform: translateX(-50%);
     color: var(--muted);
     letter-spacing: 0.04em;
+  }
+
+  .overview-axis [data-compressed] {
+    color: var(--faded);
   }
 
   .overview-axis .overview-axis-now {

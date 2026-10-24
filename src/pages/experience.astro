@@ -5,7 +5,7 @@ import CareerOverview from "../components/CareerOverview.astro";
 import CareerRecord from "../components/CareerRecord.astro";
 import { getCollection } from "astro:content";
 import { careerRelations, findCurrentRole, groupByEmployer, validateCareerGraph } from "../lib/career";
-import { buildOverview } from "../lib/overview";
+import { buildOverview, serializeOverviewInputs } from "../lib/overview";
 
 const roles = await getCollection("roles");
 const accomplishments = await getCollection("accomplishments");
@@ -16,7 +16,10 @@ validateCareerGraph(roles, accomplishments, workProjects);
 
 const groups = groupByEmployer(roles);
 const relations = careerRelations(roles, accomplishments, workProjects);
-const overview = buildOverview({ roles, accomplishments, workProjects });
+// One "now" for the server render and the browser re-layout, so they match exactly.
+const now = new Date();
+const overview = buildOverview({ roles, accomplishments, workProjects, now });
+const overviewInputs = serializeOverviewInputs({ roles, accomplishments, workProjects, now });
 const currentRole = findCurrentRole(roles.filter((role) => role.data.track === "primary"));
 const currentGroup = groups.find((group) => group.roles.some(({ role }) => role === currentRole));
 const featured = accomplishments
@@ -39,12 +42,12 @@ const featured = accomplishments
   <div class="shell" data-career>
     {currentRole && <CareerGlance current={currentRole} group={currentGroup} featured={featured} />}
 
-    <section class="career-section" aria-labelledby="overview-title">
+    <section class="career-section" id="timeline" aria-labelledby="overview-title">
       <header class="career-section-head">
         <h2 id="overview-title" class="label">Timeline</h2>
-        <p>Roles, work projects and wins on one axis. Select any bar or marker to jump to it.</p>
+        <p>Roles, work projects and wins on one axis, focused on recent years; earlier years are compressed, not cut. Select any bar or marker to jump to it.</p>
       </header>
-      <CareerOverview overview={overview} relations={relations} />
+      <CareerOverview overview={overview} relations={relations} inputs={overviewInputs} />
     </section>
 
     <section class="section career-record" id="career-record" aria-labelledby="career-record-title">
@@ -68,7 +71,9 @@ const featured = accomplishments
 
 <script>
   import { initCareerLinks } from "../scripts/career-links";
+  import { initCareerOverview } from "../scripts/career-overview";
 
+  document.querySelectorAll<HTMLElement>("[data-overview]").forEach(initCareerOverview);
   document.querySelectorAll<HTMLElement>("[data-career]").forEach(initCareerLinks);
 </script>
 
