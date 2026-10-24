@@ -32,6 +32,7 @@ const related = (key: string) => (relations.get(key) ?? []).join(" ");
             data-point={item.point ? "" : undefined}
             data-ongoing={item.ongoing ? "" : undefined}
             data-flip={item.flip ? "" : undefined}
+            data-compact={item.compact ? "" : undefined}
             style={`--start: ${item.start}%; --end: ${item.end}%; --row: ${item.row}`}
           >
             <a href={`#${item.key}`} title={item.description} data-key={item.key} data-related={related(item.key)}>
@@ -169,6 +170,10 @@ const related = (key: string) => (relations.get(key) ?? []).join(" ");
     letter-spacing: 0.06em;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .overview-item[data-compact] .overview-label {
+    display: none;
   }
 
   .overview-item[data-kind="role"] .overview-marker {

@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import RoleEntry from "./RoleEntry.astro";
 import WorkProjectEntry from "./WorkProjectEntry.astro";
-import { byId, careerKey, type EmployerGroup } from "../lib/career";
+import { byId, careerKey, trackOf, type EmployerGroup } from "../lib/career";
 import { formatDateRange, formatDuration } from "../lib/dates";
 
 type Role = CollectionEntry<"roles">;
@@ -27,11 +27,12 @@ function projectsIn(group: EmployerGroup<Role>) {
 }
 
 function groupMeta(group: EmployerGroup<Role>): string[] {
-  const titles = group.roles.length;
+  // A degree sits in the group but isn't a role.
+  const titles = group.roles.filter(({ role }) => trackOf(role) !== "education").length;
   return [
     formatDateRange(group.startDate, group.endDate),
     formatDuration(group.startDate, group.endDate),
-    `${titles} ${titles === 1 ? "role" : "roles"}`,
+    ...(titles > 0 ? [`${titles} ${titles === 1 ? "role" : "roles"}`] : []),
     ...(group.promotions > 0 ? [`${group.promotions} ${group.promotions === 1 ? "promotion" : "promotions"}`] : []),
   ];
 }

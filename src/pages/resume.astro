@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { accomplishmentsForRole, byId, groupByEmployer, trackOf, validateCareerGraph } from "../lib/career";
+import { accomplishmentsForRole, byId, groupByEmployer, sortRolesNewestFirst, trackOf, validateCareerGraph } from "../lib/career";
 import { formatDateRange, formatMonthYear } from "../lib/dates";
 import { profile } from "../lib/profile";
 
@@ -12,10 +12,13 @@ validateCareerGraph(roles, accomplishments, await getCollection("workProjects"))
 
 const accomplishmentsById = byId(accomplishments);
 const winsFor = (role: (typeof roles)[number]) => accomplishmentsForRole(role, accomplishmentsById);
-const groups = groupByEmployer(roles.filter((role) => trackOf(role) !== "education"));
-const education = roles
-  .filter((role) => trackOf(role) === "education")
-  .sort((a, b) => b.data.startDate.valueOf() - a.data.startDate.valueOf());
+const education = sortRolesNewestFirst(roles.filter((role) => trackOf(role) === "education"));
+// Roles that ended by graduation (co-ops, research) print one line each, so the resume stays on one page.
+const graduation = Math.max(0, ...education.map((role) => role.data.endDate?.valueOf() ?? 0));
+const isEarly = (role: (typeof roles)[number]) => (role.data.endDate?.valueOf() ?? Infinity) <= graduation;
+const jobs = roles.filter((role) => trackOf(role) !== "education");
+const groups = groupByEmployer(jobs.filter((role) => !isEarly(role)));
+const early = sortRolesNewestFirst(jobs.filter(isEarly));
 // On paper a bare handle means nothing, so links print as their address.
 const printable = (href: string, text: string) =>
   href.startsWith("mailto:") ? text : href.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
@@ -87,16 +90,33 @@ const year = (date?: Date) => (date ? String(date.getUTCFullYear()) : "Present")
             ))}
           </div>
         ))}
+        {early.length > 0 && (
+          <div class="resume-employer">
+            <h3>Early experience</h3>
+            <ul class="resume-early">
+              {early.map((role) => (
+                <li>
+                  <strong>{role.data.title}</strong>, {role.data.organization}
+                  <span class="resume-dates"> ({formatDateRange(role.data.startDate, role.data.endDate)})</span>
+                  {winsFor(role).map((win) => <>. {win.data.title}</>)}.
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       {education.length > 0 && (
         <section>
           <h2>Education</h2>
           {education.map((role) => (
-            <h4>
-              <span>{role.data.title}, {role.data.organization}</span>
-              <span class="resume-dates">{year(role.data.endDate)}</span>
-            </h4>
+            <div class="resume-role">
+              <h4>
+                <span>{role.data.title}, {role.data.organization}</span>
+                <span class="resume-dates">{year(role.data.endDate)}</span>
+              </h4>
+              <p class="resume-summary">{role.data.summary}{role.data.scope.length > 0 && ` ${role.data.scope.join(", ")}.`}</p>
+            </div>
           ))}
         </section>
       )}
@@ -278,7 +298,8 @@ const year = (date?: Date) => (date ? String(date.getUTCFullYear()) : "Present")
     margin-top: 0.35rem;
   }
 
-  .resume-concurrent strong {
+  .resume-concurrent strong,
+  .resume-early strong {
     font-weight: 600;
   }
 

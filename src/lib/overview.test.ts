@@ -74,4 +74,17 @@ describe("buildOverview", () => {
   it("describes items in full for screen readers", () => {
     expect(overview.lanes[0].items[1].description).toBe("eng, Acme, Oct 2019 – Jan 2025");
   });
+
+  it("drops the label from bars too short to hold one", () => {
+    const withCoop = buildOverview({
+      roles: [...roles, role("coop", "2018-09-01", "2018-12-01", { organization: "Co-op Inc" })],
+      accomplishments: [],
+      workProjects: [],
+      now,
+    });
+    const compact = (key: string) => withCoop.lanes.flatMap((l) => l.items).find((i) => i.key === key)!.compact;
+    expect(compact("role-coop")).toBe(true);
+    expect(compact("role-ra")).toBe(false);
+    expect(compact("role-eng")).toBe(false);
+  });
 });
