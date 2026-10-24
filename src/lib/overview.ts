@@ -21,6 +21,8 @@ const LABEL_CHAR_PX = 7.6;
 const MARKER_PX = 18;
 /** Space after an ongoing bar's last day, so "now" isn't the chart's edge. */
 const TAIL_MONTHS = 3;
+/** A bar too narrow for this many characters drops its label; the lane label and tooltip still name it. */
+const MIN_LABEL_CHARS = 3;
 
 export type OverviewKind = "role" | "current" | "concurrent" | "education" | "project" | "win";
 
@@ -38,6 +40,8 @@ export interface OverviewItem {
   ongoing: boolean;
   /** A win label that would run off the right edge sits to the left of its marker instead. */
   flip: boolean;
+  /** A bar too short to hold a readable label, so it is drawn without one. */
+  compact: boolean;
 }
 
 export interface OverviewLane {
@@ -100,17 +104,20 @@ export function buildOverview({ roles, accomplishments, workProjects, now = new 
     entry: { startDate: Date; endDate?: Date } & Titled,
     context: string,
   ): OverviewItem {
+    const start = at(entry.startDate);
+    const end = entry.endDate ? at(entry.endDate) : 100;
     return {
       key,
       kind,
       label: entry.shortTitle ?? entry.title,
       description: `${entry.title}, ${context}, ${formatDateRange(entry.startDate, entry.endDate)}`,
-      start: at(entry.startDate),
-      end: entry.endDate ? at(entry.endDate) : 100,
+      start,
+      end,
       row: 0,
       point: false,
       ongoing: !entry.endDate,
       flip: false,
+      compact: end - start < labelWidthPercent("x".repeat(MIN_LABEL_CHARS)),
     };
   }
 
@@ -184,6 +191,7 @@ export function buildOverview({ roles, accomplishments, workProjects, now = new 
               point,
               ongoing: false,
               flip: false,
+              compact: false,
             };
           }),
       ),

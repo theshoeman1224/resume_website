@@ -57,7 +57,7 @@ Any entry can set `shortTitle` for the overview chart, where space is tight.
 
 The build fails if a role and an accomplishment disagree, if any `roleId`, `relatedRoles`, `accomplishments`, `workProject` or project `roles` entry points at a file that doesn't exist, or if a concurrent role doesn't overlap a primary role at the same organization (`validateCareerGraph` in `src/lib/career.ts`). The experience page, case studies and `/resume/` are all built from these files.
 
-`docs/CAREER_QUESTIONNAIRE.md` collects the details these files need. Nothing in it is published.
+`docs/CAREER_QUESTIONNAIRE.md` collects the details these files need. It is gitignored, because the repository is public and the answers are private; the blank template is in commit `5998190`.
 
 ## Styles
 

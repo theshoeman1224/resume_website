@@ -1,17 +1,20 @@
 ---
-title: Built feedback control for a student photolithography system
-shortTitle: Photolithography
+title: Cut photolithography dose error from 15% to 2%
+shortTitle: Dose error
 date: 2017-05-01
-endDate: 2018-01-01
+endDate: 2018-12-01
 category: Systems
-summary: Built feedback-control automation and a touchscreen operator interface for a student photolithography system.
-impact: Validated dose accuracy with oscilloscope measurements. Presented at AAAS and NCUR 2018.
+summary: Inherited a working but inaccurate system, in which a microcontroller set each wafer's exposure dose from photodiode readings. Used oscilloscope captures and MATLAB analysis as the source of truth, debugged the dosing software, and redesigned the measurement circuits with new components for more accurate readings.
+impact: Dose error fell from about 15% to 2%. Presented as posters at AAAS and NCUR 2018.
 technologies:
+  - Microcontrollers
+  - Circuit design
   - MATLAB
-  - Feedback control
-  - Test automation
   - Oscilloscopes
+  - Photodiode calibration
 roleId: research-assistant-wit
 relatedRoles: []
+metric:
+  value: 15% → 2%
+  label: Dose error
 ---
-
