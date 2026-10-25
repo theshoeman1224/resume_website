@@ -54,8 +54,8 @@ if [[ "$force" == false ]]; then
   esac
 fi
 
-if ! node -e 'const [major, minor] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 20) ? 0 : 1)'; then
-  printf 'Node.js 22.20.0 or newer is required. Run `nvm use` and retry.\n' >&2
+if ! node -e 'const [major, minor, patch] = process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && (minor > 23 || (minor === 23 && patch >= 4))) ? 0 : 1)'; then
+  printf 'Node.js 22.23.4 or newer is required (Astro'"'"'s minimum). Run `nvm use` and retry.\n' >&2
   exit 1
 fi
 
