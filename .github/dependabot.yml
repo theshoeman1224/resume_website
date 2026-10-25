@@ -1,0 +1,25 @@
+# Weekly update PRs. Minor and patch bumps are grouped into one PR per
+# ecosystem; major versions arrive as separate PRs. The cooldown waits a few
+# days after a release before proposing it, so a compromised version has time
+# to be caught and pulled. Security updates skip the cooldown.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+    groups:
+      npm-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+    groups:
+      actions-minor-and-patch:
+        update-types: [minor, patch]

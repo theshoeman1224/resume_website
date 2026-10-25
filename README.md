@@ -4,7 +4,7 @@ The source for [joshshuman.com](https://joshshuman.com), a static engineering re
 
 ## Requirements
 
-- Node.js 22.20 or newer (`.nvmrc` pins the setup version)
+- Node.js 22.23.4 or newer (`.nvmrc` pins the setup version)
 - npm 9.6.5 or newer
 - Rust with the `wasm32-unknown-unknown` target and Trunk 0.21.14 when rebuilding Snake
 
