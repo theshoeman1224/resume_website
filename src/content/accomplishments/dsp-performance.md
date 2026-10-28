@@ -14,6 +14,5 @@ technologies:
 roleId: software-engineer-raytheon
 relatedRoles:
   - software-engineer-ii-raytheon
-  - devsecops-lead
 ---
 
