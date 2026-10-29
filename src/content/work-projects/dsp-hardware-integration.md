@@ -1,15 +1,16 @@
 ---
-title: DSP hardware integration
-shortTitle: DSP hardware
+title: End-of-life DSP replacement
+shortTitle: DSP replacement
 organization: Raytheon
-startDate: 2024-09-01
-endDate: 2025-09-01
-summary: Led integration of new DSP hardware into the radar's signal-processing software, and served as the team's main technical contact with the hardware supplier.
+# TODO: confirm dates (see TODO.md)
+startDate: 2024-01-01
+endDate: 2024-12-01
+summary: Solo software and test effort to integrate a supplier's replacement for end-of-life DSP hardware. Delivered 6 months early and 48% under budget.
 roles:
   - software-engineer-ii-raytheon
-  - senior-software-engineering-task-lead
 technologies:
   - DSP
   - Hardware integration
+  - Boot and initialization
   - Supplier coordination
 ---
