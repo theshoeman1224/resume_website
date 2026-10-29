@@ -1,6 +1,7 @@
 ---
 title: Cut boot failure rate from 7–10% to 1–2% on radar platform
 shortTitle: Boot failures
+# TODO: date and role conflict with the DSP replacement project (see TODO.md)
 date: 2022-02-01
 endDate: 2022-02-01
 category: Embedded
@@ -13,6 +14,7 @@ technologies:
   - Hardware integration
 roleId: software-engineer-raytheon
 relatedRoles: []
+workProject: dsp-hardware-integration
 featured: true
 metric:
   value: 7–10% → 1–2%
