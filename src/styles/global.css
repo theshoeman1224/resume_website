@@ -315,6 +315,21 @@ h6 {
   color: var(--muted);
 }
 
+/* "← All projects" style link above a detail page's eyebrow. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  min-height: var(--tap-target);
+  margin-bottom: var(--space-s);
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--signal);
+}
+
 .page-intro {
   padding-block: var(--space-intro) var(--space-intro-end);
 }

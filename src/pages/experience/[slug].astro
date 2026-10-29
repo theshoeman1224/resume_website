@@ -39,9 +39,8 @@ const hasStory = Boolean(entry.body?.trim());
 <BaseLayout title={`${data.title} | Josh Shuman`} description={data.summary}>
   <article class="shell case">
     <header class="page-intro case-intro">
-      <p class="eyebrow">
-        <a href={`/experience/#${careerKey.win(id)}`}>Experience</a> / Case study
-      </p>
+      <a class="back-link label" href={`/experience/#${careerKey.win(id)}`}><Arrow direction="left" />Back to timeline</a>
+      <p class="eyebrow">Experience / Case study</p>
       <h1>{data.title}</h1>
       <p class="case-meta label">
         <span>{formatSpan(data.date, data.endDate)}</span>
@@ -133,10 +132,6 @@ const hasStory = Boolean(entry.body?.trim());
   .case-intro h1 {
     max-width: 24ch;
     font-size: var(--text-display-l);
-  }
-
-  .case-intro .eyebrow a {
-    text-decoration: none;
   }
 
   /* Outranks the global .page-intro > p:last-child lead size. */
