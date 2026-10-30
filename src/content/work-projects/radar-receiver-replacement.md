@@ -2,6 +2,7 @@
 title: Radar receiver replacement
 shortTitle: Receiver
 organization: Raytheon
+# TODO: confirm date
 startDate: 2025-02-01
 summary: Software for a new radar receiver replacing the existing one. Interface contracts let hardware, firmware, and systems teams integrate independently.
 roles:

@@ -1,7 +1,9 @@
 ---
 title: Automated customer estimates, earning a Cooperative Education Award
 shortTitle: Estimates
+# TODO: confirm date
 date: 2018-01-01
+# TODO: confirm date
 endDate: 2018-04-01
 category: Automation
 summary: Outside assigned project management work, and without being asked, automated how the office generated estimates for customers.

@@ -1,7 +1,7 @@
 ---
 title: DevSecOps Champion
 organization: Raytheon
-startDate: 2023-09-01
+startDate: 2023-12-01
 summary: One of two DevSecOps champions, nominated by leadership, for a program software group of nearly 400 engineers. Works with Raytheon's corporate software modernization team and the program's platform engineers to bring modern source control, build infrastructure, and automation to the program.
 focus:
   - Developer platform

@@ -1,6 +1,7 @@
 ---
 title: Owned the software architecture for a new radar receiver
 shortTitle: Receiver architecture
+# TODO: confirm date
 date: 2025-02-01
 category: Architecture
 summary: Owned the software architecture and interface strategy for a new radar receiver replacement.

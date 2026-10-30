@@ -1,7 +1,7 @@
 ---
 title: Group T
 organization: Raytheon
-startDate: 2022-02-01
+startDate: 2021-10-01
 summary: Software task manager for one of the radar's real-time signal-processing capabilities.
 roles:
   - software-engineer-raytheon

@@ -1,9 +1,10 @@
 ---
 title: Group E
 organization: Raytheon
-startDate: 2023-08-01
+startDate: 2022-03-01
 summary: Software task manager for one of the radar's real-time signal-processing capabilities.
 roles:
+  - software-engineer-raytheon
   - software-engineer-ii-raytheon
   - senior-software-engineering-task-lead
   - principal-software-engineer
