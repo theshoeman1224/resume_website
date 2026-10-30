@@ -1,9 +1,8 @@
 ---
 title: Delivered an end-of-life DSP replacement 6 months early and 48% under budget
 shortTitle: Early, under budget
-# TODO: confirm dates (see TODO.md)
-date: 2024-01-01
-endDate: 2024-12-01
+date: 2023-05-01
+endDate: 2024-09-01
 category: DSP
 summary: Sole engineer on the software and test effort to integrate a supplier's replacement for end-of-life DSP hardware. Worked directly with the supplier, diagnosed defects in their software, and fixed some of them without waiting on supplier support. Redesigned startup so the software detects and configures any mix of old and new DSP boards on its own, where operators used to need to know the hardware configuration at boot.
 # TODO: replace "about 10%" with the measured boot-time improvement (see TODO.md)
