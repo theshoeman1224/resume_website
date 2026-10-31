@@ -21,7 +21,7 @@ const accomplishments = defineCollection({
     workProject: z.string().optional(),
     // Featured wins lead the experience page and the home page's signature work.
     featured: z.boolean().default(false),
-    // The headline number, e.g. { value: "7–10% → 1–2%", label: "boot failure rate" }.
+    // The headline number, e.g. { value: "7–10% → 2–3%", label: "boot failure rate" }.
     metric: z.object({ value: z.string(), label: z.string() }).optional(),
     // The Markdown body, if any, is the case study (/experience/<id>/).
   }),
