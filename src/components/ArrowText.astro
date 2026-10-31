@@ -1,9 +1,9 @@
 ---
 import Arrow from "./Arrow.astro";
 
-// Renders content text such as "7–10% → 1–2%" with drawn arrows. Screen
-// readers hear "7–10% to 1–2%". Lines break only at spaces, never at a dash,
-// and an arrow stays with the word after it: a wrap reads "7–10%" / "→ 1–2%"
+// Renders content text such as "7–10% → 2–3%" with drawn arrows. Screen
+// readers hear "7–10% to 2–3%". Lines break only at spaces, never at a dash,
+// and an arrow stays with the word after it: a wrap reads "7–10%" / "→ 2–3%"
 // (never "7–" / "10%"), and "6 months early" can wrap between its words.
 interface Props {
   text: string;
