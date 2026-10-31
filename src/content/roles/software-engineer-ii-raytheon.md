@@ -12,6 +12,7 @@ focus:
 accomplishments:
   - race-condition-diagnostics
   - dsp-obsolescence-replacement
+  - dsp-plug-and-play
   - boot-reliability
 order: 25
 promotion: true
