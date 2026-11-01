@@ -16,12 +16,12 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.11",
+    "@astrojs/check": "^0.9.12",
     "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.2.0",
     "typescript": "^6.0.3",
     "vitest": "^5.0.5",
-    "wrangler": "^4.120.0",
+    "wrangler": "^4.153.0",
     "yaml": "^2.9.0"
   },
   "engines": {
